@@ -6,6 +6,27 @@
 
 ---
 
+## [2026-03-31] - UI Store (Задача 5.3)
+
+### Добавлено
+- `src/store/ui-store.ts` — Zustand store для UI-состояния: `isLoading`, `toasts`, `unlockAttempts`, `lockedUntil`
+- Логика блокировки: 5 неверных попыток unlock → `lockedUntil = now + 5 мин`, счётчик сбрасывается
+- persist-слой: сохраняет только `lockedUntil` (блокировка переживает перезагрузку)
+- Типы `Toast`, `ToastType`, `UIState`, `UIActions`, `UIStore` добавлены в `store/types.ts`
+- `src/store/ui-store.test.ts` — 22 теста (все прошли)
+- Экспорт из `src/store/index.ts`
+
+---
+
+## [2026-03-31] - Проверка состояния аккаунта получателя (Задача 7.3)
+
+### Добавлено
+- `src/services/validation/account-state.ts` — `checkAccountState(recipientAddress)`: предупреждения для uninit, bounce_risk (bounceable + uninit), frozen
+- При ошибке сети возвращает пустой массив (не блокирует отправку)
+- `src/services/validation/account-state.test.ts` — 6 тестов (все прошли)
+
+---
+
 ## [2026-03-31] - Проверка self-send (Задача 7.2)
 
 ### Добавлено

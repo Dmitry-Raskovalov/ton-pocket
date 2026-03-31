@@ -493,7 +493,7 @@ Store для транзакций с клиентской фильтрацией
 
 #### 5.3 UI Store
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** доменная логика
 
@@ -506,11 +506,11 @@ Store для транзакций с клиентской фильтрацией
 **Зависимости:** зависит от `1.1`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Определить `UIState` — isLoading (boolean), toasts (массив {id, type, message, duration}), unlockAttempts (number), lockedUntil (number | null).
-- [ ] Шаг 2: Определить actions — setLoading, addToast, removeToast, incrementUnlockAttempts, resetUnlockAttempts, setLockedUntil.
-- [ ] Шаг 3: Реализовать логику блокировки: при unlockAttempts ≥ 5 — setLockedUntil(Date.now() + 5 * 60 * 1000), resetUnlockAttempts.
-- [ ] Шаг 4: Реализовать persist для lockedUntil (чтобы перезагрузка страницы не сбрасывала блокировку).
-- [ ] Шаг 5: Написать юнит-тесты: добавление/удаление toast, инкремент попыток, блокировка после 5 попыток, разблокировка по времени.
+- [x] Шаг 1: Определить `UIState` — isLoading (boolean), toasts (массив {id, type, message, duration}), unlockAttempts (number), lockedUntil (number | null).
+- [x] Шаг 2: Определить actions — setLoading, addToast, removeToast, incrementUnlockAttempts, resetUnlockAttempts, setLockedUntil.
+- [x] Шаг 3: Реализовать логику блокировки: при unlockAttempts ≥ 5 — setLockedUntil(Date.now() + 5 * 60 * 1000), resetUnlockAttempts.
+- [x] Шаг 4: Реализовать persist для lockedUntil (чтобы перезагрузка страницы не сбрасывала блокировку).
+- [x] Шаг 5: Написать юнит-тесты: добавление/удаление toast, инкремент попыток, блокировка после 5 попыток, разблокировка по времени.
 
 **Ожидаемый результат:**
 Store для UI-состояния с механикой блокировки unlock-попыток.
@@ -774,7 +774,7 @@ Store для UI-состояния с механикой блокировки un
 
 #### 7.3 Проверка состояния аккаунта получателя
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** доменная логика / интеграция
 
@@ -787,12 +787,12 @@ Store для UI-состояния с механикой блокировки un
 **Зависимости:** зависит от `4.1`, `7.1`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Реализовать `checkAccountState(recipientAddress: string): Promise<Warning[]>`.
-- [ ] Шаг 2: Запросить состояние аккаунта через TonClient.
-- [ ] Шаг 3: Если аккаунт не инициализирован — Warning severity='warning', blocking=true (чекбокс).
-- [ ] Шаг 4: Если адрес bounceable + аккаунт не инициализирован — Warning severity='critical', blocking=true (средства bounce-нутся).
-- [ ] Шаг 5: Если аккаунт frozen — Warning severity='critical', blocking=true.
-- [ ] Шаг 6: Написать юнит-тесты с мокнутым TonClient: active аккаунт (нет warnings), uninit + non-bounceable, uninit + bounceable, frozen.
+- [x] Шаг 1: Реализовать `checkAccountState(recipientAddress: string): Promise<Warning[]>`.
+- [x] Шаг 2: Запросить состояние аккаунта через TonClient.
+- [x] Шаг 3: Если аккаунт не инициализирован — Warning severity='warning', blocking=true (чекбокс).
+- [x] Шаг 4: Если адрес bounceable + аккаунт не инициализирован — Warning severity='critical', blocking=true (средства bounce-нутся).
+- [x] Шаг 5: Если аккаунт frozen — Warning severity='critical', blocking=true.
+- [x] Шаг 6: Написать юнит-тесты с мокнутым TonClient: active аккаунт (нет warnings), uninit + non-bounceable, uninit + bounceable, frozen.
 
 **Ожидаемый результат:**
 Функция проверки состояния получателя, возвращающая массив предупреждений.
