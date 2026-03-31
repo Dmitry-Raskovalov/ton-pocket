@@ -5,3 +5,4 @@
 export * from './types';
 export * from './TonService';
 export * from './client';
+export * from './balance';

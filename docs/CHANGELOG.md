@@ -6,6 +6,15 @@
 
 ---
 
+## [2026-03-31] - Сервис получения баланса (Задача 4.2)
+
+### Добавлено
+- `src/services/ton/balance.ts` — `getBalance(address)` возвращает баланс в нанотон, `formatTon(nanotons)` форматирует для UI
+- Несуществующий аккаунт возвращает `0n` без броска ошибки
+- `src/services/ton/balance.test.ts` — 12 тестов (getBalance, formatTon, edge cases)
+
+---
+
 ## [2026-03-31] - TonClient wrapper (Задача 4.1)
 
 ### Добавлено
