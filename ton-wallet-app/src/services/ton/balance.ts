@@ -16,7 +16,7 @@ const NANOTON_PER_TON = 1_000_000_000n;
  */
 export async function getBalance(address: string): Promise<bigint> {
   const client = getTonClient();
-  const parsed = Address.parse(address);
+  const parsed = address.includes(':') ? Address.parseRaw(address) : Address.parse(address);
 
   try {
     return await client.getBalance(parsed);

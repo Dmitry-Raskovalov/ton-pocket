@@ -135,3 +135,24 @@
 ### Проблемы
 
 - Нет. 12/12 тестов с первого прогона.
+
+---
+
+## 2026-03-31 — Задача 4.3: Сервис истории транзакций
+
+### Наблюдения
+
+- `TonClient.getTransactions` возвращает `Transaction[]` из `@ton/core` — сложная структура с `inMessage`, `outMessages` (Dictionary) и `totalFees`.
+- Text comment cell: первые 32 бита = opcode 0x00000000, затем UTF-8 строка через `loadStringTail()`. Нераспознанный opcode → `null`.
+- `Address.parse()` принимает только user-friendly формат. Для raw (`0:...`) нужен `Address.parseRaw()`. Добавил автодетекцию по наличию `:` в строке — теперь оба формата работают в `getBalance` и `getTransactions`.
+- Deploy-транзакция: `inMessage` — `external-in`, out-messages пустые → direction `'out'`, amount `0n`.
+- Bounce: флаг `bounced` на inMessage не меняет логику парсинга — транзакция всё равно `'in'`.
+
+### Решения
+
+- Мок `Transaction` строится через реальные `@ton/core` классы (`beginCell`, `Dictionary.empty()`) — гарантирует правильные типы без полного мока библиотеки.
+- Параметры пагинации `lt`/`hash` пробрасываются напрямую в `TonClient.getTransactions`.
+
+### Проблемы
+
+- Адрес `EQBvW8Z...` в тесте имел невалидную контрольную сумму. Решено переходом на `Address.parseRaw()` с raw-адресами в тестах.

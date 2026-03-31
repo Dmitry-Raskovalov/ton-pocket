@@ -317,7 +317,7 @@ Singleton `TonClient`, через который все сервисы обра�
 
 #### 4.3 Сервис истории транзакций
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** интеграция
 
@@ -330,11 +330,11 @@ Singleton `TonClient`, через который все сервисы обра�
 **Зависимости:** зависит от `4.1`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Определить тип `ParsedTransaction` — hash, timestamp, direction ('in' | 'out'), amount (bigint), counterpartyAddress (raw), comment (string | null), fee.
-- [ ] Шаг 2: Реализовать функцию `getTransactions(address: string, limit: number, lt?: string, hash?: string): Promise<ParsedTransaction[]>`.
-- [ ] Шаг 3: Реализовать парсинг raw-транзакций из TonClient в `ParsedTransaction` — определение направления, извлечение адреса контрагента, декодирование комментария из body (text comment cell).
-- [ ] Шаг 4: Обработать edge cases: транзакции без in_msg, транзакции deploy-контракта, bounce-транзакции.
-- [ ] Шаг 5: Написать юнит-тесты с мокнутыми данными: парсинг входящей/исходящей транзакции, извлечение комментария, пагинация.
+- [x] Шаг 1: Определить тип `ParsedTransaction` — hash, timestamp, direction ('in' | 'out'), amount (bigint), counterpartyAddress (raw), comment (string | null), fee.
+- [x] Шаг 2: Реализовать функцию `getTransactions(address: string, limit: number, lt?: string, hash?: string): Promise<ParsedTransaction[]>`.
+- [x] Шаг 3: Реализовать парсинг raw-транзакций из TonClient в `ParsedTransaction` — определение направления, извлечение адреса контрагента, декодирование комментария из body (text comment cell).
+- [x] Шаг 4: Обработать edge cases: транзакции без in_msg, транзакции deploy-контракта, bounce-транзакции.
+- [x] Шаг 5: Написать юнит-тесты с мокнутыми данными: парсинг входящей/исходящей транзакции, извлечение комментария, пагинация.
 
 **Ожидаемый результат:**
 Сервис, возвращающий типизированный список транзакций с поддержкой пагинации, готовый к использованию в store и UI.

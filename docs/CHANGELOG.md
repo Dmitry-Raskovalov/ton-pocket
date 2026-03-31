@@ -6,6 +6,17 @@
 
 ---
 
+## [2026-03-31] - Сервис истории транзакций (Задача 4.3)
+
+### Добавлено
+- `src/services/ton/transactions.ts` — `getTransactions(address, limit, lt?, hash?)` с пагинацией
+- Тип `ParsedTransaction` — hash, timestamp, direction, amount, counterpartyAddress, comment, fee, lt
+- Парсинг входящих/исходящих/deploy транзакций, декодирование text comment (opcode 0x00000000)
+- `src/services/ton/transactions.test.ts` — 15 тестов
+- `balance.ts` — поддержка raw-адресов (формат `0:...`)
+
+---
+
 ## [2026-03-31] - Сервис получения баланса (Задача 4.2)
 
 ### Добавлено
