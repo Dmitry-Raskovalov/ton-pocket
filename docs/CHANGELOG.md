@@ -5,6 +5,36 @@
 
 ---
 
+## [2026-04-01] - Общие UI-компоненты (Задача 8.4)
+
+### Добавлено
+- `src/components/CopyButton.tsx` — переписан: иконки `Copy`/`Check` из `lucide-react`, варианты `icon-only` (16px) и `with-text` (20px), feedback "Copied!" на 2 сек, `aria-label` и `title` синхронизированы
+- `src/components/TransactionItem.tsx` — строка транзакции: иконка направления `ArrowDownLeft`/`ArrowUpRight`, сумма (+/- TON с компактным форматом до 4 знаков), адрес контрагента (4+...+4), label адресной книги, дата (`formatTime`), комментарий с иконкой
+- `src/components/SearchBar.tsx` — поле поиска: иконка `Search` слева, кнопка `X` очистки (показывается при наличии текста), pill-shape, полная ширина
+- `src/components/Loader.tsx` — fullscreen overlay `bg-background/80 backdrop-blur-sm`, спиннер `Loader2` 40px с `animate-spin`, опциональный текст
+- `src/components/Toast.tsx` — `ToastItem` (авто-dismiss через `useEffect` по `duration`; duration=0 не скрывает) + `ToastContainer` (читает toasts из `useUIStore`, fixed bottom-center)
+- `src/components/CopyButton.test.tsx` — 5 тестов: clipboard API вызывается, aria-label меняется, возврат через 2с, with-text вариант
+- `src/components/TransactionItem.test.tsx` — 8 тестов: in/out префикс, truncated адрес, label, комментарий, onClick, null counterparty
+- `src/components/Toast.test.tsx` — 5 тестов: пустой контейнер, рендер из store, авто-dismiss, duration=0
+
+### Изменено
+- `src/components/index.ts` — добавлены экспорты `Loader`, `SearchBar`, `Toast`/`ToastContainer`, `TransactionItem`
+
+---
+
+## [2026-04-01] - Компоненты WarningCard и WarningList (Задача 8.3)
+
+### Добавлено
+- `src/components/WarningCard.tsx` — переписан: принимает `warning: Warning` из `services/validation/types`, иконки из `lucide-react` (AlertCircle/AlertTriangle/Info), левая полоса `border-l-4` по severity, контролируемый checkbox (`checked`/`onCheck` пропсы), только при `blocking=true`
+- `src/components/WarningList.tsx` — список `WarningCard`: внутреннее состояние чекбоксов `Record<number, boolean>`, reset при смене `warnings`, `onAllBlockingConfirmed` вызывается через `useEffect`
+- `src/components/WarningCard.test.tsx` — 10 тестов: форматирование type, сообщение, blocking/non-blocking чекбокс, controlled state, severity стили
+- `src/components/WarningList.test.tsx` — 8 тестов: пустой список, все warnings, один чекбокс для blocking, callback false/true, частичное подтверждение, non-blocking only
+
+### Изменено
+- `src/components/index.ts` — добавлен экспорт `WarningList`
+
+---
+
 ## [2026-04-01] - HighlightedAddress (Задача 8.2)
 
 ### Добавлено

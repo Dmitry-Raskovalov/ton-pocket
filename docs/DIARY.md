@@ -1,5 +1,41 @@
 # Дневник разработки TON Testnet Wallet
 
+## 2026-04-01 — Задача 8.4: Общие UI-компоненты
+
+### Наблюдения
+- `lucide-react` присутствовал в `package.json`, но не был установлен (`node_modules` отсутствовал). `@testing-library/user-event` тоже не установлен — все тесты кликов реализованы через `fireEvent`.
+- `formatTon()` из `balance.ts` возвращает 9 знаков после запятой ("1.500000000") — для UI неудобно. В `TransactionItem` добавлен локальный форматтер: обрезает trailing zeros и ограничивает 4 знаками.
+- `Toast` дизайн в `component_sheet_ui_kit` — простой pill `bg-on-surface text-surface rounded-full` с bounce-анимацией. Реализован более функциональный вариант из `DESIGN_BRIEF.md` (поддержка типов, dismiss-кнопка) с учётом интеграции с `ui-store`.
+- `duration=0` используется в тестах store как "не скрывать автоматически" — ToastItem явно проверяет `if (toast.duration <= 0) return` в useEffect.
+
+### Решения
+- `ToastContainer` вынесен отдельно от `ToastItem` — контейнер читает store, item управляет своим таймером. Нет глобального таймер-менеджера.
+- `TransactionItem` не использует `HighlightedAddress` для адреса контрагента — в списке транзакций достаточно простого truncate (4+...+4) без выделения начала/конца; `HighlightedAddress` нужен на экране подтверждения.
+- `animate-in slide-in-from-bottom-2 fade-in` в Toast — утилиты из `tailwindcss-animate` (если не установлен, классы игнорируются без ошибки). При необходимости можно заменить на `transition + translate`.
+
+### Проблемы
+- Нет. 18/18 тестов с первого запуска после `npm install`.
+
+---
+
+## 2026-04-01 — Задача 8.3: WarningCard и WarningList
+
+### Наблюдения
+- Существующий `WarningCard.tsx` (заглушка) имел собственный внутренний `useState` для чекбокса — не управляем снаружи. Для `WarningList` нужен контроль состояния снаружи, поэтому переписан на controlled pattern.
+- `WarningSeverity` в заглушке: `'error' | 'warning' | 'info'`. В `ValidationSeverity` из types.ts: то же самое. Переиспользуем тип напрямую.
+- Tailwind не имеет токена `warning` или `info` в конфиге — `warning` маппится на `tertiary` (жёлтый), `info` на `primary` (синий). Это соответствует Material You цветовой схеме.
+- Дизайн confirm_transaction использует `border-l-4` (не 3px), `rounded-r-lg` (скругление только справа), `space-y-4` между контентом и чекбоксом.
+
+### Решения
+- `formatType(warning.type)` — конвертирует `snake_case` → `Title Case` для отображения заголовка. Warning.type — машинный идентификатор (`'insufficient_balance'`), не человекочитаемый.
+- Два `useEffect` в WarningList с разными зависимостями: первый сбрасывает `checkedMap` при смене `warnings`, второй вызывает `onAllBlockingConfirmed`. Это предотвращает race-condition при одновременном изменении.
+- `onAllBlockingConfirmed(false)` при `blockingIndices.length === 0` — нет blocking warnings → нельзя "подтвердить всё", callback возвращает false.
+
+### Проблемы
+- Нет. 18/18 тестов с первого запуска.
+
+---
+
 ## 2026-04-01 — Задача 8.2: HighlightedAddress
 
 ### Наблюдения
