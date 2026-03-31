@@ -6,6 +6,17 @@
 
 ---
 
+## [2026-03-31] - TonClient wrapper (Задача 4.1)
+
+### Добавлено
+- `src/services/ton/client.ts` — singleton `getTonClient()`, Axios adapter поверх `fetch`
+- Типизированные ошибки: `NetworkError`, `RateLimitError`, `ApiError`
+- `withRetry<T>()` — retry 3 попытки, exponential backoff (1s→2s→4s)
+- `resetTonClient()` — сброс singleton для тестов
+- `src/services/ton/client.test.ts` — 13 тестов (withRetry, singleton, ошибки)
+
+---
+
 ## [2026-03-31] - Оценка силы пароля (Задача 3.3)
 
 ### Добавлено

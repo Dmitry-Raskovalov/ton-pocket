@@ -15,7 +15,7 @@ export interface PasswordStrength {
   label: string;
   color: string;
   warning: string;
-  suggestions: string[];
+  suggestions: readonly string[];
   isAcceptable: boolean;
 }
 

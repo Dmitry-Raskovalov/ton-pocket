@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { generateSalt, deriveKey, deriveKeyWithParams, isArgon2Available } from './kdf';
+import { generateSalt, deriveKeyWithParams } from './kdf';
 import type { Argon2Params, Pbkdf2Params } from './types';
 
 // Reset module cache between tests to reset argon2Available singleton

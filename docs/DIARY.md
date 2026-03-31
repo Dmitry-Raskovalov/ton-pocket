@@ -95,3 +95,24 @@
 
 - Задача 3.1: Реализация модуля KDF с полноценной Argon2id интеграцией и тестами.
 - Задача 3.2: Реализация Encrypted Vault с тестами.
+
+---
+
+## 2026-03-31 — Задача 4.1: TonClient wrapper
+
+### Наблюдения
+
+- `TonClient` из `@ton/ton` принимает `httpAdapter?: AxiosAdapter` (не кастомный fetch), где `AxiosAdapter = (config: InternalAxiosRequestConfig) => AxiosPromise`.
+- Внутри адаптера используется `globalThis.fetch` для отправки запросов — это позволяет заменить transport без мока axios.
+- Retry-логика вынесена в отдельную `withRetry<T>()` утилиту и тестируется независимо от клиента.
+- `vi.useFakeTimers()` + `mockRejectedValue` создаёт "unhandled rejection" если Promise не обёрнут перед `advanceTimersByTimeAsync`. Решено через `.then(v => ..., e => ...)` паттерн.
+
+### Решения
+
+- Singleton сбрасывается через `resetTonClient()` в тестах — не нужно моковать модуль целиком.
+- HTTP 429 → `RateLimitError`, network fail → `NetworkError`, другие non-2xx → `ApiError`. `RateLimitError` и `ApiError` не ретраятся.
+- `import.meta.env` читается через безопасный try/catch чтобы работало в jsdom.
+
+### Проблемы
+
+- Нет. Все 13 тестов прошли с первого прогона (после правки unhandled rejection).

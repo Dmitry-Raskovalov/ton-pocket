@@ -250,7 +250,7 @@ Self-custodial криптокошелёк для TON testnet — одностр�
 
 #### 4.1 TonClient wrapper
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** интеграция
 
@@ -263,11 +263,11 @@ Self-custodial криптокошелёк для TON testnet — одностр�
 **Зависимости:** зависит от `1.1`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Создать `src/services/ton/client.ts` с функцией `getTonClient(): TonClient`.
-- [ ] Шаг 2: Конфигурировать endpoint (`VITE_TON_ENDPOINT` или дефолтный `https://testnet.toncenter.com/api/v2/jsonRPC`) и API key (`VITE_TON_API_KEY`, опционален).
-- [ ] Шаг 3: Реализовать retry-обёртку: 3 попытки, exponential backoff (1s, 2s, 4s), перехват ошибок сети и rate limit (HTTP 429).
-- [ ] Шаг 4: Определить типизированные ошибки: `NetworkError`, `RateLimitError`, `ApiError`.
-- [ ] Шаг 5: Написать юнит-тесты с мокнутым fetch: успешный запрос, retry при ошибке, исчерпание попыток, rate limit обработка.
+- [x] Шаг 1: Создать `src/services/ton/client.ts` с функцией `getTonClient(): TonClient`.
+- [x] Шаг 2: Конфигурировать endpoint (`VITE_TON_ENDPOINT` или дефолтный `https://testnet.toncenter.com/api/v2/jsonRPC`) и API key (`VITE_TON_API_KEY`, опционален).
+- [x] Шаг 3: Реализовать retry-обёртку: 3 попытки, exponential backoff (1s, 2s, 4s), перехват ошибок сети и rate limit (HTTP 429).
+- [x] Шаг 4: Определить типизированные ошибки: `NetworkError`, `RateLimitError`, `ApiError`.
+- [x] Шаг 5: Написать юнит-тесты с мокнутым fetch: успешный запрос, retry при ошибке, исчерпание попыток, rate limit обработка.
 
 **Ожидаемый результат:**
 Singleton `TonClient`, через который все сервисы обращаются к testnet. Retry-логика прозрачна для вызывающего кода.
