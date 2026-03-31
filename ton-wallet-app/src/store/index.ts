@@ -3,4 +3,4 @@
  */
 
 export * from './types';
-export * from './walletStore';
+export * from './wallet-store';

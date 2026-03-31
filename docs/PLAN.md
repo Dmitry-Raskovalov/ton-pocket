@@ -427,7 +427,7 @@ Singleton `TonClient`, через который все сервисы обра�
 
 #### 5.1 Wallet Store
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** доменная логика
 
@@ -440,11 +440,11 @@ Singleton `TonClient`, через который все сервисы обра�
 **Зависимости:** зависит от `1.1`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Определить интерфейс `WalletState` — address (string | null), version (WalletVersion | null), balance (bigint), isUnlocked (boolean), publicKey (string | null).
-- [ ] Шаг 2: Определить actions — setWallet, clearWallet, updateBalance, setUnlocked.
-- [ ] Шаг 3: Настроить persist middleware: сохранять только address, version, publicKey. Не сохранять balance (обновляется при каждом polling), isUnlocked (всегда false при старте).
-- [ ] Шаг 4: Реализовать селекторы: isWalletCreated (есть ли vault в localStorage), hasWallet (есть ли address в store).
-- [ ] Шаг 5: Написать юнит-тесты: setWallet сохраняет данные, clearWallet очищает, persist корректно восстанавливает address/version.
+- [x] Шаг 1: Определить интерфейс `WalletState` — address (string | null), version (WalletVersion | null), balance (bigint), isUnlocked (boolean), publicKey (string | null).
+- [x] Шаг 2: Определить actions — setWallet, clearWallet, updateBalance, setUnlocked.
+- [x] Шаг 3: Настроить persist middleware: сохранять только address, version, publicKey. Не сохранять balance (обновляется при каждом polling), isUnlocked (всегда false при старте).
+- [x] Шаг 4: Реализовать селекторы: isWalletCreated (есть ли vault в localStorage), hasWallet (есть ли address в store).
+- [x] Шаг 5: Написать юнит-тесты: setWallet сохраняет данные, clearWallet очищает, persist корректно восстанавливает address/version.
 
 **Ожидаемый результат:**
 Zustand store для wallet state с persist-слоем, готовый к использованию в экранах и хуках.
