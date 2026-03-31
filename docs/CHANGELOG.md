@@ -6,6 +6,15 @@
 
 ---
 
+## [2026-03-31] - Оценка силы пароля (Задача 3.3)
+
+### Добавлено
+
+- `src/crypto/password-strength.ts` — модуль оценки пароля через `zxcvbn-ts`: `evaluatePassword` возвращает score (0–4), label, color, warning, suggestions, isAcceptable
+- `src/crypto/password-strength.test.ts` — 10 юнит-тестов: простые пароли (score < 2), сложные (score ≥ 2), короткий пароль (isAcceptable = false), метки, цвета, структура результата
+
+---
+
 ## [2026-03-31] - Encrypted Vault (Задача 3.2)
 
 ### Добавлено
