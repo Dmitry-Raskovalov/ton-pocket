@@ -7,7 +7,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { WalletService } from './WalletService';
-import { InvalidMnemonicError, InvalidPasswordError, NoVaultError } from './types';
+import { InvalidMnemonicError, InvalidPasswordError, NoVaultError, WeakPasswordError } from './types';
 
 // Mock argon2-browser so KDF falls back to PBKDF2 in tests
 vi.mock('argon2-browser', () => {
@@ -419,5 +419,131 @@ describe('WalletService.exportMnemonic', () => {
       expect(error).toBeInstanceOf(NoVaultError);
       expect((error as NoVaultError).name).toBe('NoVaultError');
     }
+  });
+});
+
+// ─── changePassword (task 6.4) ───────────────────────────────────────────────
+
+describe('WalletService.changePassword', () => {
+  let service: WalletService;
+  const NEW_PASSWORD = 'New-Strong-Password!2026';
+
+  beforeEach(() => {
+    service = new WalletService();
+    localStorage.clear();
+  });
+
+  async function seedVault(password: string): Promise<void> {
+    const { encrypt, saveVault } = await import('@/crypto/vault');
+    const mnemonicJson = JSON.stringify(MNEMONIC);
+    const vault = await encrypt(mnemonicJson, password);
+    saveVault(vault);
+  }
+
+  it('successfully changes password — new vault can be decrypted with new password', async () => {
+    await seedVault(PASSWORD);
+
+    await service.changePassword(PASSWORD, NEW_PASSWORD);
+
+    const { decrypt: vaultDecrypt, loadVault } = await import('@/crypto/vault');
+    const vault = loadVault();
+    expect(vault).not.toBeNull();
+
+    const plaintext = await vaultDecrypt(vault!, NEW_PASSWORD);
+    const decrypted: string[] = JSON.parse(plaintext);
+    expect(decrypted).toEqual(MNEMONIC);
+  });
+
+  it('old password no longer works after change', async () => {
+    await seedVault(PASSWORD);
+
+    await service.changePassword(PASSWORD, NEW_PASSWORD);
+
+    const { decrypt: vaultDecrypt, loadVault } = await import('@/crypto/vault');
+    const vault = loadVault()!;
+
+    await expect(vaultDecrypt(vault, PASSWORD)).rejects.toThrow();
+  });
+
+  it('throws InvalidPasswordError when current password is wrong', async () => {
+    await seedVault(PASSWORD);
+
+    await expect(service.changePassword('wrong-current', NEW_PASSWORD))
+      .rejects.toThrow(InvalidPasswordError);
+  });
+
+  it('throws NoVaultError when no vault exists', async () => {
+    await expect(service.changePassword(PASSWORD, NEW_PASSWORD))
+      .rejects.toThrow(NoVaultError);
+  });
+
+  it('throws WeakPasswordError when new password is too weak', async () => {
+    await seedVault(PASSWORD);
+
+    await expect(service.changePassword(PASSWORD, '12345678'))
+      .rejects.toThrow(WeakPasswordError);
+  });
+
+  it('throws WeakPasswordError when new password is too short', async () => {
+    await seedVault(PASSWORD);
+
+    await expect(service.changePassword(PASSWORD, 'X#9kP!2'))
+      .rejects.toThrow(WeakPasswordError);
+  });
+
+  it('vault is not modified when current password is wrong', async () => {
+    await seedVault(PASSWORD);
+
+    const { loadVault: loadBefore } = await import('@/crypto/vault');
+    const vaultBefore = loadBefore();
+
+    await expect(service.changePassword('wrong', NEW_PASSWORD)).rejects.toThrow();
+
+    const { loadVault: loadAfter } = await import('@/crypto/vault');
+    const vaultAfter = loadAfter();
+
+    expect(vaultAfter).not.toBeNull();
+    expect(vaultAfter!.ciphertext).toBe(vaultBefore!.ciphertext);
+    expect(vaultAfter!.iv).toBe(vaultBefore!.iv);
+  });
+
+  it('vault is not modified when new password is weak', async () => {
+    await seedVault(PASSWORD);
+
+    const { loadVault: loadBefore } = await import('@/crypto/vault');
+    const vaultBefore = loadBefore();
+
+    await expect(service.changePassword(PASSWORD, 'weak')).rejects.toThrow();
+
+    const { loadVault: loadAfter } = await import('@/crypto/vault');
+    const vaultAfter = loadAfter();
+
+    expect(vaultAfter!.ciphertext).toBe(vaultBefore!.ciphertext);
+  });
+
+  it('WeakPasswordError has correct name property', async () => {
+    await seedVault(PASSWORD);
+
+    try {
+      await service.changePassword(PASSWORD, '123');
+    } catch (error) {
+      expect(error).toBeInstanceOf(WeakPasswordError);
+      expect((error as WeakPasswordError).name).toBe('WeakPasswordError');
+    }
+  });
+
+  it('new vault has different salt and IV from old vault', async () => {
+    await seedVault(PASSWORD);
+
+    const { loadVault: loadBefore } = await import('@/crypto/vault');
+    const oldVault = loadBefore();
+
+    await service.changePassword(PASSWORD, NEW_PASSWORD);
+
+    const { loadVault: loadAfter } = await import('@/crypto/vault');
+    const newVault = loadAfter();
+
+    expect(newVault!.iv).not.toBe(oldVault!.iv);
+    expect(newVault!.ciphertext).not.toBe(oldVault!.ciphertext);
   });
 });

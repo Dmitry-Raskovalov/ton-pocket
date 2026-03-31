@@ -8,7 +8,8 @@ import { encrypt, saveVault, loadVault, decrypt } from '@/crypto/vault';
 import { createContract, detectVersions } from './contract-factory';
 import type { WalletVersion } from './contract-factory';
 import type { WalletCreateResult, WalletImportResult, WalletState } from './types';
-import { InvalidPasswordError, InvalidMnemonicError, NoVaultError } from './types';
+import { InvalidPasswordError, InvalidMnemonicError, NoVaultError, WeakPasswordError } from './types';
+import { evaluatePassword } from '@/crypto/password-strength';
 
 export class WalletService {
   /**
@@ -146,10 +147,39 @@ export class WalletService {
 
   /**
    * Change wallet password.
+   * Decrypts vault with current password, validates new password strength,
+   * re-encrypts mnemonic with new password and overwrites vault.
+   *
+   * @throws {NoVaultError} if no vault is found in localStorage
+   * @throws {InvalidPasswordError} if the current password is incorrect
+   * @throws {WeakPasswordError} if the new password does not meet strength requirements
    */
-  async changePassword(_oldPassword: string, _newPassword: string): Promise<void> {
-    // TODO: Implement
-    throw new Error('Not implemented');
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    // 1. Load vault
+    const vault = loadVault();
+    if (!vault) {
+      throw new NoVaultError();
+    }
+
+    // 2. Decrypt with current password
+    let plaintext: string;
+    try {
+      plaintext = await decrypt(vault, currentPassword);
+    } catch {
+      throw new InvalidPasswordError();
+    }
+
+    // 3. Validate new password strength
+    const strength = evaluatePassword(newPassword);
+    if (!strength.isAcceptable) {
+      throw new WeakPasswordError();
+    }
+
+    // 4. Re-encrypt with new password (new salt, new IV)
+    const newVault = await encrypt(plaintext, newPassword);
+
+    // 5. Save new vault (overwrites old one)
+    saveVault(newVault);
   }
 }
 

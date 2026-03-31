@@ -62,3 +62,13 @@ export class InvalidMnemonicError extends Error {
     this.name = 'InvalidMnemonicError';
   }
 }
+
+/**
+ * Thrown when the new password does not meet strength requirements.
+ */
+export class WeakPasswordError extends Error {
+  constructor(message = 'New password is too weak. Use at least 8 characters with score ≥ 2.') {
+    super(message);
+    this.name = 'WeakPasswordError';
+  }
+}
