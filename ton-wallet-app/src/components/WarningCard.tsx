@@ -1,55 +1,99 @@
 /**
- * Warning card component with severity levels.
+ * file: WarningCard.tsx
+ * description: Warning card with severity levels, left-border accent, and optional blocking checkbox
+ * dependencies: services/validation/types, lucide-react
+ * created: 2026-04-01
  */
 
-import { useState } from 'react';
-
-export type WarningSeverity = 'error' | 'warning' | 'info';
+import { AlertCircle, AlertTriangle, Info } from 'lucide-react';
+import type { Warning, ValidationSeverity } from '@/services/validation/types';
 
 export interface WarningCardProps {
-  title: string;
-  message: string;
-  severity: WarningSeverity;
-  showCheckbox?: boolean;
-  checkboxLabel?: string;
-  onCheckboxChange?: (checked: boolean) => void;
+  warning: Warning;
+  /** Controlled checkbox state — used only when warning.blocking=true */
+  checked: boolean;
+  onCheck: (checked: boolean) => void;
 }
 
-const severityStyles: Record<WarningSeverity, string> = {
-  error: 'bg-error/10 border-error text-error',
-  warning: 'bg-warning/10 border-warning text-warning',
-  info: 'bg-info/10 border-info text-info',
+interface SeverityConfig {
+  border: string;
+  bg: string;
+  iconColor: string;
+  titleColor: string;
+  checkboxBg: string;
+  checkboxBorder: string;
+  checkboxText: string;
+  Icon: typeof AlertCircle;
+}
+
+const SEVERITY_CONFIG: Record<ValidationSeverity, SeverityConfig> = {
+  error: {
+    border: 'border-error',
+    bg: 'bg-error-container/10',
+    iconColor: 'text-error',
+    titleColor: 'text-error',
+    checkboxBg: 'bg-error/5',
+    checkboxBorder: 'border-error',
+    checkboxText: 'text-error',
+    Icon: AlertCircle,
+  },
+  warning: {
+    border: 'border-tertiary',
+    bg: 'bg-tertiary-container/10',
+    iconColor: 'text-tertiary',
+    titleColor: 'text-tertiary',
+    checkboxBg: 'bg-tertiary/5',
+    checkboxBorder: 'border-tertiary',
+    checkboxText: 'text-tertiary',
+    Icon: AlertTriangle,
+  },
+  info: {
+    border: 'border-primary',
+    bg: 'bg-primary-container/10',
+    iconColor: 'text-primary',
+    titleColor: 'text-primary',
+    checkboxBg: 'bg-primary/5',
+    checkboxBorder: 'border-primary',
+    checkboxText: 'text-primary',
+    Icon: Info,
+  },
 };
 
-export function WarningCard({
-  title,
-  message,
-  severity,
-  showCheckbox = false,
-  checkboxLabel = 'I understand the risks',
-  onCheckboxChange,
-}: WarningCardProps) {
-  const [checked, setChecked] = useState(false);
+/** Converts snake_case type identifier to Title Case for display */
+function formatType(type: string): string {
+  return type
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newChecked = e.target.checked;
-    setChecked(newChecked);
-    onCheckboxChange?.(newChecked);
-  };
+export function WarningCard({ warning, checked, onCheck }: WarningCardProps) {
+  const config = SEVERITY_CONFIG[warning.severity];
+  const { Icon } = config;
 
   return (
-    <div className={`p-4 rounded-lg border ${severityStyles[severity]}`}>
-      <div className="font-medium">{title}</div>
-      <div className="mt-1 text-sm opacity-80">{message}</div>
-      {showCheckbox && (
-        <label className="flex items-center gap-2 mt-3 cursor-pointer">
+    <div className={`${config.bg} border-l-4 ${config.border} p-4 rounded-r-lg space-y-4`}>
+      <div className="flex gap-3">
+        <Icon className={`${config.iconColor} shrink-0 mt-0.5`} size={18} aria-hidden="true" />
+        <div className="space-y-1">
+          <p className={`text-sm font-bold ${config.titleColor}`}>{formatType(warning.type)}</p>
+          <p className="text-xs text-on-surface-variant leading-relaxed">{warning.message}</p>
+        </div>
+      </div>
+
+      {warning.blocking && (
+        <label
+          className={`flex items-center gap-3 ${config.checkboxBg} p-3 rounded cursor-pointer active:scale-[0.98] transition-transform`}
+        >
           <input
             type="checkbox"
             checked={checked}
-            onChange={handleCheckboxChange}
-            className="w-4 h-4 rounded border-current"
+            onChange={(e) => onCheck(e.target.checked)}
+            className={`w-4 h-4 rounded border ${config.checkboxBorder} bg-transparent accent-current`}
           />
-          <span className="text-sm">{checkboxLabel}</span>
+          <span className={`text-xs font-semibold ${config.checkboxText} uppercase tracking-wide`}>
+            I understand the risk
+          </span>
         </label>
       )}
     </div>

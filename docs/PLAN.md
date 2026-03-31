@@ -983,7 +983,7 @@ Store для UI-состояния с механикой блокировки un
 
 #### 8.3 Компоненты WarningCard и WarningList
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** UI
 
@@ -997,10 +997,10 @@ Store для UI-состояния с механикой блокировки un
 **Зависимости:** нет
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Реализовать WarningCard — props: warning (Warning), checked (boolean), onCheck. Стилизация по severity (info=голубой, warning=жёлтый, critical=красный, error=красный).
-- [ ] Шаг 2: Если warning.blocking=true — показать чекбокс «I understand the risks».
-- [ ] Шаг 3: Реализовать WarningList — props: warnings (Warning[]), onAllBlockingConfirmed (callback). Рендерит список WarningCard, управляет состоянием чекбоксов, вызывает callback когда все blocking-чекбоксы отмечены.
-- [ ] Шаг 4: Написать юнит-тесты: рендер разных severity, чекбокс для blocking, onAllBlockingConfirmed вызывается корректно.
+- [x] Шаг 1: Реализовать WarningCard — props: warning (Warning), checked (boolean), onCheck. Стилизация по severity (info=голубой, warning=жёлтый, critical=красный, error=красный).
+- [x] Шаг 2: Если warning.blocking=true — показать чекбокс «I understand the risks».
+- [x] Шаг 3: Реализовать WarningList — props: warnings (Warning[]), onAllBlockingConfirmed (callback). Рендерит список WarningCard, управляет состоянием чекбоксов, вызывает callback когда все blocking-чекбоксы отмечены.
+- [x] Шаг 4: Написать юнит-тесты: рендер разных severity, чекбокс для blocking, onAllBlockingConfirmed вызывается корректно.
 
 **Ожидаемый результат:**
 Компоненты для отображения предупреждений с интерактивными чекбоксами.

@@ -1,5 +1,5 @@
 ---
-name: CODE
+name: code-assist
 description: AI Coding Assistant Rules
 invokable: true
 ---
