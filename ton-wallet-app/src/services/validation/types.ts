@@ -4,6 +4,14 @@
 
 export type ValidationSeverity = 'error' | 'warning' | 'info';
 
+export interface Warning {
+  type: string;
+  message: string;
+  severity: ValidationSeverity;
+  /** blocking=true означает, что пользователь должен явно подтвердить предупреждение */
+  blocking: boolean;
+}
+
 export interface ValidationResult {
   valid: boolean;
   errors: ValidationError[];

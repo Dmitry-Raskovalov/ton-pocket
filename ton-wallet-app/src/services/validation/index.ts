@@ -5,3 +5,4 @@
 export * from './types';
 export * from './ValidationPipeline';
 export * from './address-format';
+export * from './self-send';

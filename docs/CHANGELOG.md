@@ -6,6 +6,15 @@
 
 ---
 
+## [2026-03-31] - Проверка self-send (Задача 7.2)
+
+### Добавлено
+- `src/services/validation/self-send.ts` — `checkSelfSend(recipientRaw, walletPublicKey)`: проверяет совпадение адреса получателя с адресами всех версий контрактов отправителя (v3R2, v4R2, v5R1)
+- Тип `Warning` в `types.ts` — поля `type`, `message`, `severity`, `blocking`
+- `src/services/validation/self-send.test.ts` — 5 тестов (все прошли)
+
+---
+
 ## [2026-03-31] - Валидация формата адреса (Задача 7.1)
 
 ### Добавлено
