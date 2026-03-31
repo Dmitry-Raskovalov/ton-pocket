@@ -5,6 +5,18 @@
 
 ---
 
+## [2026-03-31] - Transaction Store (Задача 5.2)
+
+### Добавлено
+- `src/store/transaction-store.ts` — Zustand store для транзакций: `transactions`, `isLoading`, `hasMore`, `searchQuery`, `directionFilter`, `lastUpdateTimestamp`
+- Клиентская фильтрация: `getFilteredTransactions(labelMap)` — фильтр по направлению, поиск по адресу/комментарию/label
+- Действия: `setTransactions`, `appendTransactions` (для пагинации), `setSearchQuery`, `setDirectionFilter`, `setLoading`
+- Без persist-слоя (загружается с нуля при каждом открытии)
+- `src/store/transaction-store.test.ts` — 23 теста (все прошли)
+- Экспорт из `src/store/index.ts`
+
+---
+
 ## [2026-03-31] - Сервис отправки транзакций (Задача 4.4)
 
 ### Добавлено

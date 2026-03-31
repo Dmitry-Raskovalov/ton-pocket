@@ -460,7 +460,7 @@ Zustand store для wallet state с persist-слоем, готовый к ис�
 
 #### 5.2 Transaction Store
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** доменная логика
 
@@ -473,11 +473,11 @@ Zustand store для wallet state с persist-слоем, готовый к ис�
 **Зависимости:** зависит от `1.1`, `4.3`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Определить `TransactionState` — transactions (ParsedTransaction[]), isLoading, hasMore (для пагинации), searchQuery, directionFilter ('all' | 'in' | 'out'), lastUpdateTimestamp.
-- [ ] Шаг 2: Определить actions — setTransactions, appendTransactions, setSearchQuery, setDirectionFilter, setLoading.
-- [ ] Шаг 3: Реализовать computed-селектор `filteredTransactions` — применяет текстовый поиск и фильтр направления к списку транзакций (клиентская фильтрация).
-- [ ] Шаг 4: Текстовый поиск: матчинг по адресу контрагента (частичное совпадение), комментарию, label из адресной книги.
-- [ ] Шаг 5: Написать юнит-тесты: фильтрация по направлению, текстовый поиск по адресу и комментарию, корректная пагинация (append).
+- [x] Шаг 1: Определить `TransactionState` — transactions (ParsedTransaction[]), isLoading, hasMore (для пагинации), searchQuery, directionFilter ('all' | 'in' | 'out'), lastUpdateTimestamp.
+- [x] Шаг 2: Определить actions — setTransactions, appendTransactions, setSearchQuery, setDirectionFilter, setLoading.
+- [x] Шаг 3: Реализовать computed-селектор `filteredTransactions` — применяет текстовый поиск и фильтр направления к списку транзакций (клиентская фильтрация).
+- [x] Шаг 4: Текстовый поиск: матчинг по адресу контрагента (частичное совпадение), комментарию, label из адресной книги.
+- [x] Шаг 5: Написать юнит-тесты: фильтрация по направлению, текстовый поиск по адресу и комментарию, корректная пагинация (append).
 
 **Ожидаемый результат:**
 Store для транзакций с клиентской фильтрацией и поиском.
