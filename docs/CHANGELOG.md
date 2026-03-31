@@ -5,6 +5,25 @@
 
 ---
 
+## [2026-03-31] - Проверка баланса и комиссии (Задача 7.4)
+
+### Добавлено
+- `src/services/validation/balance-check.ts` — `checkBalance(amount, balance): Warning[]`: три проверки: #7 сумма > баланс → error blocking, #8 сумма + комиссия > баланс → error blocking, #9 остаток < 0.05 TON → warning non-blocking
+- Константа `LOW_REMAINDER_THRESHOLD = 50_000_000n` (0.05 TON)
+- `src/services/validation/balance-check.test.ts` — 11 юнит-тестов: все граничные случаи
+- Экспорт из `src/services/validation/index.ts`
+
+---
+
+## [2026-03-31] - Смена пароля (Задача 6.4)
+
+### Добавлено
+- `src/services/wallet/WalletService.ts` — реализован `changePassword(currentPassword, newPassword)`: расшифровка vault текущим паролем, валидация нового пароля через `evaluatePassword`, перешифровка новым паролём (новый salt + IV), перезапись vault
+- `src/services/wallet/types.ts` — добавлена `WeakPasswordError` (новый пароль не проходит проверку силы: score < 2 или длина < 8)
+- `src/services/wallet/WalletService.test.ts` — 10 юнит-тестов: успешная смена, старый пароль больше не работает, неверный текущий пароль, отсутствие vault, слабый новый пароль, короткий новый пароль, vault не модифицируется при ошибке, новый vault имеет отличный salt/IV, корректность name property ошибки
+
+---
+
 ## [2026-03-31] - Импорт кошелька по мнемонике (Задача 6.2)
 
 ### Добавлено
