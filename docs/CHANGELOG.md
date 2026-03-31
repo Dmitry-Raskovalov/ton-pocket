@@ -6,6 +6,16 @@
 
 ---
 
+## [2026-03-31] - Валидация формата адреса (Задача 7.1)
+
+### Добавлено
+- `src/services/validation/address-format.ts` — `isValidAddress()`, `normalizeAddress()`, `parseAddress()`
+- Поддержка форматов: bounceable (EQ/kQ), non-bounceable (UQ/0Q), raw (0:hex)
+- `src/services/validation/address-format.test.ts` — 20 тестов (все прошли)
+- Экспорт из `src/services/validation/index.ts`
+
+---
+
 ## [2026-03-31] - Адресная книга (Задача 6.5)
 
 ### Добавлено

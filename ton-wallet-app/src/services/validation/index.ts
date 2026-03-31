@@ -4,3 +4,4 @@
 
 export * from './types';
 export * from './ValidationPipeline';
+export * from './address-format';

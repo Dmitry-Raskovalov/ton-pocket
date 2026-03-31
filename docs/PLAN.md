@@ -711,7 +711,7 @@ Store для UI-состояния с механикой блокировки un
 
 #### 7.1 Валидация формата адреса и нормализация
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** доменная логика
 
@@ -724,10 +724,10 @@ Store для UI-состояния с механикой блокировки un
 **Зависимости:** зависит от `1.1`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Реализовать `isValidAddress(input: string): boolean` — проверка через `Address.parseFriendly()` или `Address.parseRaw()` из `@ton/core`.
-- [ ] Шаг 2: Реализовать `normalizeAddress(input: string): string` — приведение к raw-формату `0:hex`.
-- [ ] Шаг 3: Реализовать `parseAddress(input: string): { raw: string, bounceable: boolean, isTestnet: boolean }` — извлечение флагов.
-- [ ] Шаг 4: Написать юнит-тесты: валидный bounceable, non-bounceable, raw адрес; невалидный адрес; нормализация разных форматов к одному raw.
+- [x] Шаг 1: Реализовать `isValidAddress(input: string): boolean` — проверка через `Address.parseFriendly()` или `Address.parseRaw()` из `@ton/core`.
+- [x] Шаг 2: Реализовать `normalizeAddress(input: string): string` — приведение к raw-формату `0:hex`.
+- [x] Шаг 3: Реализовать `parseAddress(input: string): { raw: string, bounceable: boolean, isTestnet: boolean }` — извлечение флагов.
+- [x] Шаг 4: Написать юнит-тесты: валидный bounceable, non-bounceable, raw адрес; невалидный адрес; нормализация разных форматов к одному raw.
 
 **Ожидаемый результат:**
 Утилиты для валидации и нормализации TON-адресов.
