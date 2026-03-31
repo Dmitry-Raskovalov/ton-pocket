@@ -11,6 +11,7 @@ export interface WalletState {
 export interface WalletCreateResult {
   mnemonic: string[];
   address: string;
+  version: 'v3R2' | 'v4R2' | 'v5R1';
 }
 
 export interface WalletImportResult {

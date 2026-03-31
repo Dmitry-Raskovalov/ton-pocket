@@ -5,6 +5,15 @@
 
 ---
 
+## [2026-03-31] - Создание нового кошелька (Задача 6.1)
+
+### Добавлено
+- `src/services/wallet/WalletService.ts` — реализован `createWallet(password)`: генерация 24-словной мнемоники через `@ton/crypto`, деривация keypair, создание v4R2 контракта, шифрование мнемоники через vault, сохранение в localStorage
+- `src/services/wallet/types.ts` — добавлено поле `version` в `WalletCreateResult`
+- `src/services/wallet/WalletService.test.ts` — 9 юнит-тестов для createWallet: 24 слова, формат адреса, версия v4R2, сохранение vault, round-trip дешифровка, неверный пароль, адрес из publicKey, вызовы @ton/crypto
+
+---
+
 ## [2026-03-31] - Экспорт мнемоники (Задача 6.3)
 
 ### Добавлено

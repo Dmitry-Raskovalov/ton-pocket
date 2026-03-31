@@ -1,5 +1,23 @@
 # Дневник разработки TON Testnet Wallet
 
+## 2026-03-31 — Задача 6.1: Создание нового кошелька
+
+### Наблюдения
+- `@ton/crypto` `mnemonicNew()` возвращает `string[]` из 24 слов — синхронная обёртка над Web Crypto.
+- `mnemonicToPrivateKey(mnemonic)` возвращает `{ publicKey: Buffer, secretKey: Buffer }` — publicKey используется для создания контракта через `createContract()`.
+- В jsdom/vitest `tweetnacl` (внутренняя зависимость `@ton/crypto`) выбрасывает `TypeError: unexpected type, use Uint8Array` — seed, возвращаемый из PBKDF2, является `Buffer`, а tweetnacl ожидает именно `Uint8Array`.
+- Реализация `createWallet` размещена в `WalletService.ts` (не в отдельном файле `create.ts`) — уже существует заглушка в этом классе.
+
+### Решения
+- Мок `@ton/crypto` в тестах `createWallet` через `vi.mock('@ton/crypto', ...)` с inline-литералами (не ссылками на переменные) — `vi.mock` hoisted в начало файла, переменные ещё не инициализированы.
+- `vi.clearAllMocks()` в `beforeEach` — моки `mnemonicNew`/`mnemonicToPrivateKey` сбрасываются между тестами.
+- Тест адреса через `createContract(MOCK_PUBLIC_KEY, 'v4R2')` — детерминированная проверка, что `createWallet` возвращает корректный адрес v4R2.
+
+### Проблемы
+- `tweetnacl` в jsdom несовместим с `Buffer` от `mnemonicToSeed`. Решено через мок `@ton/crypto` в тестах — крипто-генерация не тестируется в юнит-тестах WalletService.
+
+---
+
 ## 2026-03-31 — Задача 6.3: Экспорт мнемоники
 
 ### Наблюдения
