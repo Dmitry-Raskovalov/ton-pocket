@@ -1017,7 +1017,7 @@ Store для UI-состояния с механикой блокировки un
 
 #### 8.4 Общие UI-компоненты (CopyButton, TransactionItem, SearchBar, Loader, Toast)
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** UI
 
@@ -1031,12 +1031,12 @@ Store для UI-состояния с механикой блокировки un
 **Зависимости:** `8.2`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: CopyButton — props: text (string). При клике — navigator.clipboard.writeText(), смена label на "Copied!" на 2 секунды.
-- [ ] Шаг 2: TransactionItem — props: transaction (ParsedTransaction), label (string | undefined). Отображает: иконка направления (↓/↑), сумму, адрес контрагента (сокращённый через HighlightedAddress), label, дату, комментарий.
-- [ ] Шаг 3: SearchBar — props: value, onChange, placeholder. Поле ввода с иконкой поиска и кнопкой очистки.
-- [ ] Шаг 4: Loader — полноэкранный спиннер с опциональным текстом.
-- [ ] Шаг 5: Toast — props: type (success/error/info), message, duration. Auto-dismiss по таймеру. Управление через UI store (addToast/removeToast).
-- [ ] Шаг 6: Написать юнит-тесты: CopyButton копирует (мок clipboard API), TransactionItem рендерит корректно, Toast автоматически исчезает.
+- [x] Шаг 1: CopyButton — props: text (string). При клике — navigator.clipboard.writeText(), смена label на "Copied!" на 2 секунды.
+- [x] Шаг 2: TransactionItem — props: transaction (ParsedTransaction), label (string | undefined). Отображает: иконка направления (↓/↑), сумму, адрес контрагента (сокращённый через HighlightedAddress), label, дату, комментарий.
+- [x] Шаг 3: SearchBar — props: value, onChange, placeholder. Поле ввода с иконкой поиска и кнопкой очистки.
+- [x] Шаг 4: Loader — полноэкранный спиннер с опциональным текстом.
+- [x] Шаг 5: Toast — props: type (success/error/info), message, duration. Auto-dismiss по таймеру. Управление через UI store (addToast/removeToast).
+- [x] Шаг 6: Написать юнит-тесты: CopyButton копирует (мок clipboard API), TransactionItem рендерит корректно, Toast автоматически исчезает.
 
 **Ожидаемый результат:**
 Набор переиспользуемых UI-компонентов, готовых к использованию на экранах.
