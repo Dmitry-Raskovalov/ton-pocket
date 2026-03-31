@@ -2,27 +2,35 @@
  * Wallet service types.
  */
 
+import type { WalletVersion } from './contract-factory';
+import type { DetectedWallet } from './contract-factory';
+
 export interface WalletState {
   address: string;
   publicKey: string;
-  version: 'v4' | 'v3r2';
+  version: WalletVersion;
 }
 
 export interface WalletCreateResult {
   mnemonic: string[];
   address: string;
-  version: 'v3R2' | 'v4R2' | 'v5R1';
+  version: WalletVersion;
 }
 
+/**
+ * Result of importByMnemonic.
+ * If wallet was created immediately — address and version are set, needsVersionChoice = false.
+ * If multiple versions found — detectedWallets is populated for user to choose.
+ */
 export interface WalletImportResult {
-  address: string;
-  versions: WalletVersionInfo[];
-}
-
-export interface WalletVersionInfo {
-  version: 'v4' | 'v3r2';
-  address: string;
-  balance: bigint;
+  /** Wallet created successfully */
+  address: string | null;
+  /** Contract version of the created wallet */
+  version: WalletVersion | null;
+  /** True when user needs to select from multiple detected versions */
+  needsVersionChoice: boolean;
+  /** Available versions for user selection (when needsVersionChoice = true) */
+  detectedWallets: DetectedWallet[];
 }
 
 /**
@@ -42,5 +50,15 @@ export class NoVaultError extends Error {
   constructor(message = 'No wallet found. Please create or import a wallet first.') {
     super(message);
     this.name = 'NoVaultError';
+  }
+}
+
+/**
+ * Thrown when the provided mnemonic phrase is invalid.
+ */
+export class InvalidMnemonicError extends Error {
+  constructor(message = 'Invalid mnemonic phrase') {
+    super(message);
+    this.name = 'InvalidMnemonicError';
   }
 }

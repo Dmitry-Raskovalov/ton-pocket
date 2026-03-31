@@ -1,5 +1,23 @@
 # Дневник разработки TON Testnet Wallet
 
+## 2026-03-31 — Задача 6.2: Импорт кошелька по мнемонике
+
+### Наблюдения
+- `mnemonicValidate` из `@ton/crypto` — простая async-обёртка, возвращает `boolean`. Используется как есть через делегирование в `WalletService.validateMnemonic`.
+- `detectVersions` уже возвращает `DetectedWallet[]` с полями `version`, `addressRaw`, `addressFriendly`, `balance`, `isDeployed` — идеально подходит для возврата списка версий в UI.
+- При нескольких найденных версиях vault НЕ сохраняется — пользователь должен сначала выбрать версию, затем вызвать `importFromMnemonic` повторно с `selectedVersion`.
+- `WalletImportResult` перепроектирован: вместо старого `versions: WalletVersionInfo[]` (с устаревшими типами версий) теперь содержит `needsVersionChoice` + `detectedWallets: DetectedWallet[]`.
+
+### Решения
+- Используем `DetectedWallet` из `contract-factory` напрямую вместо дублирования типа — DRY.
+- `InvalidMnemonicError` — отдельный класс ошибки (аналогично `InvalidPasswordError`), чтобы UI мог различать сценарии.
+- `selectedVersion` — опциональный 3-й параметр: при передаче пропускает проверку множественных версий, сразу создаёт кошелёк с выбранной версией.
+
+### Проблемы
+- Нет. 12 новых тестов прошли со всеми 228 тестами.
+
+---
+
 ## 2026-03-31 — Задача 6.1: Создание нового кошелька
 
 ### Наблюдения

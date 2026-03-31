@@ -1,13 +1,13 @@
 /**
  * file: WalletService.test.ts
- * description: Unit tests for WalletService — createWallet (task 6.1), exportMnemonic (task 6.3)
+ * description: Unit tests for WalletService — createWallet (6.1), importFromMnemonic (6.2), exportMnemonic (6.3)
  * dependencies: WalletService.ts, crypto/vault, contract-factory
  * created: 2026-03-31
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { WalletService } from './WalletService';
-import { InvalidPasswordError, NoVaultError } from './types';
+import { InvalidMnemonicError, InvalidPasswordError, NoVaultError } from './types';
 
 // Mock argon2-browser so KDF falls back to PBKDF2 in tests
 vi.mock('argon2-browser', () => {
@@ -29,9 +29,29 @@ vi.mock('@ton/crypto', () => ({
     publicKey: Buffer.alloc(32, 0xab),
     secretKey: Buffer.alloc(64),
   }),
+  mnemonicValidate: vi.fn().mockResolvedValue(true),
 }));
 
-import { mnemonicNew, mnemonicToPrivateKey } from '@ton/crypto';
+import { mnemonicNew, mnemonicToPrivateKey, mnemonicValidate } from '@ton/crypto';
+
+// Mock contract-factory detectVersions — returns default v4R2 by default
+vi.mock('./contract-factory', async () => {
+  const actual = await vi.importActual<typeof import('./contract-factory')>('./contract-factory');
+  return {
+    ...actual,
+    detectVersions: vi.fn().mockResolvedValue([
+      {
+        version: 'v4R2',
+        addressRaw: '0:' + 'ab'.repeat(32),
+        addressFriendly: 'EQ' + 'ab'.repeat(32),
+        balance: 0n,
+        isDeployed: false,
+      },
+    ]),
+  };
+});
+
+import { detectVersions } from './contract-factory';
 
 const MNEMONIC = [
   'abandon', 'abandon', 'abandon', 'abandon',
@@ -133,6 +153,197 @@ describe('WalletService.createWallet', () => {
     const contract = createContract(MOCK_PUBLIC_KEY, 'v4R2');
 
     expect(result.address).toBe(contract.address.toRawString());
+  });
+});
+
+// ─── importFromMnemonic (task 6.2) ───────────────────────────────────────────
+
+describe('WalletService.validateMnemonic', () => {
+  let service: WalletService;
+
+  beforeEach(() => {
+    service = new WalletService();
+    vi.clearAllMocks();
+  });
+
+  it('returns true for valid mnemonic', async () => {
+    const result = await service.validateMnemonic(MNEMONIC);
+    expect(result).toBe(true);
+    expect(mnemonicValidate).toHaveBeenCalledWith(MNEMONIC);
+  });
+
+  it('returns false for invalid mnemonic', async () => {
+    vi.mocked(mnemonicValidate).mockResolvedValueOnce(false);
+    const result = await service.validateMnemonic(['invalid', 'words']);
+    expect(result).toBe(false);
+  });
+});
+
+describe('WalletService.importFromMnemonic', () => {
+  let service: WalletService;
+
+  beforeEach(() => {
+    service = new WalletService();
+    localStorage.clear();
+    vi.clearAllMocks();
+    // Default: valid mnemonic, single v4R2 detected
+    vi.mocked(mnemonicValidate).mockResolvedValue(true);
+  });
+
+  it('throws InvalidMnemonicError for invalid mnemonic', async () => {
+    vi.mocked(mnemonicValidate).mockResolvedValueOnce(false);
+
+    await expect(service.importFromMnemonic(['bad'], PASSWORD))
+      .rejects.toThrow(InvalidMnemonicError);
+  });
+
+  it('creates wallet with v4R2 when auto-detection returns single version', async () => {
+    vi.mocked(detectVersions).mockResolvedValueOnce([
+      {
+        version: 'v4R2',
+        addressRaw: '0:' + 'ab'.repeat(32),
+        addressFriendly: 'EQ' + 'ab'.repeat(32),
+        balance: 0n,
+        isDeployed: false,
+      },
+    ]);
+
+    const result = await service.importFromMnemonic(MNEMONIC, PASSWORD);
+
+    expect(result.needsVersionChoice).toBe(false);
+    expect(result.version).toBe('v4R2');
+    expect(result.address).toMatch(/^0:[0-9a-f]{64}$/);
+  });
+
+  it('creates wallet with v4R2 when auto-detection finds no deployed wallets', async () => {
+    vi.mocked(detectVersions).mockResolvedValueOnce([
+      {
+        version: 'v4R2',
+        addressRaw: '0:' + 'ab'.repeat(32),
+        addressFriendly: 'EQ' + 'ab'.repeat(32),
+        balance: 0n,
+        isDeployed: false,
+      },
+    ]);
+
+    const result = await service.importFromMnemonic(MNEMONIC, PASSWORD);
+
+    expect(result.needsVersionChoice).toBe(false);
+    expect(result.version).toBe('v4R2');
+  });
+
+  it('returns needsVersionChoice=true when multiple versions found', async () => {
+    vi.mocked(detectVersions).mockResolvedValueOnce([
+      {
+        version: 'v3R2',
+        addressRaw: '0:' + '11'.repeat(32),
+        addressFriendly: 'EQ' + '11'.repeat(32),
+        balance: 1_000_000_000n,
+        isDeployed: true,
+      },
+      {
+        version: 'v4R2',
+        addressRaw: '0:' + '22'.repeat(32),
+        addressFriendly: 'EQ' + '22'.repeat(32),
+        balance: 2_000_000_000n,
+        isDeployed: true,
+      },
+    ]);
+
+    const result = await service.importFromMnemonic(MNEMONIC, PASSWORD);
+
+    expect(result.needsVersionChoice).toBe(true);
+    expect(result.address).toBeNull();
+    expect(result.version).toBeNull();
+    expect(result.detectedWallets).toHaveLength(2);
+    expect(result.detectedWallets[0].version).toBe('v3R2');
+    expect(result.detectedWallets[1].version).toBe('v4R2');
+  });
+
+  it('uses selectedVersion when provided (skips version choice)', async () => {
+    vi.mocked(detectVersions).mockResolvedValueOnce([
+      {
+        version: 'v3R2',
+        addressRaw: '0:' + '11'.repeat(32),
+        addressFriendly: 'EQ' + '11'.repeat(32),
+        balance: 1n,
+        isDeployed: true,
+      },
+      {
+        version: 'v4R2',
+        addressRaw: '0:' + '22'.repeat(32),
+        addressFriendly: 'EQ' + '22'.repeat(32),
+        balance: 2n,
+        isDeployed: true,
+      },
+    ]);
+
+    const result = await service.importFromMnemonic(MNEMONIC, PASSWORD, 'v3R2');
+
+    expect(result.needsVersionChoice).toBe(false);
+    expect(result.version).toBe('v3R2');
+  });
+
+  it('saves vault to localStorage with encrypted mnemonic', async () => {
+    await service.importFromMnemonic(MNEMONIC, PASSWORD);
+
+    const stored = localStorage.getItem('ton_wallet_vault');
+    expect(stored).not.toBeNull();
+
+    const vault = JSON.parse(stored!);
+    expect(vault.version).toBe(1);
+    expect(vault.cipher).toBe('AES-256-GCM');
+  });
+
+  it('vault round-trip: decrypt returns original mnemonic', async () => {
+    await service.importFromMnemonic(MNEMONIC, PASSWORD);
+
+    const { decrypt: vaultDecrypt, loadVault } = await import('@/crypto/vault');
+    const vault = loadVault();
+    const plaintext = await vaultDecrypt(vault!, PASSWORD);
+    const decrypted: string[] = JSON.parse(plaintext);
+
+    expect(decrypted).toEqual(MNEMONIC);
+  });
+
+  it('calls detectVersions with derived public key', async () => {
+    await service.importFromMnemonic(MNEMONIC, PASSWORD);
+
+    expect(detectVersions).toHaveBeenCalledWith(MOCK_PUBLIC_KEY);
+  });
+
+  it('does not save vault when multiple versions found', async () => {
+    vi.mocked(detectVersions).mockResolvedValueOnce([
+      {
+        version: 'v3R2',
+        addressRaw: '0:' + '11'.repeat(32),
+        addressFriendly: 'EQ' + '11'.repeat(32),
+        balance: 0n,
+        isDeployed: true,
+      },
+      {
+        version: 'v4R2',
+        addressRaw: '0:' + '22'.repeat(32),
+        addressFriendly: 'EQ' + '22'.repeat(32),
+        balance: 0n,
+        isDeployed: true,
+      },
+    ]);
+
+    await service.importFromMnemonic(MNEMONIC, PASSWORD);
+
+    expect(localStorage.getItem('ton_wallet_vault')).toBeNull();
+  });
+
+  it('InvalidMnemonicError has correct name property', async () => {
+    vi.mocked(mnemonicValidate).mockResolvedValueOnce(false);
+
+    try {
+      await service.importFromMnemonic(['bad'], PASSWORD);
+    } catch (error) {
+      expect(error).toBeInstanceOf(InvalidMnemonicError);
+      expect((error as InvalidMnemonicError).name).toBe('InvalidMnemonicError');
+    }
   });
 });
 

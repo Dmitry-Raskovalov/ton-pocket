@@ -5,6 +5,15 @@
 
 ---
 
+## [2026-03-31] - Импорт кошелька по мнемонике (Задача 6.2)
+
+### Добавлено
+- `src/services/wallet/WalletService.ts` — реализованы `validateMnemonic(words)` и `importFromMnemonic(words, password, selectedVersion?)`: валидация мнемоники через `@ton/crypto`, деривация keypair, автодетекция версий контракта, шифрование и сохранение в vault
+- `src/services/wallet/types.ts` — обновлён `WalletImportResult` (address/version/needsVersionChoice/detectedWallets), добавлена `InvalidMnemonicError`
+- `src/services/wallet/WalletService.test.ts` — 12 юнит-тестов: валидация мнемоники, невалидная мнемоника, автодетекция 0/1/несколько версий, selectedVersion override, сохранение vault, round-trip
+
+---
+
 ## [2026-03-31] - Создание нового кошелька (Задача 6.1)
 
 ### Добавлено
