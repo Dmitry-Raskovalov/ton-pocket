@@ -137,7 +137,7 @@ Self-custodial криптокошелёк для TON testnet — одностр�
 
 #### 3.1 Модуль KDF (Key Derivation Function)
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** доменная логика / безопасность
 

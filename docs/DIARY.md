@@ -1,5 +1,24 @@
 # Дневник разработки TON Testnet Wallet
 
+## 2026-03-31 — Задача 3.1: Модуль KDF
+
+### Наблюдения
+
+- `argon2-browser` требует WASM, который недоступен в jsdom/Node — в тестах необходимо мокировать через `vi.doMock`.
+- `vi.resetModules()` обязателен для сброса singleton `argon2Available` между тестами с разными моками.
+- `crypto.subtle.deriveBits` в jsdom принимает `Uint8Array` напрямую, но не `salt.buffer as ArrayBuffer` — это поведение отличается от спецификации Web Crypto, где `BufferSource = ArrayBuffer | ArrayBufferView`.
+
+### Решения
+
+- Исправлен `kdf.ts`: `salt.buffer as ArrayBuffer` → `salt` (Uint8Array реализует `ArrayBufferView`, что корректно принимается и в реальных браузерах, и в jsdom).
+- Argon2id тестируется через `vi.doMock` с фейковым `hashHex`; PBKDF2 — напрямую через реальный Web Crypto (600k итераций ~230ms на тест).
+
+### Проблемы
+
+- Тесты PBKDF2 медленные (~230–500ms каждый) из-за 600k итераций. Для ускорения тестов можно добавить отдельный helper с меньшим числом итераций, но пока это не критично.
+
+---
+
 ## 2026-03-31 — Задача 1.1: Инициализация проекта
 
 ### Наблюдения

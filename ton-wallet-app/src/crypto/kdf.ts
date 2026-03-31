@@ -88,7 +88,7 @@ async function deriveKeyPbkdf2(password: string, salt: Uint8Array): Promise<KdfR
   const keyBits = await crypto.subtle.deriveBits(
     {
       name: 'PBKDF2',
-      salt: salt.buffer as ArrayBuffer,
+      salt: salt,
       iterations: 600000,
       hash: 'SHA-256',
     },

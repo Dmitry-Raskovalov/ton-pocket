@@ -6,6 +6,20 @@
 
 ---
 
+## [2026-03-31] - KDF модуль (Задача 3.1)
+
+### Добавлено
+
+- `src/crypto/types.ts` — типы `KdfAlgorithm`, `KdfParams` (Argon2Params / Pbkdf2Params), `KdfResult`, `EncryptedVault`
+- `src/crypto/kdf.ts` — модуль деривации ключа: `generateSalt`, `isArgon2Available`, `deriveKey`, `deriveKeyWithParams`
+- `src/crypto/kdf.test.ts` — 11 юнит-тестов: generateSalt, PBKDF2, Argon2id (мок), fallback, воспроизводимость
+
+### Исправлено
+
+- `kdf.ts`: передача `salt` (Uint8Array) вместо `salt.buffer as ArrayBuffer` в `crypto.subtle.deriveBits` — устраняет ошибку в jsdom/Node окружении
+
+---
+
 ## [2026-03-31] - Инициализация проекта (Задача 1.1)
 
 ### Добавлено
