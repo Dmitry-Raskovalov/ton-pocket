@@ -1,5 +1,25 @@
 # Дневник разработки TON Testnet Wallet
 
+## 2026-03-31 — Задача 5.1: Wallet Store
+
+### Наблюдения
+
+- Zustand v5 persist middleware пишет в localStorage **асинхронно** (через microtask). Прямая проверка `localStorage.getItem` сразу после `set()` возвращает `null` — нужен `await new Promise(r => setTimeout(r, 0))`.
+- Старый `walletStore.ts` использовал вложенный объект `wallet: WalletState | null` — не соответствует PLAN.md. Новый store плоский.
+- `Object.defineProperty(globalThis, 'localStorage', ...)` в тестах не перехватывает запись persist — лучше использовать встроенный jsdom localStorage с `localStorage.clear()` в `beforeEach`.
+
+### Решения
+
+- `WalletVersion` определён в `store/types.ts` и переиспользуется во всём проекте.
+- `partialize` явно ограничивает сохраняемые поля: `address`, `version`, `publicKey`; `balance` и `isUnlocked` всегда сбрасываются при перезагрузке.
+- Селекторы `isWalletCreated()` и `hasWallet()` — обычные функции (не хуки), вызываемые вне React (например, в guards роутера).
+
+### Проблемы
+
+- Нет. После замены localStorage-мока на нативный jsdom все 16 тестов прошли.
+
+---
+
 ## 2026-03-31 — Задача 3.3: Оценка силы пароля
 
 ### Наблюдения

@@ -2,23 +2,31 @@
  * Hook for wallet operations.
  */
 
-import { useWalletStore } from '@/store';
+import { useWalletStore, isWalletCreated, hasWallet } from '@/store';
 
 export function useWallet() {
-  const store = useWalletStore();
+  const address = useWalletStore((s) => s.address);
+  const version = useWalletStore((s) => s.version);
+  const publicKey = useWalletStore((s) => s.publicKey);
+  const balance = useWalletStore((s) => s.balance);
+  const isUnlocked = useWalletStore((s) => s.isUnlocked);
+
+  const setWallet = useWalletStore((s) => s.setWallet);
+  const clearWallet = useWalletStore((s) => s.clearWallet);
+  const updateBalance = useWalletStore((s) => s.updateBalance);
+  const setUnlocked = useWalletStore((s) => s.setUnlocked);
 
   return {
-    wallet: store.wallet,
-    isLocked: store.isLocked,
-    isInitialized: store.isInitialized,
-    balance: store.balance,
-    transactions: store.transactions,
-    
-    lock: store.lock,
-    unlock: store.unlock,
-    setWallet: store.setWallet,
-    setBalance: store.setBalance,
-    setTransactions: store.setTransactions,
-    clear: store.clear,
+    address,
+    version,
+    publicKey,
+    balance,
+    isUnlocked,
+    isWalletCreated: isWalletCreated(),
+    hasWallet: hasWallet(),
+    setWallet,
+    clearWallet,
+    updateBalance,
+    setUnlocked,
   };
 }
