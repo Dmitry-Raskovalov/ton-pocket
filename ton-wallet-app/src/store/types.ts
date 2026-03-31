@@ -73,3 +73,40 @@ export interface UIActions {
 }
 
 export type UIStore = UIState & UIActions;
+
+// ─── Transaction Store ────────────────────────────────────────────────────────
+
+export type DirectionFilter = 'all' | 'in' | 'out';
+
+export interface TransactionState {
+  /** Список загруженных транзакций */
+  transactions: import('@/services/ton/transactions').ParsedTransaction[];
+  /** Флаг загрузки списка */
+  isLoading: boolean;
+  /** Есть ли ещё транзакции для подгрузки (пагинация) */
+  hasMore: boolean;
+  /** Строка текстового поиска */
+  searchQuery: string;
+  /** Фильтр направления */
+  directionFilter: DirectionFilter;
+  /** Timestamp последнего обновления (unix ms, null если не загружали) */
+  lastUpdateTimestamp: number | null;
+}
+
+export interface TransactionActions {
+  /** Установить (заменить) список транзакций */
+  setTransactions: (
+    transactions: import('@/services/ton/transactions').ParsedTransaction[],
+    hasMore?: boolean,
+  ) => void;
+  /** Добавить транзакции к существующему списку (пагинация) */
+  appendTransactions: (
+    transactions: import('@/services/ton/transactions').ParsedTransaction[],
+    hasMore?: boolean,
+  ) => void;
+  setSearchQuery: (query: string) => void;
+  setDirectionFilter: (filter: DirectionFilter) => void;
+  setLoading: (isLoading: boolean) => void;
+}
+
+export type TransactionStore = TransactionState & TransactionActions;

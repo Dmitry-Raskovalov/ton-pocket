@@ -1,13 +1,34 @@
 # Changelog
 
-Все заметные изменения в проекте TON Testnet Wallet будут документированы в этом файле.
-
+Все заметные изменения в проекте TON Testnet Wallet будут документироваться в этом файле.
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/).
 
 ---
 
-## [2026-03-31] - UI Store (Задача 5.3)
+## [2026-03-31] - Сервис отправки транзакций (Задача 4.4)
 
+### Добавлено
+- `src/services/ton/transfer.ts` — сервис отправки транзакций с seqno polling:
+  - `sendTransfer(params: TransferParams): Promise<TransferResult>` — формирование, подписание и отправка transfer-сообщения
+  - Polling seqno каждые 2 секунды для ожидания подтверждения (максимум 30 секунд)
+  - Возврат статуса: `'confirmed'` (с hash), `'timeout'`, или `'error'` (с сообщением)
+  - Константа `ESTIMATED_FEE = 10_000_000n` (0.01 TON) для UI и валидации
+  - Типы `TransferParams`, `TransferResult`, `TransferStatus`, `WalletContract`
+- `src/services/ton/transfer.test.ts` — 6 юнит-тестов:
+  - Успешная отправка с подтверждением (seqno increment)
+  - Таймаут при отсутствии подтверждения за 30 секунд
+  - Ошибка сети при `sendExternalMessage`
+  - Приём `Address` объекта как recipient
+  - Включение текстового комментария в transfer
+  - Проверка константы `ESTIMATED_FEE`
+
+### Технические детали
+- Использована функция `internal()` из `@ton/ton` для создания сообщений
+- Поддержка строковых адресов (user-friendly и raw) и объектов `Address`
+- Экспорт из `src/services/ton/index.ts`
+---
+
+## [2026-03-31] - UI Store (Задача 5.3)
 ### Добавлено
 - `src/store/ui-store.ts` — Zustand store для UI-состояния: `isLoading`, `toasts`, `unlockAttempts`, `lockedUntil`
 - Логика блокировки: 5 неверных попыток unlock → `lockedUntil = now + 5 мин`, счётчик сбрасывается
@@ -15,7 +36,6 @@
 - Типы `Toast`, `ToastType`, `UIState`, `UIActions`, `UIStore` добавлены в `store/types.ts`
 - `src/store/ui-store.test.ts` — 22 теста (все прошли)
 - Экспорт из `src/store/index.ts`
-
 ---
 
 ## [2026-03-31] - Проверка состояния аккаунта получателя (Задача 7.3)
@@ -33,7 +53,6 @@
 - `src/services/validation/self-send.ts` — `checkSelfSend(recipientRaw, walletPublicKey)`: проверяет совпадение адреса получателя с адресами всех версий контрактов отправителя (v3R2, v4R2, v5R1)
 - Тип `Warning` в `types.ts` — поля `type`, `message`, `severity`, `blocking`
 - `src/services/validation/self-send.test.ts` — 5 тестов (все прошли)
-
 ---
 
 ## [2026-03-31] - Валидация формата адреса (Задача 7.1)
@@ -47,24 +66,20 @@
 ---
 
 ## [2026-03-31] - Адресная книга (Задача 6.5)
-
 ### Добавлено
 - `src/services/address-book/types.ts` — типы `AddressBookEntry`, `SimilarAddressMatch`
 - `src/services/address-book/address-book.ts` — класс `AddressBook`: CRUD, persist в localStorage, `findSimilar` (защита от clipboard poisoning), `getLabelForAddress`
 - `src/services/address-book/index.ts` — barrel export
 - `src/services/address-book/address-book.test.ts` — 15 тестов (все прошли)
-
 ---
 
 ## [2026-03-31] - Contract Factory и автодетекция версий (Задача 4.5)
-
 ### Добавлено
 - `src/services/wallet/contract-factory.ts` — `createContract(publicKey, version)`, `detectVersions(publicKey)`, `pickDefaultWallet(detected)`
 - Тип `DetectedWallet` — version, addressRaw, addressFriendly, balance, isDeployed
 - Параллельный опрос трёх версий контрактов (v3R2, v4R2, v5R1) через `Promise.all`
 - Fallback на v4R2 (isDeployed=false) если ни одна версия не найдена
 - `src/services/wallet/contract-factory.test.ts` — 12 тестов
-
 ---
 
 ## [2026-03-31] - Wallet Store (Задача 5.1)
@@ -81,7 +96,6 @@
 
 ### Удалено
 - `src/store/walletStore.ts` — заменён на `wallet-store.ts` с правильной структурой и persist
-
 ---
 
 ## [2026-03-31] - Сервис истории транзакций (Задача 4.3)
@@ -92,7 +106,6 @@
 - Парсинг входящих/исходящих/deploy транзакций, декодирование text comment (opcode 0x00000000)
 - `src/services/ton/transactions.test.ts` — 15 тестов
 - `balance.ts` — поддержка raw-адресов (формат `0:...`)
-
 ---
 
 ## [2026-03-31] - Сервис получения баланса (Задача 4.2)
@@ -101,7 +114,6 @@
 - `src/services/ton/balance.ts` — `getBalance(address)` возвращает баланс в нанотон, `formatTon(nanotons)` форматирует для UI
 - Несуществующий аккаунт возвращает `0n` без броска ошибки
 - `src/services/ton/balance.test.ts` — 12 тестов (getBalance, formatTon, edge cases)
-
 ---
 
 ## [2026-03-31] - TonClient wrapper (Задача 4.1)
@@ -109,7 +121,7 @@
 ### Добавлено
 - `src/services/ton/client.ts` — singleton `getTonClient()`, Axios adapter поверх `fetch`
 - Типизированные ошибки: `NetworkError`, `RateLimitError`, `ApiError`
-- `withRetry<T>()` — retry 3 попытки, exponential backoff (1s→2s→4s)
+- `withRetry()` — retry 3 попытки, exponential backoff (1s→2s→4s)
 - `resetTonClient()` — сброс singleton для тестов
 - `src/services/ton/client.test.ts` — 13 тестов (withRetry, singleton, ошибки)
 
@@ -118,7 +130,6 @@
 ## [2026-03-31] - Оценка силы пароля (Задача 3.3)
 
 ### Добавлено
-
 - `src/crypto/password-strength.ts` — модуль оценки пароля через `zxcvbn-ts`: `evaluatePassword` возвращает score (0–4), label, color, warning, suggestions, isAcceptable
 - `src/crypto/password-strength.test.ts` — 10 юнит-тестов: простые пароли (score < 2), сложные (score ≥ 2), короткий пароль (isAcceptable = false), метки, цвета, структура результата
 
@@ -127,13 +138,11 @@
 ## [2026-03-31] - Encrypted Vault (Задача 3.2)
 
 ### Добавлено
-
 - `src/crypto/vault.ts` — AES-256-GCM шифрование/расшифровка: `encrypt`, `decrypt`, `saveVault`, `loadVault`, `hasVault`, `clearVault`
 - `src/crypto/vault.test.ts` — 16 юнит-тестов: round-trip, ошибка при неверном пароле, tampered ciphertext/IV, unicode, localStorage round-trip с декриптом
 - `src/crypto/types.ts` — добавлены `KdfParamsSerialized`, `Argon2ParamsSerialized`, `Pbkdf2ParamsSerialized` для JSON-совместимого хранения
 
 ### Исправлено
-
 - `vault.ts`: `keyBytes.buffer`, `iv.buffer`, `ciphertext.buffer` → прямая передача TypedArray в Web Crypto
 - `vault.ts`: `kdfParams.salt` сериализуется в base64 при сохранении и восстанавливается в `Uint8Array` при загрузке (JSON.parse разрушал TypedArray)
 
@@ -142,13 +151,11 @@
 ## [2026-03-31] - KDF модуль (Задача 3.1)
 
 ### Добавлено
-
 - `src/crypto/types.ts` — типы `KdfAlgorithm`, `KdfParams` (Argon2Params / Pbkdf2Params), `KdfResult`, `EncryptedVault`
 - `src/crypto/kdf.ts` — модуль деривации ключа: `generateSalt`, `isArgon2Available`, `deriveKey`, `deriveKeyWithParams`
 - `src/crypto/kdf.test.ts` — 11 юнит-тестов: generateSalt, PBKDF2, Argon2id (мок), fallback, воспроизводимость
 
 ### Исправлено
-
 - `kdf.ts`: передача `salt` (Uint8Array) вместо `salt.buffer as ArrayBuffer` в `crypto.subtle.deriveBits` — устраняет ошибку в jsdom/Node окружении
 
 ---
@@ -156,7 +163,6 @@
 ## [2026-03-31] - Инициализация проекта (Задача 1.1)
 
 ### Добавлено
-
 - Проект инициализирован через Vite 8 с шаблоном `react-ts`
 - Настроен Tailwind CSS 4 с `@tailwindcss/postcss`
 - Установлены зависимости:
@@ -184,7 +190,6 @@
 - Добавлены npm scripts: `test`, `test:watch`, `test:coverage`
 
 ### Созданные модули (заглушки)
-
 - `crypto/types.ts` — типы для KDF и Vault
 - `crypto/kdf.ts` — Key Derivation Function (Argon2id/PBKDF2)
 - `crypto/vault.ts` — AES-256-GCM шифрование мнемоники
@@ -201,7 +206,7 @@
 - `hooks/useWallet.ts` — hook для работы с кошельком
 
 ### Проверено
-
 - `npm run dev` — dev-сервер запускается без ошибок
 - `npm run build` — production сборка успешна
 - `npm run test` — тесты проходят (1 заглушка)
+
