@@ -6,6 +6,34 @@
 
 ---
 
+## [2026-03-31] - Contract Factory и автодетекция версий (Задача 4.5)
+
+### Добавлено
+- `src/services/wallet/contract-factory.ts` — `createContract(publicKey, version)`, `detectVersions(publicKey)`, `pickDefaultWallet(detected)`
+- Тип `DetectedWallet` — version, addressRaw, addressFriendly, balance, isDeployed
+- Параллельный опрос трёх версий контрактов (v3R2, v4R2, v5R1) через `Promise.all`
+- Fallback на v4R2 (isDeployed=false) если ни одна версия не найдена
+- `src/services/wallet/contract-factory.test.ts` — 12 тестов
+
+---
+
+## [2026-03-31] - Wallet Store (Задача 5.1)
+
+### Добавлено
+- `src/store/types.ts` — тип `WalletVersion = 'v3R2' | 'v4R2' | 'v5R1'`, интерфейсы `WalletState`, `WalletActions`, `WalletStore`
+- `src/store/wallet-store.ts` — Zustand store с persist middleware; persists: `address`, `version`, `publicKey`; не persists: `balance` (0n при старте), `isUnlocked` (false при старте)
+- Селекторы `isWalletCreated()` (проверяет vault в localStorage) и `hasWallet()` (проверяет address в store)
+- `src/store/wallet-store.test.ts` — 16 юнит-тестов: начальное состояние, все actions, persist (записывает нужное / не записывает лишнее), селекторы
+
+### Изменено
+- `src/store/index.ts` — экспортирует `wallet-store.ts` вместо `walletStore.ts`
+- `src/hooks/useWallet.ts` — переработан под новый API store (плоский state, `isUnlocked` вместо `isLocked`)
+
+### Удалено
+- `src/store/walletStore.ts` — заменён на `wallet-store.ts` с правильной структурой и persist
+
+---
+
 ## [2026-03-31] - Сервис истории транзакций (Задача 4.3)
 
 ### Добавлено

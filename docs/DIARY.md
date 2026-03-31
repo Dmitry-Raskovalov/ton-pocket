@@ -156,3 +156,24 @@
 ### Проблемы
 
 - Адрес `EQBvW8Z...` в тесте имел невалидную контрольную сумму. Решено переходом на `Address.parseRaw()` с raw-адресами в тестах.
+
+---
+
+## 2026-03-31 — Задача 4.5: Contract Factory и автодетекция версий
+
+### Наблюдения
+
+- `WalletContractV3R2`, `WalletContractV4`, `WalletContractV5R1` — все создаются через `ClassName.create({ workchain, publicKey })`. Один и тот же publicKey даёт три разных адреса.
+- `TonClient.getContractState(address)` возвращает `{ state: 'active' | 'uninitialized' | 'frozen', balance, ... }`. Deployed = `state === 'active'`.
+- `Promise.all` на три параллельных запроса — оптимально для автодетекции. Ошибка одного версии не ломает остальные (возвращаем `null`, потом фильтруем).
+- `Address.toString({ bounceable: true, testOnly: true })` — правильный формат для testnet user-friendly адреса (начинается с `k`).
+
+### Решения
+
+- `detectVersions` объединяет фабрику и детекцию в одном файле — нет смысла разделять по отдельным файлам для MVP.
+- При ошибке `getContractState` версия молча пропускается (возвращается `null`) — graceful degradation для нестабильного API.
+- `pickDefaultWallet` — простая утилита, возвращает первый элемент; порядок в `ALL_VERSIONS` (`v3R2`, `v4R2`, `v5R1`) определяет приоритет.
+
+### Проблемы
+
+- Нет. 12/12 тестов с первого прогона.
