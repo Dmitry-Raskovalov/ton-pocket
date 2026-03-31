@@ -6,6 +6,16 @@
 
 ---
 
+## [2026-03-31] - Адресная книга (Задача 6.5)
+
+### Добавлено
+- `src/services/address-book/types.ts` — типы `AddressBookEntry`, `SimilarAddressMatch`
+- `src/services/address-book/address-book.ts` — класс `AddressBook`: CRUD, persist в localStorage, `findSimilar` (защита от clipboard poisoning), `getLabelForAddress`
+- `src/services/address-book/index.ts` — barrel export
+- `src/services/address-book/address-book.test.ts` — 15 тестов (все прошли)
+
+---
+
 ## [2026-03-31] - Contract Factory и автодетекция версий (Задача 4.5)
 
 ### Добавлено

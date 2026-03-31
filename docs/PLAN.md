@@ -669,7 +669,7 @@ Store для UI-состояния с механикой блокировки un
 
 #### 6.5 Адресная книга
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** доменная логика
 
@@ -682,14 +682,14 @@ Store для UI-состояния с механикой блокировки un
 **Зависимости:** зависит от `1.1`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Определить тип `AddressBookEntry` (address, displayAddress, label, lastUsed, usageCount, source) в `types.ts`.
-- [ ] Шаг 2: Реализовать загрузку/сохранение адресной книги из/в localStorage (JSON).
-- [ ] Шаг 3: Реализовать `addOrUpdateEntry(entry: Partial<AddressBookEntry> & { address: string }): void` — если адрес уже есть, обновить lastUsed и usageCount.
-- [ ] Шаг 4: Реализовать `getEntries(): AddressBookEntry[]`, `getByAddress(address: string): AddressBookEntry | undefined`.
-- [ ] Шаг 5: Реализовать `findSimilar(address: string): SimilarAddressMatch[]` — поиск записей, у которых совпадают первые 6 или последние 6 символов raw-адреса, но адрес целиком отличается. Возвращать информацию о характере совпадения.
-- [ ] Шаг 6: Реализовать `getLabelForAddress(rawAddress: string): string | undefined` — для отображения label в списке транзакций.
-- [ ] Шаг 7: Все сравнения — через нормализованный raw-формат (`0:hex`).
-- [ ] Шаг 8: Написать юнит-тесты: CRUD, поиск похожих (совпадение начала, совпадение конца, полное совпадение — не должен матчить), автообновление usageCount.
+- [x] Шаг 1: Определить тип `AddressBookEntry` (address, displayAddress, label, lastUsed, usageCount, source) в `types.ts`.
+- [x] Шаг 2: Реализовать загрузку/сохранение адресной книги из/в localStorage (JSON).
+- [x] Шаг 3: Реализовать `addOrUpdateEntry(entry: Partial<AddressBookEntry> & { address: string }): void` — если адрес уже есть, обновить lastUsed и usageCount.
+- [x] Шаг 4: Реализовать `getEntries(): AddressBookEntry[]`, `getByAddress(address: string): AddressBookEntry | undefined`.
+- [x] Шаг 5: Реализовать `findSimilar(address: string): SimilarAddressMatch[]` — поиск записей, у которых совпадают первые 6 или последние 6 символов raw-адреса, но адрес целиком отличается. Возвращать информацию о характере совпадения.
+- [x] Шаг 6: Реализовать `getLabelForAddress(rawAddress: string): string | undefined` — для отображения label в списке транзакций.
+- [x] Шаг 7: Все сравнения — через нормализованный raw-формат (`0:hex`).
+- [x] Шаг 8: Написать юнит-тесты: CRUD, поиск похожих (совпадение начала, совпадение конца, полное совпадение — не должен матчить), автообновление usageCount.
 
 **Ожидаемый результат:**
 Модуль адресной книги с хранением в localStorage и функцией поиска похожих адресов.
