@@ -35,7 +35,7 @@ export class WalletService {
     const vault = await encrypt(mnemonicJson, password);
     saveVault(vault);
 
-    return { mnemonic, address, version };
+    return { mnemonic, address, version, publicKey: Buffer.from(keyPair.publicKey).toString('hex') };
   }
 
   /**

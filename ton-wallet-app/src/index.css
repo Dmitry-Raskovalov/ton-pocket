@@ -1,22 +1,22 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../tailwind.config.js";
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @layer base {
-  html {
-    @apply dark;
-  }
-
   body {
-    @apply bg-background text-on-surface font-body antialiased;
+    background-color: theme(colors.background);
+    color: theme(colors.on-surface);
+    font-family: Inter, sans-serif;
     font-size: 16px;
     line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
   }
 
   #root {
-    @apply min-h-svh flex flex-col;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
   }
 
   *,
@@ -30,14 +30,16 @@
     width: 4px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-surface-container;
+    background-color: theme(colors.surface-container);
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-outline-variant rounded-full;
+    background-color: theme(colors.outline-variant);
+    border-radius: 9999px;
   }
 
   /* Selection */
   ::selection {
-    @apply bg-primary/30;
+    background-color: rgb(from theme(colors.primary) r g b / 0.3);
   }
 }
+

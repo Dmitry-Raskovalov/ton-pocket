@@ -11,6 +11,15 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  optimizeDeps: {
+    exclude: ['argon2-browser'],
+  },
+  build: {
+    rollupOptions: {
+      external: [],
+    },
+  },
+  assetsInclude: ['**/*.wasm'],
   test: {
     globals: true,
     environment: 'jsdom',

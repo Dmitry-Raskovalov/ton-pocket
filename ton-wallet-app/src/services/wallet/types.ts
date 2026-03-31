@@ -15,6 +15,7 @@ export interface WalletCreateResult {
   mnemonic: string[];
   address: string;
   version: WalletVersion;
+  publicKey: string;
 }
 
 /**

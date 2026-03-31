@@ -5,6 +5,33 @@
 
 ---
 
+## [2026-04-01] - CreateWalletScreen (Задача 9.2)
+
+### Добавлено
+- `src/screens/CreateWalletScreen.tsx` — двухшаговый экран создания кошелька:
+  - **StepPassword**: два `PasswordInput` (пароль + подтверждение), индикатор силы, inline ошибка несовпадения, info-баннер о локальном шифровании, gradient-кнопка Continue (активна при score≥2 + match), inline spinner при загрузке
+  - **StepMnemonic**: WarningCard, 3-колоночная сетка 24 слов с нумерацией, CopyButton «Copy All», чекбокс «I have saved my recovery phrase», Continue (активен только при checked)
+  - После шага 2 — `setWallet()` в store + `onComplete()` callback
+  - Ошибки создания → toast через `useUIStore`
+- `src/services/wallet/types.ts` — добавлено поле `publicKey: string` в `WalletCreateResult`
+- `src/services/wallet/WalletService.ts` — `createWallet` теперь возвращает `publicKey` в hex
+
+### Исправлено
+- `vite.config.ts` — добавлен `vite-plugin-wasm` и `optimizeDeps.exclude: ['argon2-browser']` + `assetsInclude: ['**/*.wasm']` для корректной сборки argon2-browser в Vite 8/Rolldown
+
+---
+
+## [2026-04-01] - WelcomeScreen и фикс Tailwind v4 (Задача 9.1)
+
+### Добавлено
+- `src/screens/WelcomeScreen.tsx` — полноценная реализация по дизайн-макету: header с логотипом (Wallet icon + "TON Wallet"), Testnet badge, Settings; логотип Diamond с glow-эффектом; блок Network/Protocol; стеклянный footer с кнопками «Create New Wallet» (градиент) и «Import Existing Wallet»; декоративный ротированный текст «TESTNET». Принимает пропсы `onCreateWallet` / `onImportWallet` для навигации
+
+### Исправлено
+- `src/index.css` — переведён с Tailwind v3 синтаксиса на v4: `@import "tailwindcss"` вместо `@tailwind base/components/utilities`, `@config` вместо `@apply dark`, убран `@apply` для несовместимых утилит
+- `index.html` — добавлен `class="dark"` на `<html>` (заменяет сломанный `@apply dark` в CSS)
+
+---
+
 ## [2026-04-01] - Общие UI-компоненты (Задача 8.4)
 
 ### Добавлено

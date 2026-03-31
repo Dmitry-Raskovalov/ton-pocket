@@ -1056,7 +1056,7 @@ Store для UI-состояния с механикой блокировки un
 
 #### 9.1 Welcome Screen
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** UI / экран
 
@@ -1070,11 +1070,11 @@ Store для UI-состояния с механикой блокировки un
 **Зависимости:** зависит от `5.1` (проверка наличия vault)
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Создать компонент WelcomeScreen с layout согласно wireframe.
-- [ ] Шаг 2: Добавить логотип/название и пометку «Testnet».
-- [ ] Шаг 3: Кнопка «Create New Wallet» → навигация на CreateWalletScreen.
-- [ ] Шаг 4: Кнопка «Import Existing Wallet» → навигация на ImportMnemonicScreen.
-- [ ] Шаг 5: Условие показа: vault отсутствует в localStorage (hasVault() === false).
+- [x] Шаг 1: Создать компонент WelcomeScreen с layout согласно wireframe.
+- [x] Шаг 2: Добавить логотип/название и пометку «Testnet».
+- [x] Шаг 3: Кнопка «Create New Wallet» → навигация на CreateWalletScreen.
+- [x] Шаг 4: Кнопка «Import Existing Wallet» → навигация на ImportMnemonicScreen.
+- [x] Шаг 5: Условие показа: vault отсутствует в localStorage (hasVault() === false).
 
 **Ожидаемый результат:**
 Экран приветствия, отображающийся при первом запуске приложения.
@@ -1090,7 +1090,7 @@ Store для UI-состояния с механикой блокировки un
 
 #### 9.2 Create Wallet Screen
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** UI / экран
 
@@ -1104,11 +1104,11 @@ Store для UI-состояния с механикой блокировки un
 **Зависимости:** зависит от `6.1`, `8.1`, `8.4`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Шаг 1 (Set Password) — два PasswordInput (пароль + подтверждение), индикатор силы, кнопка «Continue» (активна при score ≥ 2 + совпадение полей).
-- [ ] Шаг 2: При клике «Continue» — вызов createWallet(password), показ Loader.
-- [ ] Шаг 3: Шаг 2 (Backup Mnemonic) — нумерованный список из 24 слов, CopyButton для копирования всех слов, предупреждение, чекбокс «I have saved my recovery phrase», кнопка «Continue» (активна после чекбокса).
-- [ ] Шаг 4: При клике «Continue» на шаге 2 — обновить wallet store (setWallet), навигация на MainScreen.
-- [ ] Шаг 5: Обработка ошибок (генерация провалилась) → toast с ошибкой.
+- [x] Шаг 1: Шаг 1 (Set Password) — два PasswordInput (пароль + подтверждение), индикатор силы, кнопка «Continue» (активна при score ≥ 2 + совпадение полей).
+- [x] Шаг 2: При клике «Continue» — вызов createWallet(password), показ Loader.
+- [x] Шаг 3: Шаг 2 (Backup Mnemonic) — нумерованный список из 24 слов, CopyButton для копирования всех слов, предупреждение, чекбокс «I have saved my recovery phrase», кнопка «Continue» (активна после чекбокса).
+- [x] Шаг 4: При клике «Continue» на шаге 2 — обновить wallet store (setWallet), навигация на MainScreen.
+- [x] Шаг 5: Обработка ошибок (генерация провалилась) → toast с ошибкой.
 - [ ] Шаг 6: Написать юнит-тесты: кнопка «Continue» неактивна при слабом пароле, кнопка «Continue» неактивна без чекбокса.
 
 **Ожидаемый результат:**
