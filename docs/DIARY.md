@@ -1,5 +1,41 @@
 # Дневник разработки TON Testnet Wallet
 
+## 2026-04-01 — Задача 8.2: HighlightedAddress
+
+### Наблюдения
+- Стаб использовал 6 символов, но с неверными токенами (`text-primary`/`text-text-secondary` — не определены в дизайн-системе).
+- PLAN.md указывал 4 символа, но по согласованию с пользователем — 6.
+- Дизайн из `component_sheet_ui_kit` показывает `text-on-surface font-bold` для highlight и `text-on-surface-variant/40` для середины — это визуально "растворяет" середину.
+
+### Решения
+- `HIGHLIGHT_LEN = 6` вынесен в константу — единственное место для изменения при необходимости.
+- Компонент рендерит `<span>` (не `<div>`) — inline-элемент, удобен для встраивания в текст.
+- `truncate=true` рендерит символ `…` (U+2026) вместо ASCII `...` — типографически корректно.
+
+### Проблемы
+- Нет. 9 тестов прошли с первого запуска.
+
+---
+
+## 2026-04-01 — Задача 8.1: Tailwind дизайн-система + PasswordInput
+
+### Наблюдения
+- `tailwind.config.js` был пустым — все классы вроде `bg-surface-container-lowest` и `text-on-surface-variant` из дизайна не работали.
+- Дизайн в `component_sheet_ui_kit/code.html` использует Material You (M3) тёмную схему — палитра взята из этого файла напрямую.
+- Текущий `index.css` содержал CSS-переменные для светлой темы (не связанные с дизайн-системой проекта) — полностью заменён.
+- `lucide-react` не установлен и нет доступа к npm registry — иконки реализованы как временные inline SVG.
+
+### Решения
+- `tailwind.config.js` обновлён без breaking changes — все стандартные классы Tailwind сохранены, токены добавлены через `extend.colors`.
+- `darkMode: "class"` + `html.dark` в index.css — принудительная тёмная тема для MVP без media query переключения.
+- Сегменты индикатора силы: score 0/1 → `bg-error`, score 2 → `bg-tertiary`, score 3/4 → `bg-primary` — соответствует DESIGN_BRIEF.md.
+- Tailwind класс `pb-4` добавляется к input только при `showStrength && value` — оставляет место для полоски внутри поля.
+
+### Проблемы
+- `lucide-react` отсутствует в проекте и недоступен через npm. Добавлен в `package.json`, временно реализован через inline SVG. После `npm install` нужно заменить `EyeIcon`/`EyeOffIcon` на импорт из `lucide-react`.
+
+---
+
 ## 2026-04-01 — Задача 7.6: Оркестратор валидации
 
 ### Наблюдения

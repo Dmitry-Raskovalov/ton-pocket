@@ -5,6 +5,31 @@
 
 ---
 
+## [2026-04-01] - HighlightedAddress (Задача 8.2)
+
+### Добавлено
+- `src/components/HighlightedAddress.tsx` — отображение адреса с выделением первых/последних 6 символов (`text-on-surface font-bold`), средняя часть — `text-on-surface-variant/40`; prop `truncate` заменяет середину на `…`; prop `className`
+- `src/components/HighlightedAddress.test.tsx` — 9 тестов: full/truncated режимы, bold-классы, edge cases (короткий адрес), className
+
+### Изменено
+- `src/components/HighlightedAddress.tsx` — переписан со стаба: 6 символов (вместо 6 с неверными токенами), добавлен `truncate`, исправлены CSS-токены
+
+---
+
+## [2026-04-01] - Tailwind дизайн-система + PasswordInput (Задача 8.1)
+
+### Добавлено
+- `tailwind.config.js` — полная палитра Material You (dark): surface, primary, secondary, tertiary, error, outline и все их вариации; шрифты Inter + JetBrains Mono; скругления
+- `src/index.css` — переписан: тёмная тема как базовый стиль, `html.dark`, шрифт Inter, кастомный скроллбар
+- `src/components/PasswordInput.tsx` — переработан с нуля: inline SVG Eye/EyeOff toggle, 4-сегментный индикатор силы (`evaluatePassword`), prop `error`, prop `label`, prop `disabled`
+- `src/components/PasswordInput.test.tsx` — 13 тестов: рендер, placeholder, label, onChange, toggle видимости, strength bar (3 кейса), error state, disabled state
+- `package.json` — добавлена зависимость `lucide-react` (ожидает `npm install` при наличии сети)
+
+### Изменено
+- `src/components/PasswordInput.tsx` — иконки Eye/EyeOff реализованы как временные inline SVG; после `npm install lucide-react` можно заменить на import из `lucide-react`
+
+---
+
 ## [2026-04-01] - Оркестратор валидации (Задача 7.6)
 
 ### Добавлено

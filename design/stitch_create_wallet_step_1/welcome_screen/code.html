@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TON Testnet Wallet - Welcome</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-fixed": "#001c37",
+              "on-tertiary-fixed-variant": "#633f00",
+              "on-secondary-container": "#b0b8cc",
+              "on-secondary": "#283140",
+              "on-error": "#690005",
+              "on-tertiary": "#452b00",
+              "tertiary": "#ffb955",
+              "primary": "#a0caff",
+              "secondary": "#bfc6db",
+              "tertiary-fixed-dim": "#ffb955",
+              "secondary-container": "#41495a",
+              "on-background": "#e2e2e6",
+              "on-tertiary-fixed": "#291800",
+              "inverse-surface": "#e2e2e6",
+              "tertiary-container": "#c68200",
+              "surface-bright": "#37393d",
+              "inverse-primary": "#0061a5",
+              "surface-container-highest": "#333538",
+              "on-primary-container": "#002b4e",
+              "primary-fixed": "#d2e4ff",
+              "tertiary-fixed": "#ffddb4",
+              "inverse-on-surface": "#2f3034",
+              "outline": "#8b919c",
+              "on-primary": "#003259",
+              "primary-container": "#4f94dd",
+              "secondary-fixed": "#dbe2f7",
+              "on-secondary-fixed-variant": "#3f4757",
+              "error-container": "#93000a",
+              "on-surface": "#e2e2e6",
+              "primary-fixed-dim": "#a0caff",
+              "surface": "#111317",
+              "background": "#111317",
+              "on-primary-fixed-variant": "#00497e",
+              "on-error-container": "#ffdad6",
+              "surface-container-low": "#1a1c1f",
+              "surface-container-lowest": "#0c0e11",
+              "surface-dim": "#111317",
+              "on-tertiary-container": "#3c2500",
+              "surface-variant": "#333538",
+              "outline-variant": "#414751",
+              "secondary-fixed-dim": "#bfc6db",
+              "surface-tint": "#a0caff",
+              "error": "#ffb4ab",
+              "on-secondary-fixed": "#141c2a",
+              "on-surface-variant": "#c1c7d2",
+              "surface-container-high": "#282a2d",
+              "surface-container": "#1e2023"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0F1114;
+            color: #e2e2e6;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-footer {
+            background: rgba(30, 32, 35, 0.8);
+            backdrop-filter: blur(12px);
+        }
+        .machined-sheen {
+            background: linear-gradient(135deg, #a0caff 0%, #4f94dd 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col min-h-screen items-center overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="w-full max-w-[480px] sticky top-0 z-50 bg-[#111317] flex justify-between items-center px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#4A90D9]" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-['Inter'] tracking-tight font-bold uppercase text-xs text-white">TON Wallet</span>
+</div>
+<div class="flex items-center gap-3">
+<!-- Mandatory Testnet Badge -->
+<span class="text-[10px] font-extrabold tracking-widest text-[#F59E0B] bg-[#451A03] px-2 py-0.5 rounded-sm uppercase">Testnet</span>
+<span class="material-symbols-outlined text-gray-500 hover:opacity-80 transition-opacity cursor-pointer active:scale-95 duration-150" data-icon="settings">settings</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-[480px] flex flex-col items-center justify-center px-8 pb-32">
+<!-- App Logo Area -->
+<div class="relative mb-12">
+<!-- Background glow for the icon -->
+<div class="absolute inset-0 bg-primary/10 blur-3xl rounded-full"></div>
+<div class="relative flex items-center justify-center w-24 h-24 rounded-xl bg-surface-container border border-white/5 shadow-2xl">
+<span class="material-symbols-outlined text-primary text-5xl" data-icon="diamond" style="font-variation-settings: 'FILL' 1;">diamond</span>
+</div>
+</div>
+<!-- Typography Cluster -->
+<div class="text-center space-y-4">
+<h1 class="text-3xl font-extrabold tracking-tight text-on-surface">
+                TON Testnet Wallet
+            </h1>
+<p class="text-on-surface-variant font-medium text-sm leading-relaxed max-w-[280px] mx-auto">
+                Self-custodial wallet for TON testnet. Your keys, your crypto, zero compromise.
+            </p>
+</div>
+<!-- Technical Metadata (Asymmetric Layout Detail) -->
+<div class="mt-16 w-full grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-4 rounded-lg border-l-2 border-primary/20">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1 font-bold">Network</p>
+<p class="text-xs font-mono text-primary">testnet-v4.ton.org</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg border-l-2 border-tertiary/20">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1 font-bold">Protocol</p>
+<p class="text-xs font-mono text-tertiary">ADNL/UDP</p>
+</div>
+</div>
+</main>
+<!-- Bottom Actions (Fixed/Glass Footer) -->
+<footer class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] glass-footer p-6 space-y-3 z-50">
+<!-- Primary Action -->
+<button class="w-full machined-sheen text-on-primary-fixed py-4 rounded-xl font-bold tracking-tight active:scale-[0.98] transition-transform flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="add_circle">add_circle</span>
+            Create New Wallet
+        </button>
+<!-- Secondary Action -->
+<button class="w-full bg-surface-container-highest text-on-surface py-4 rounded-xl font-bold tracking-tight active:scale-[0.98] transition-transform flex items-center justify-center gap-2 border border-white/5">
+<span class="material-symbols-outlined text-lg" data-icon="file_download">file_download</span>
+            Import Existing Wallet
+        </button>
+<!-- Small Print/Disclaimer -->
+<p class="text-center text-[10px] text-on-surface-variant pt-2 font-medium uppercase tracking-tighter opacity-50">
+            By continuing, you agree to the precise architect's terms
+        </p>
+</footer>
+<!-- Decorative Editorial Element -->
+<div class="fixed top-1/4 -right-20 opacity-10 pointer-events-none select-none">
+<span class="text-[120px] font-black tracking-tighter text-white rotate-90 leading-none">TESTNET</span>
+</div>
+</body></html>

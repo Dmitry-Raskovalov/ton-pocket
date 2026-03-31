@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-container": "#b0b8cc",
+              "surface": "#111317",
+              "surface-dim": "#111317",
+              "on-primary-fixed-variant": "#00497e",
+              "on-tertiary": "#452b00",
+              "on-background": "#e2e2e6",
+              "on-primary-fixed": "#001c37",
+              "surface-container-lowest": "#0c0e11",
+              "secondary-fixed": "#dbe2f7",
+              "surface-variant": "#333538",
+              "primary-fixed-dim": "#a0caff",
+              "on-tertiary-container": "#3c2500",
+              "primary-container": "#4f94dd",
+              "on-tertiary-fixed-variant": "#633f00",
+              "on-secondary-fixed": "#141c2a",
+              "on-primary": "#003259",
+              "tertiary": "#ffb955",
+              "on-tertiary-fixed": "#291800",
+              "secondary": "#bfc6db",
+              "inverse-primary": "#0061a5",
+              "outline-variant": "#414751",
+              "on-error": "#690005",
+              "outline": "#8b919c",
+              "on-primary-container": "#002b4e",
+              "on-surface-variant": "#c1c7d2",
+              "primary": "#a0caff",
+              "surface-container": "#1e2023",
+              "secondary-fixed-dim": "#bfc6db",
+              "surface-tint": "#a0caff",
+              "surface-container-high": "#282a2d",
+              "tertiary-fixed-dim": "#ffb955",
+              "error": "#ffb4ab",
+              "on-surface": "#e2e2e6",
+              "inverse-on-surface": "#2f3034",
+              "primary-fixed": "#d2e4ff",
+              "on-error-container": "#ffdad6",
+              "tertiary-container": "#c68200",
+              "surface-container-low": "#1a1c1f",
+              "on-secondary-fixed-variant": "#3f4757",
+              "inverse-surface": "#e2e2e6",
+              "surface-container-highest": "#333538",
+              "tertiary-fixed": "#ffddb4",
+              "background": "#111317",
+              "secondary-container": "#41495a",
+              "on-secondary": "#283140",
+              "error-container": "#93000a",
+              "surface-bright": "#37393d"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        background-color: #111317;
+        color: #e2e2e6;
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased min-h-screen flex flex-col">
+<!-- TopAppBar Fragment (Source: Shared Components JSON) -->
+<header class="bg-[#111317] dark:bg-[#111317] docked full-width top-0 sticky no-border space-y-4 flat no-shadows z-50">
+<div class="flex justify-between items-center max-w-[480px] mx-auto px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#4A90D9] dark:text-[#a0caff] active:scale-95 duration-150 cursor-pointer" data-icon="account_balance_wallet">account_balance_wallet</span>
+<h1 class="font-['Inter'] tracking-tight font-bold uppercase text-xs text-white">TON Wallet</h1>
+</div>
+<div class="flex items-center gap-4">
+<!-- Mandatory Testnet Badge -->
+<div class="bg-tertiary-container text-on-tertiary-fixed-variant px-2 py-0.5 rounded-sm text-[10px] font-bold tracking-widest uppercase">
+                    Testnet
+                </div>
+<span class="material-symbols-outlined text-[#4A90D9] dark:text-[#a0caff] hover:opacity-80 transition-opacity active:scale-95 duration-150 cursor-pointer" data-icon="settings">settings</span>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center max-w-[480px] mx-auto w-full px-8 pb-24">
+<!-- Status Visual -->
+<div class="relative mb-10">
+<!-- Background glow -->
+<div class="absolute inset-0 bg-tertiary/10 blur-3xl rounded-full"></div>
+<div class="relative flex items-center justify-center w-32 h-32 rounded-full bg-surface-container border border-tertiary/20">
+<span class="material-symbols-outlined text-tertiary text-6xl" data-icon="pending_actions">pending_actions</span>
+</div>
+<!-- Floating Warning Badge -->
+<div class="absolute -bottom-2 -right-2 bg-tertiary text-on-tertiary w-10 h-10 rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined font-bold" data-icon="priority_high">priority_high</span>
+</div>
+</div>
+<!-- Feedback Text -->
+<div class="text-center space-y-4">
+<h2 class="text-2xl font-extrabold tracking-tight text-on-surface uppercase">
+                Transaction Status Unknown
+            </h2>
+<p class="text-on-surface-variant font-medium leading-relaxed max-w-[280px] mx-auto text-sm">
+                Transaction may have been sent. Please check your balance in a few moments.
+            </p>
+</div>
+<!-- Technical Metadata (Editorial Style) -->
+<div class="mt-12 w-full bg-surface-container-lowest p-5 rounded-xl border border-white/5 space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-[10px] uppercase tracking-widest text-outline font-bold">Request ID</span>
+<span class="text-[10px] font-mono text-on-surface">TX-9921-A9FF</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-[10px] uppercase tracking-widest text-outline font-bold">Network State</span>
+<span class="text-[10px] uppercase font-bold text-tertiary">Timeout</span>
+</div>
+</div>
+<!-- Actions -->
+<div class="mt-12 w-full space-y-3">
+<button class="w-full bg-primary-fixed-dim text-on-primary-fixed font-bold py-4 rounded-xl active:scale-[0.98] transition-all hover:opacity-90 shadow-[0_4px_12px_rgba(0,0,0,0.3)] bg-gradient-to-br from-primary/20 to-transparent">
+                Back to Wallet
+            </button>
+<button class="w-full bg-transparent text-primary text-xs font-bold uppercase tracking-widest py-3 hover:bg-white/5 rounded-lg transition-colors">
+                View on Explorer
+            </button>
+</div>
+</main>
+<!-- BottomNavBar Fragment (Source: Shared Components JSON) -->
+<!-- Note: Determining active state: 'Assets' is the destination for 'Back to Wallet' -->
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-50 flex justify-around items-center h-20 pb-safe px-4 bg-[#1E2023]/80 backdrop-blur-md border-t border-white/5 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] rounded-t-xl">
+<div class="flex flex-col items-center justify-center text-[#a0caff] font-bold transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-2xl group-active:scale-90 duration-200" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-wider mt-1">Assets</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 hover:text-white transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-2xl group-active:scale-90 duration-200" data-icon="receipt_long">receipt_long</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-wider mt-1">History</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 hover:text-white transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-2xl group-active:scale-90 duration-200" data-icon="swap_horiz">swap_horiz</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-wider mt-1">Swap</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 hover:text-white transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-2xl group-active:scale-90 duration-200" data-icon="explore">explore</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-wider mt-1">Browser</span>
+</div>
+</nav>
+<!-- Decorative Grain Texture -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
+</body></html>

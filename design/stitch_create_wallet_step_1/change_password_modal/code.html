@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wallet Settings - Change Password</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-container": "#3c2500",
+              "on-tertiary-fixed-variant": "#633f00",
+              "inverse-on-surface": "#2f3034",
+              "primary": "#a0caff",
+              "surface": "#111317",
+              "surface-tint": "#a0caff",
+              "on-primary-fixed-variant": "#00497e",
+              "tertiary-fixed-dim": "#ffb955",
+              "tertiary-container": "#c68200",
+              "primary-fixed": "#d2e4ff",
+              "surface-variant": "#333538",
+              "secondary-fixed-dim": "#bfc6db",
+              "secondary": "#bfc6db",
+              "error-container": "#93000a",
+              "on-secondary": "#283140",
+              "surface-container-high": "#282a2d",
+              "on-secondary-fixed": "#141c2a",
+              "inverse-surface": "#e2e2e6",
+              "surface-container-highest": "#333538",
+              "tertiary": "#ffb955",
+              "surface-container-low": "#1a1c1f",
+              "on-tertiary-fixed": "#291800",
+              "inverse-primary": "#0061a5",
+              "on-secondary-fixed-variant": "#3f4757",
+              "secondary-fixed": "#dbe2f7",
+              "on-error": "#690005",
+              "surface-dim": "#111317",
+              "primary-fixed-dim": "#a0caff",
+              "surface-container": "#1e2023",
+              "outline-variant": "#414751",
+              "on-primary": "#003259",
+              "on-background": "#e2e2e6",
+              "on-secondary-container": "#b0b8cc",
+              "error": "#ffb4ab",
+              "tertiary-fixed": "#ffddb4",
+              "primary-container": "#4f94dd",
+              "on-error-container": "#ffdad6",
+              "surface-bright": "#37393d",
+              "on-surface-variant": "#c1c7d2",
+              "on-tertiary": "#452b00",
+              "on-primary-container": "#002b4e",
+              "outline": "#8b919c",
+              "secondary-container": "#41495a",
+              "surface-container-lowest": "#0c0e11",
+              "background": "#111317",
+              "on-primary-fixed": "#001c37",
+              "on-surface": "#e2e2e6"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        background-color: #111317;
+        color: #e2e2e6;
+        font-family: 'Inter', sans-serif;
+      }
+      .custom-blur {
+        backdrop-filter: blur(12px);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased min-h-screen">
+<!-- Top Navigation Shell -->
+<header class="bg-[#1E2023] docked full-width top-0 z-40 fixed w-full">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-[480px] mx-auto">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#333538]">close</span>
+<h1 class="font-['Inter'] tracking-tight text-sm font-medium uppercase text-[#e2e2e6]">Wallet Settings</h1>
+</div>
+<div class="px-2 py-0.5 rounded-[4px] bg-tertiary-container text-on-tertiary-fixed-variant font-mono text-[10px] font-bold">
+                TESTNET
+            </div>
+</div>
+</header>
+<!-- Background Content (Settings Screen Mockup) -->
+<main class="pt-20 pb-24 px-6 max-w-[480px] mx-auto space-y-8">
+<!-- Security Section -->
+<section>
+<h2 class="text-[10px] uppercase tracking-[0.05em] font-bold text-on-surface-variant mb-4">Security</h2>
+<div class="space-y-1">
+<div class="flex items-center justify-between p-4 bg-surface-container rounded-lg opacity-40">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-outline">fingerprint</span>
+<span class="text-sm">Biometric Authentication</span>
+</div>
+<div class="w-8 h-4 bg-primary/20 rounded-full relative">
+<div class="absolute right-0.5 top-0.5 w-3 h-3 bg-primary rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container rounded-lg opacity-40">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-outline">lock</span>
+<span class="text-sm">Auto-lock timer</span>
+</div>
+<span class="text-xs text-on-surface-variant">5 minutes</span>
+</div>
+</div>
+</section>
+<!-- Preferences Section -->
+<section>
+<h2 class="text-[10px] uppercase tracking-[0.05em] font-bold text-on-surface-variant mb-4">Preferences</h2>
+<div class="space-y-1">
+<div class="flex items-center justify-between p-4 bg-surface-container rounded-lg opacity-40">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-outline">payments</span>
+<span class="text-sm">Base Currency</span>
+</div>
+<span class="text-xs text-on-surface-variant">USD</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container rounded-lg opacity-40">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-outline">language</span>
+<span class="text-sm">Language</span>
+</div>
+<span class="text-xs text-on-surface-variant">English</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 bg-black/60 z-50 flex items-end md:items-center justify-center">
+<!-- Modal Dialog -->
+<div class="w-full max-w-[480px] bg-[#1A1D23] rounded-t-xl md:rounded-xl overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.05)]">
+<!-- Modal Header -->
+<div class="flex justify-between items-center px-6 py-5 border-b border-white/5">
+<div class="flex items-center gap-3">
+<h3 class="font-['Inter'] text-sm font-bold uppercase tracking-widest text-on-surface">Change Password</h3>
+<div class="px-2 py-0.5 rounded-[4px] bg-tertiary-container text-on-tertiary-fixed-variant font-mono text-[9px] font-black">
+                        TESTNET
+                    </div>
+</div>
+<button class="p-2 -mr-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Modal Content -->
+<div class="p-6 space-y-6">
+<!-- Current Password -->
+<div class="space-y-2">
+<label class="text-[10px] uppercase tracking-wider font-bold text-on-surface-variant">Current Password</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-lowest border-none rounded-lg py-4 px-4 text-sm focus:ring-1 focus:ring-primary/50 placeholder:text-surface-variant font-mono" placeholder="••••••••" type="password"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant cursor-pointer">visibility</span>
+</div>
+</div>
+<!-- New Password -->
+<div class="space-y-2">
+<label class="text-[10px] uppercase tracking-wider font-bold text-on-surface-variant">New Password</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-lowest border-none rounded-lg py-4 px-4 text-sm focus:ring-1 focus:ring-primary/50 placeholder:text-surface-variant font-mono" placeholder="••••••••" type="password"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant cursor-pointer">visibility</span>
+</div>
+<!-- Password Strength -->
+<div class="pt-2 flex items-center gap-4">
+<div class="flex-1 flex gap-1">
+<div class="h-1 flex-1 bg-primary rounded-full"></div>
+<div class="h-1 flex-1 bg-primary rounded-full"></div>
+<div class="h-1 flex-1 bg-surface-container-highest rounded-full"></div>
+</div>
+<span class="text-[10px] font-bold text-primary uppercase tracking-tighter">Good</span>
+</div>
+</div>
+<!-- Confirm New Password -->
+<div class="space-y-2">
+<label class="text-[10px] uppercase tracking-wider font-bold text-on-surface-variant">Confirm New Password</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-lowest border-none rounded-lg py-4 px-4 text-sm focus:ring-1 focus:ring-primary/50 placeholder:text-surface-variant font-mono" placeholder="••••••••" type="password"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant cursor-pointer">visibility</span>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="p-6 bg-surface-container-low flex gap-3">
+<button class="flex-1 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-on-surface transition-colors border border-white/5 rounded-lg">
+                    Cancel
+                </button>
+<button class="flex-1 py-4 text-[10px] font-bold uppercase tracking-widest bg-primary-container text-on-primary-container rounded-lg shadow-lg active:scale-95 transition-all">
+                    Change Password
+                </button>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Shell (Suppressed visuals via opacity for background feel) -->
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-40 flex justify-around items-center py-3 px-8 bg-[#111317]/80 backdrop-blur-md opacity-20 pointer-events-none">
+<div class="flex flex-col items-center justify-center text-[#333538]">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-widest mt-1">Assets</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#333538]">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-widest mt-1">Activity</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#4A90D9] scale-105">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-widest mt-1">Settings</span>
+</div>
+</nav>
+</body></html>

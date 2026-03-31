@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Roboto+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed": "#d2e4ff",
+              "on-error": "#690005",
+              "tertiary-fixed-dim": "#ffb955",
+              "secondary": "#bfc6db",
+              "on-tertiary": "#452b00",
+              "surface-container-lowest": "#0c0e11",
+              "on-tertiary-fixed": "#291800",
+              "surface-variant": "#333538",
+              "outline-variant": "#414751",
+              "on-error-container": "#ffdad6",
+              "inverse-primary": "#0061a5",
+              "error-container": "#93000a",
+              "surface-dim": "#111317",
+              "on-tertiary-fixed-variant": "#633f00",
+              "on-surface-variant": "#c1c7d2",
+              "secondary-container": "#41495a",
+              "background": "#111317",
+              "tertiary": "#ffb955",
+              "inverse-surface": "#e2e2e6",
+              "inverse-on-surface": "#2f3034",
+              "on-primary-container": "#002b4e",
+              "surface-bright": "#37393d",
+              "secondary-fixed-dim": "#bfc6db",
+              "on-background": "#e2e2e6",
+              "on-primary-fixed-variant": "#00497e",
+              "on-primary-fixed": "#001c37",
+              "outline": "#8b919c",
+              "on-primary": "#003259",
+              "surface": "#111317",
+              "on-surface": "#e2e2e6",
+              "surface-tint": "#a0caff",
+              "surface-container-high": "#282a2d",
+              "primary-container": "#4f94dd",
+              "on-secondary-fixed": "#141c2a",
+              "on-secondary-container": "#b0b8cc",
+              "tertiary-container": "#c68200",
+              "primary": "#a0caff",
+              "surface-container": "#1e2023",
+              "on-secondary": "#283140",
+              "error": "#ffb4ab",
+              "surface-container-highest": "#333538",
+              "on-tertiary-container": "#3c2500",
+              "on-secondary-fixed-variant": "#3f4757",
+              "surface-container-low": "#1a1c1f",
+              "primary-fixed-dim": "#a0caff",
+              "tertiary-fixed": "#ffddb4",
+              "secondary-fixed": "#dbe2f7"
+            },
+            fontFamily: {
+              "headline": ["Inter", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"],
+              "mono": ["Roboto Mono", "monospace"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #111317;
+            color: #e2e2e6;
+            -webkit-font-smoothing: antialiased;
+        }
+        .ton-glass {
+            background: linear-gradient(135deg, rgba(160, 202, 255, 0.08) 0%, rgba(79, 148, 221, 0.02) 100%);
+        }
+        .confirm-btn-gradient {
+            background: linear-gradient(to bottom right, #a0caff 0%, #4f94dd 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body">
+<!-- Shell Container -->
+<div class="max-w-[480px] mx-auto min-h-screen flex flex-col bg-background relative pb-24">
+<!-- Header (JSON Mapping: TopAppBar) -->
+<header class="bg-[#111317] sticky top-0 z-50 docked full-width flex justify-between items-center px-6 py-4 w-full no-border space-y-4">
+<div class="flex items-center gap-4">
+<button class="hover:opacity-80 transition-opacity active:scale-95 duration-150 text-[#a0caff]">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<h1 class="font-['Inter'] tracking-tight font-bold uppercase text-xs text-white">Confirm Transaction</h1>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-sm font-bold tracking-widest text-[#F59E0B] bg-[#451A03] px-2 py-0.5 rounded-sm">TESTNET</span>
+<button class="hover:opacity-80 transition-opacity active:scale-95 duration-150 text-[#a0caff]">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<!-- Progress Indicator -->
+<div class="px-6 py-2 flex items-center justify-between gap-1">
+<div class="h-1 flex-1 bg-primary rounded-full opacity-40"></div>
+<div class="h-1 flex-1 bg-primary rounded-full"></div>
+<div class="h-1 flex-1 bg-surface-container-highest rounded-full"></div>
+<span class="ml-3 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Step 2 of 3</span>
+</div>
+<main class="flex-1 px-6 pt-6 pb-12 space-y-8">
+<!-- Transaction Summary Card -->
+<section class="space-y-4">
+<div class="bg-surface-container rounded-xl p-5 space-y-6 ton-glass border border-white/5">
+<!-- Amount Focus -->
+<div class="text-center space-y-1">
+<div class="text-[32px] font-bold tracking-tight text-white">
+                            1,250.00 <span class="text-primary text-xl">TON</span>
+</div>
+<div class="text-xs text-on-surface-variant font-medium">≈ $2,845.12 USD</div>
+</div>
+<!-- Details List -->
+<div class="space-y-5">
+<div class="flex flex-col gap-2">
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Recipient Address</span>
+<div class="bg-surface-container-lowest p-3 rounded-lg font-mono text-[13px] break-all leading-relaxed flex flex-wrap items-center">
+<span class="text-white font-bold">EQA1</span>
+<span class="text-on-surface-variant">_vRzZ_W4S_ZzGk_7K8P_XwY_QzL_RkP_V9s_T1n_</span>
+<span class="text-white font-bold">kL7m</span>
+<button class="ml-auto text-primary p-1 hover:bg-primary/10 rounded">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-2">
+<div class="space-y-1">
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Fee (Estimated)</span>
+<p class="text-sm font-medium text-white">0.0042 TON</p>
+</div>
+<div class="space-y-1">
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Network</span>
+<p class="text-sm font-medium text-tertiary">TON Testnet</p>
+</div>
+</div>
+<div class="space-y-1 pt-2">
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Comment</span>
+<p class="text-sm text-on-surface-variant italic leading-relaxed">"Invoice #8842 - Development Services for Q3 Ecosystem Grant"</p>
+</div>
+</div>
+</div>
+<!-- Total Row -->
+<div class="flex justify-between items-end px-2">
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Total Amount</span>
+<span class="text-xl font-bold text-white">1,250.0042 TON</span>
+</div>
+</section>
+<!-- Security Warnings (Blocking) -->
+<section class="space-y-3">
+<h3 class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant px-1">Critical Security Check</h3>
+<!-- Warning 1: Uninitialized -->
+<div class="bg-error-container/10 border-l-4 border-error p-4 rounded-r-lg space-y-4">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div class="space-y-1">
+<p class="text-sm font-bold text-error">Account is not initialized</p>
+<p class="text-xs text-on-surface-variant leading-relaxed">This recipient address has no history. Sending funds to an uninitialized address might result in loss if the address was generated incorrectly.</p>
+</div>
+</div>
+<label class="flex items-center gap-3 bg-error/5 p-3 rounded cursor-pointer group active:scale-[0.98] transition-transform">
+<input class="w-4 h-4 rounded border-error text-error focus:ring-error bg-transparent" type="checkbox"/>
+<span class="text-xs font-semibold text-error/90 uppercase tracking-wide">I understand the risk</span>
+</label>
+</div>
+<!-- Warning 2: Bounceable -->
+<div class="bg-tertiary-container/10 border-l-4 border-tertiary p-4 rounded-r-lg space-y-4">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">info</span>
+<div class="space-y-1">
+<p class="text-sm font-bold text-tertiary">Bounceable Address</p>
+<p class="text-xs text-on-surface-variant leading-relaxed">The destination is marked as bounceable. If the contract fails to process the transaction, funds will return minus fees.</p>
+</div>
+</div>
+<label class="flex items-center gap-3 bg-tertiary/5 p-3 rounded cursor-pointer active:scale-[0.98] transition-transform">
+<input class="w-4 h-4 rounded border-tertiary text-tertiary focus:ring-tertiary bg-transparent" type="checkbox"/>
+<span class="text-xs font-semibold text-tertiary/90 uppercase tracking-wide">I acknowledge bounce terms</span>
+</label>
+</div>
+</section>
+<!-- Authorization -->
+<section class="space-y-4">
+<div class="space-y-2">
+<label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant px-1">Confirm Identity</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant group-focus-within:text-primary transition-colors">lock</span>
+</div>
+<input class="w-full bg-surface-container-lowest border-none focus:ring-1 focus:ring-primary/50 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-outline/50 font-mono" placeholder="Enter Wallet Password" type="password"/>
+</div>
+</div>
+</section>
+</main>
+<!-- Action Footer -->
+<footer class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] p-6 bg-background/80 backdrop-blur-xl space-y-3">
+<button class="w-full py-4 rounded-xl confirm-btn-gradient text-on-primary font-extrabold uppercase tracking-widest text-sm shadow-xl shadow-primary/10 active:scale-[0.98] transition-transform duration-150">
+                Confirm &amp; Send TON
+            </button>
+<button class="w-full py-3 rounded-xl border border-outline/10 text-on-surface-variant font-bold uppercase tracking-widest text-xs hover:bg-surface-container-high transition-colors">
+                Cancel Transaction
+            </button>
+</footer>
+</div>
+</body></html>

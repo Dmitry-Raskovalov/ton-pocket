@@ -1,23 +1,44 @@
 /**
- * Highlighted address component for visual verification.
+ * file: HighlightedAddress.tsx
+ * description: Displays a blockchain address with the first and last 6 characters
+ *   visually highlighted for tamper-detection. Supports full and truncated modes.
+ * dependencies: none
+ * created: 2026-04-01
  */
 
+const HIGHLIGHT_LEN = 6;
+
 export interface HighlightedAddressProps {
+  /** Raw or user-friendly TON address string */
   address: string;
+  /**
+   * When true — middle section is replaced with "…" (for lists, headers).
+   * When false (default) — full address is shown.
+   */
+  truncate?: boolean;
   className?: string;
 }
 
-export function HighlightedAddress({ address, className = '' }: HighlightedAddressProps) {
-  // Split address into parts for highlighting
-  const start = address.slice(0, 6);
-  const middle = address.slice(6, -6);
-  const end = address.slice(-6);
+export function HighlightedAddress({
+  address,
+  truncate = false,
+  className = '',
+}: HighlightedAddressProps) {
+  const start = address.slice(0, HIGHLIGHT_LEN);
+  const end = address.slice(-HIGHLIGHT_LEN);
+  const middle = address.slice(HIGHLIGHT_LEN, -HIGHLIGHT_LEN);
 
   return (
-    <div className={`font-mono text-sm ${className}`}>
-      <span className="text-primary font-semibold">{start}</span>
-      <span className="text-text-secondary">{middle}</span>
-      <span className="text-primary font-semibold">{end}</span>
-    </div>
+    <span
+      className={`font-mono text-xs break-all leading-relaxed ${className}`}
+    >
+      <span className="text-on-surface font-bold">{start}</span>
+      {truncate ? (
+        <span className="text-on-surface-variant/40">…</span>
+      ) : (
+        <span className="text-on-surface-variant/40">{middle}</span>
+      )}
+      <span className="text-on-surface font-bold">{end}</span>
+    </span>
   );
 }

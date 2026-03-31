@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - TON Wallet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-fixed": "#001c37",
+              "on-tertiary-fixed-variant": "#633f00",
+              "on-secondary-container": "#b0b8cc",
+              "on-secondary": "#283140",
+              "on-error": "#690005",
+              "on-tertiary": "#452b00",
+              "tertiary": "#ffb955",
+              "primary": "#a0caff",
+              "secondary": "#bfc6db",
+              "tertiary-fixed-dim": "#ffb955",
+              "secondary-container": "#41495a",
+              "on-background": "#e2e2e6",
+              "on-tertiary-fixed": "#291800",
+              "inverse-surface": "#e2e2e6",
+              "tertiary-container": "#c68200",
+              "surface-bright": "#37393d",
+              "inverse-primary": "#0061a5",
+              "surface-container-highest": "#333538",
+              "on-primary-container": "#002b4e",
+              "primary-fixed": "#d2e4ff",
+              "tertiary-fixed": "#ffddb4",
+              "inverse-on-surface": "#2f3034",
+              "outline": "#8b919c",
+              "on-primary": "#003259",
+              "primary-container": "#4f94dd",
+              "secondary-fixed": "#dbe2f7",
+              "on-secondary-fixed-variant": "#3f4757",
+              "error-container": "#93000a",
+              "on-surface": "#e2e2e6",
+              "primary-fixed-dim": "#a0caff",
+              "surface": "#111317",
+              "background": "#111317",
+              "on-primary-fixed-variant": "#00497e",
+              "on-error-container": "#ffdad6",
+              "surface-container-low": "#1a1c1f",
+              "surface-container-lowest": "#0c0e11",
+              "surface-dim": "#111317",
+              "on-tertiary-container": "#3c2500",
+              "surface-variant": "#333538",
+              "outline-variant": "#414751",
+              "secondary-fixed-dim": "#bfc6db",
+              "surface-tint": "#a0caff",
+              "error": "#ffb4ab",
+              "on-secondary-fixed": "#141c2a",
+              "on-surface-variant": "#c1c7d2",
+              "surface-container-high": "#282a2d",
+              "surface-container": "#1e2023"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #111317;
+            font-family: 'Inter', sans-serif;
+            color: #e2e2e6;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ton-address-font {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+        .glass-panel {
+            background: rgba(30, 32, 35, 0.6);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen">
+<div class="max-w-[480px] mx-auto min-h-screen flex flex-col bg-background relative pb-24">
+<!-- Header Section -->
+<header class="sticky top-0 z-50 bg-[#111317] flex justify-between items-center px-6 py-4 w-full">
+<button class="flex items-center text-primary hover:opacity-80 transition-opacity active:scale-95 duration-150">
+<span class="material-symbols-outlined text-[24px]">chevron_left</span>
+</button>
+<div class="bg-tertiary-container px-2 py-0.5 rounded-sm">
+<span class="text-[10px] font-bold tracking-widest text-on-tertiary-fixed-variant uppercase">Testnet</span>
+</div>
+<button class="text-gray-500 hover:opacity-80 transition-opacity active:scale-95 duration-150">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+</button>
+</header>
+<main class="flex-1 px-6 pt-4 space-y-8">
+<!-- Title Section -->
+<section>
+<h2 class="text-2xl font-bold tracking-tight text-on-surface font-headline uppercase">Settings</h2>
+</section>
+<!-- Wallet Info Card -->
+<section class="bg-surface-container rounded-xl p-5 space-y-6">
+<div class="flex items-start justify-between">
+<div class="space-y-1">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium">Wallet Architecture</p>
+<h3 class="text-xl font-bold text-on-surface">v4R2</h3>
+</div>
+<div class="text-right space-y-1">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium">Network</p>
+<p class="text-sm font-semibold text-tertiary">TON Testnet</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-4 group cursor-pointer hover:bg-surface-container-high transition-colors">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium mb-2">Address</p>
+<div class="flex items-center justify-between gap-4">
+<p class="ton-address-font text-sm break-all leading-relaxed">
+<span class="text-on-surface font-bold">UQBx</span><span class="text-on-surface-variant opacity-40">...</span><span class="text-on-surface font-bold">7f2K</span>
+</p>
+<span class="material-symbols-outlined text-primary text-xl">content_copy</span>
+</div>
+</div>
+</section>
+<!-- Security Section -->
+<section class="space-y-3">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold ml-1">Security &amp; Access</p>
+<div class="bg-surface-container rounded-xl overflow-hidden">
+<button class="w-full flex items-center justify-between p-5 hover:bg-surface-container-high transition-colors border-b border-white/5 active:scale-[0.98] duration-150">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">shield</span>
+</div>
+<span class="font-medium text-on-surface">Export Recovery Phrase</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-5 hover:bg-surface-container-high transition-colors active:scale-[0.98] duration-150">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">key</span>
+</div>
+<span class="font-medium text-on-surface">Change Password</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Danger Zone -->
+<section class="space-y-3">
+<p class="text-[10px] uppercase tracking-widest text-error font-bold ml-1">Danger Zone</p>
+<div class="bg-surface-container rounded-xl overflow-hidden border border-error/20">
+<button class="w-full flex items-center justify-between p-5 hover:bg-error-container/10 transition-colors group active:scale-[0.98] duration-150">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-error-container/20 flex items-center justify-center text-error group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">delete</span>
+</div>
+<span class="font-bold text-error">Delete Wallet</span>
+</div>
+<span class="text-[10px] uppercase tracking-tighter text-error/40 font-bold group-hover:text-error transition-colors">Irreversible</span>
+</button>
+</div>
+</section>
+<!-- Metadata Footer -->
+<footer class="pt-8 pb-12 text-center space-y-2 opacity-30">
+<p class="text-[10px] uppercase tracking-[0.2em] font-bold">TON WALLET ENGINE v1.28.4</p>
+<p class="text-[10px]">Environment: testnet-global-1</p>
+</footer>
+</main>
+<!-- Bottom Navigation Bar (Contextual) -->
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-50 flex justify-around items-center h-20 pb-safe px-4 bg-[#1E2023]/80 backdrop-blur-md rounded-t-xl border-t border-white/5 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<a class="flex flex-col items-center justify-center text-gray-500 hover:text-white transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-wider mt-1">Assets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:text-white transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-wider mt-1">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:text-white transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-wider mt-1">Swap</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:text-white transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-wider mt-1">Browser</span>
+</a>
+</nav>
+</div>
+</body></html>

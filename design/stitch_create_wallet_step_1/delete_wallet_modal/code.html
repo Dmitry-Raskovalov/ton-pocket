@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wallet Settings - Delete Wallet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-container": "#3c2500",
+              "on-tertiary-fixed-variant": "#633f00",
+              "inverse-on-surface": "#2f3034",
+              "primary": "#a0caff",
+              "surface": "#111317",
+              "surface-tint": "#a0caff",
+              "on-primary-fixed-variant": "#00497e",
+              "tertiary-fixed-dim": "#ffb955",
+              "tertiary-container": "#c68200",
+              "primary-fixed": "#d2e4ff",
+              "surface-variant": "#333538",
+              "secondary-fixed-dim": "#bfc6db",
+              "secondary": "#bfc6db",
+              "error-container": "#93000a",
+              "on-secondary": "#283140",
+              "surface-container-high": "#282a2d",
+              "on-secondary-fixed": "#141c2a",
+              "inverse-surface": "#e2e2e6",
+              "surface-container-highest": "#333538",
+              "tertiary": "#ffb955",
+              "surface-container-low": "#1a1c1f",
+              "on-tertiary-fixed": "#291800",
+              "inverse-primary": "#0061a5",
+              "on-secondary-fixed-variant": "#3f4757",
+              "secondary-fixed": "#dbe2f7",
+              "on-error": "#690005",
+              "surface-dim": "#111317",
+              "primary-fixed-dim": "#a0caff",
+              "surface-container": "#1e2023",
+              "outline-variant": "#414751",
+              "on-primary": "#003259",
+              "on-background": "#e2e2e6",
+              "on-secondary-container": "#b0b8cc",
+              "error": "#ffb4ab",
+              "tertiary-fixed": "#ffddb4",
+              "primary-container": "#4f94dd",
+              "on-error-container": "#ffdad6",
+              "surface-bright": "#37393d",
+              "on-surface-variant": "#c1c7d2",
+              "on-tertiary": "#452b00",
+              "on-primary-container": "#002b4e",
+              "outline": "#8b919c",
+              "secondary-container": "#41495a",
+              "surface-container-lowest": "#0c0e11",
+              "background": "#111317",
+              "on-primary-fixed": "#001c37",
+              "on-surface": "#e2e2e6"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(30, 32, 35, 0.8);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30 min-h-screen flex flex-col items-center">
+<!-- TopAppBar -->
+<header class="bg-[#111317] flex justify-between items-center w-full px-6 py-4 max-w-[480px] mx-auto sticky top-0 z-40">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#333538] cursor-pointer" data-icon="close">close</span>
+<h1 class="font-['Inter'] tracking-tight text-sm font-medium uppercase text-on-surface">Wallet Settings</h1>
+</div>
+<div class="bg-tertiary-container px-2 py-0.5 rounded-[4px]">
+<span class="font-['Inter'] text-[10px] font-bold tracking-widest text-on-tertiary-fixed-variant">TESTNET</span>
+</div>
+</header>
+<main class="w-full max-w-[480px] px-6 py-4 space-y-6 flex-grow pb-24">
+<!-- Background Content (Settings) - Dimmed/Blurred -->
+<div class="opacity-30 pointer-events-none space-y-8">
+<section>
+<h2 class="text-on-surface-variant font-['Inter'] text-[10px] font-bold uppercase tracking-widest mb-4">Security</h2>
+<div class="space-y-4">
+<div class="bg-surface-container rounded-xl p-4 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="key">key</span>
+<span class="text-sm font-medium">Recovery Phrase</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="bg-surface-container rounded-xl p-4 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="lock">lock</span>
+<span class="text-sm font-medium">Passcode Lock</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="toggle_on">toggle_on</span>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-on-surface-variant font-['Inter'] text-[10px] font-bold uppercase tracking-widest mb-4">Danger Zone</h2>
+<div class="bg-surface-container rounded-xl p-4 flex items-center justify-between border border-error/20">
+<div class="flex items-center gap-4 text-error">
+<span class="material-symbols-outlined" data-icon="delete_forever">delete_forever</span>
+<span class="text-sm font-medium">Delete Wallet</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Delete Wallet Modal Overaly -->
+<div class="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-50 flex items-center justify-center px-4">
+<div class="glass-panel w-full max-w-[400px] rounded-xl overflow-hidden flex flex-col">
+<!-- Modal Header -->
+<div class="px-6 py-5 border-b border-white/5 flex items-center justify-between">
+<h3 class="font-['Inter'] text-sm font-bold uppercase tracking-wider text-on-surface">Delete Wallet</h3>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface transition-colors" data-icon="close">close</button>
+</div>
+<!-- Modal Content -->
+<div class="p-6 space-y-6">
+<!-- WarningCard (severity: error) -->
+<div class="bg-error-container/20 rounded-lg p-4 flex gap-4">
+<span class="material-symbols-outlined text-error shrink-0" data-icon="report">report</span>
+<div class="space-y-1">
+<p class="text-error font-bold text-xs uppercase tracking-tight">Critical Warning</p>
+<p class="text-on-error-container text-xs leading-relaxed">
+                                This action is permanent and cannot be undone. All assets and data associated with this wallet will be irrecoverable unless you have your manual backup phrase.
+                            </p>
+</div>
+</div>
+<div class="space-y-3">
+<label class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant" for="confirm_delete">Type "DELETE" to confirm:</label>
+<input class="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3 text-on-surface font-mono text-sm focus:ring-1 focus:ring-error transition-all placeholder:text-outline/30" id="confirm_delete" placeholder="DELETE" type="text"/>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="px-6 py-6 flex gap-3">
+<button class="flex-1 py-3 text-xs font-bold uppercase tracking-widest text-on-surface hover:bg-surface-container-highest transition-colors rounded-lg">
+                        Cancel
+                    </button>
+<button class="flex-1 py-3 text-xs font-bold uppercase tracking-widest bg-error text-on-error hover:opacity-90 transition-all rounded-lg shadow-lg shadow-error/10">
+                        Delete Wallet
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-50 flex justify-around items-center py-3 px-8 bg-[#111317]/80 dark:bg-[#111317]/80 backdrop-blur-md shadow-[0_-1px_0_0_rgba(255,255,255,0.05)] rounded-t-lg">
+<div class="flex flex-col items-center justify-center text-[#333538] opacity-60 hover:text-[#4A90D9] transition-all">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-widest mt-1">Assets</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#333538] opacity-60 hover:text-[#4A90D9] transition-all">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-widest mt-1">Activity</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#4A90D9] scale-105 transition-all">
+<span class="material-symbols-outlined" data-icon="settings" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-widest mt-1">Settings</span>
+</div>
+</nav>
+</body></html>

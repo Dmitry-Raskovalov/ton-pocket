@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface-variant": "#c1c7d2",
+              "on-secondary": "#283140",
+              "tertiary": "#ffb955",
+              "on-tertiary-container": "#3c2500",
+              "on-primary-container": "#002b4e",
+              "on-surface": "#e2e2e6",
+              "inverse-primary": "#0061a5",
+              "primary": "#a0caff",
+              "outline-variant": "#414751",
+              "secondary-fixed": "#dbe2f7",
+              "on-error-container": "#ffdad6",
+              "background": "#111317",
+              "on-secondary-fixed-variant": "#3f4757",
+              "surface": "#111317",
+              "on-primary-fixed-variant": "#00497e",
+              "surface-container": "#1e2023",
+              "on-secondary-container": "#b0b8cc",
+              "error": "#ffb4ab",
+              "primary-fixed-dim": "#a0caff",
+              "on-secondary-fixed": "#141c2a",
+              "surface-container-high": "#282a2d",
+              "secondary": "#bfc6db",
+              "primary-container": "#4f94dd",
+              "on-tertiary-fixed": "#291800",
+              "surface-tint": "#a0caff",
+              "on-tertiary-fixed-variant": "#633f00",
+              "tertiary-fixed": "#ffddb4",
+              "surface-dim": "#111317",
+              "on-primary-fixed": "#001c37",
+              "on-primary": "#003259",
+              "surface-container-low": "#1a1c1f",
+              "tertiary-container": "#c68200",
+              "surface-variant": "#333538",
+              "surface-container-lowest": "#0c0e11",
+              "on-tertiary": "#452b00",
+              "primary-fixed": "#d2e4ff",
+              "tertiary-fixed-dim": "#ffb955",
+              "outline": "#8b919c",
+              "error-container": "#93000a",
+              "surface-bright": "#37393d",
+              "on-error": "#690005",
+              "secondary-container": "#41495a",
+              "inverse-on-surface": "#2f3034",
+              "secondary-fixed-dim": "#bfc6db",
+              "on-background": "#e2e2e6",
+              "surface-container-highest": "#333538",
+              "inverse-surface": "#e2e2e6"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #111317;
+            color: #e2e2e6;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-nav {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .button-gradient {
+            background: linear-gradient(135deg, #a0caff 0%, #4f94dd 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col items-center min-h-screen">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-4 h-14 max-w-[480px] mx-auto bg-[#1E2023] no-border">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#4A90D9]">account_balance_wallet</span>
+<h1 class="text-sm font-black tracking-tighter text-white">TON WALLET</h1>
+</div>
+<div class="bg-tertiary-container px-2 py-0.5 rounded-[4px]">
+<span class="font-['Inter'] uppercase tracking-widest text-[10px] font-bold text-on-tertiary-fixed-variant">TESTNET</span>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="w-full max-w-[480px] px-5 pt-20 pb-24 flex-grow flex flex-col gap-8 bg-surface-container-low min-h-screen">
+<!-- Wallet Balance Section -->
+<section class="flex flex-col items-center justify-center py-6">
+<div class="text-on-surface-variant text-[12px] font-bold uppercase tracking-[0.1em] mb-1">Total Balance</div>
+<div class="flex items-baseline gap-1">
+<span class="text-[42px] font-black tracking-[-0.02em] text-on-surface leading-none">5.230</span>
+<span class="text-[20px] font-bold text-primary tracking-tight">TON</span>
+</div>
+<div class="mt-2 flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest border border-white/5">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+<span class="text-[11px] font-mono text-on-surface-variant">EQB...9xR2</span>
+</div>
+</section>
+<!-- Quick Actions Grid -->
+<section class="grid grid-cols-2 gap-3">
+<button class="button-gradient flex items-center justify-center gap-2 py-4 rounded-xl active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-on-primary-fixed" style="font-variation-settings: 'FILL' 1;">arrow_downward</span>
+<span class="text-on-primary-fixed font-bold text-sm">Receive</span>
+</button>
+<button class="bg-surface-container-highest flex items-center justify-center gap-2 py-4 rounded-xl border border-white/5 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-primary">send</span>
+<span class="text-on-surface font-bold text-sm">Send</span>
+</button>
+</section>
+<!-- Transactions Section -->
+<section class="flex flex-col flex-grow">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Transactions</h2>
+<span class="material-symbols-outlined text-on-surface-variant text-lg">filter_list</span>
+</div>
+<!-- Empty State Container -->
+<div class="flex-grow flex flex-col items-center justify-center py-12 px-8 text-center bg-surface-container rounded-xl border border-white/[0.02]">
+<div class="w-16 h-16 rounded-full bg-surface-container-lowest flex items-center justify-center mb-6 shadow-inner">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">inbox</span>
+</div>
+<h3 class="text-on-surface font-bold text-base mb-2">No transactions yet</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed max-w-[240px]">
+                    Send or receive TON to see your transaction history.
+                </p>
+<button class="mt-8 text-primary text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">
+                    View on Explorer
+                </button>
+</div>
+</section>
+<!-- Decorative Tech Texture -->
+<div class="mt-auto opacity-10 flex justify-center py-4">
+<div class="h-[1px] w-full bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+</div>
+</main>
+<!-- BottomNavBar Shell -->
+<nav class="fixed bottom-0 left-0 right-0 w-full z-50 flex justify-around items-center h-16 pb-safe max-w-[480px] mx-auto bg-[#111317]/80 backdrop-blur-xl border-t border-white/5 shadow-[0_-1px_0_0_rgba(255,255,255,0.05)]">
+<a class="flex flex-col items-center justify-center text-[#4A90D9] font-bold active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight mt-1">Assets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#333538] hover:text-white active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight mt-1">Activity</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#333538] hover:text-white active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight mt-1">Settings</span>
+</a>
+</nav>
+</body></html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TON Wallet - Testnet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-fixed": "#001c37",
+              "on-tertiary-fixed-variant": "#633f00",
+              "on-secondary-container": "#b0b8cc",
+              "on-secondary": "#283140",
+              "on-error": "#690005",
+              "on-tertiary": "#452b00",
+              "tertiary": "#ffb955",
+              "primary": "#a0caff",
+              "secondary": "#bfc6db",
+              "tertiary-fixed-dim": "#ffb955",
+              "secondary-container": "#41495a",
+              "on-background": "#e2e2e6",
+              "on-tertiary-fixed": "#291800",
+              "inverse-surface": "#e2e2e6",
+              "tertiary-container": "#c68200",
+              "surface-bright": "#37393d",
+              "inverse-primary": "#0061a5",
+              "surface-container-highest": "#333538",
+              "on-primary-container": "#002b4e",
+              "primary-fixed": "#d2e4ff",
+              "tertiary-fixed": "#ffddb4",
+              "inverse-on-surface": "#2f3034",
+              "outline": "#8b919c",
+              "on-primary": "#003259",
+              "primary-container": "#4f94dd",
+              "secondary-fixed": "#dbe2f7",
+              "on-secondary-fixed-variant": "#3f4757",
+              "error-container": "#93000a",
+              "on-surface": "#e2e2e6",
+              "primary-fixed-dim": "#a0caff",
+              "surface": "#111317",
+              "background": "#111317",
+              "on-primary-fixed-variant": "#00497e",
+              "on-error-container": "#ffdad6",
+              "surface-container-low": "#1a1c1f",
+              "surface-container-lowest": "#0c0e11",
+              "surface-dim": "#111317",
+              "on-tertiary-container": "#3c2500",
+              "surface-variant": "#333538",
+              "outline-variant": "#414751",
+              "secondary-fixed-dim": "#bfc6db",
+              "surface-tint": "#a0caff",
+              "error": "#ffb4ab",
+              "on-secondary-fixed": "#141c2a",
+              "on-surface-variant": "#c1c7d2",
+              "surface-container-high": "#282a2d",
+              "surface-container": "#1e2023"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #111317;
+            font-family: 'Inter', sans-serif;
+            color: #e2e2e6;
+        }
+        .glass-nav {
+            background: rgba(30, 32, 35, 0.8);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="dark bg-background text-on-background min-h-screen">
+<div class="max-w-[480px] mx-auto min-h-screen flex flex-col relative pb-24">
+<!-- Header Section (TopAppBar mapping) -->
+<header class="sticky top-0 z-50 bg-[#111317] flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#4A90D9]" data-icon="account_balance_wallet">account_balance_wallet</span>
+<h1 class="font-['Inter'] tracking-tight font-bold uppercase text-xs text-white">TON Wallet</h1>
+</div>
+<div class="flex items-center gap-3">
+<!-- Mandatory Testnet Badge -->
+<span class="bg-tertiary-container text-on-tertiary-fixed-variant px-2 py-0.5 rounded-sm text-[10px] font-bold tracking-widest uppercase">
+                    Testnet
+                </span>
+<span class="material-symbols-outlined text-gray-500 hover:opacity-80 transition-opacity cursor-pointer" data-icon="settings">settings</span>
+</div>
+</header>
+<main class="flex-1 px-6 pt-4 space-y-8">
+<!-- Wallet Balance Section -->
+<section class="space-y-6 text-center py-4">
+<div class="inline-flex items-center gap-2 bg-surface-container-lowest px-4 py-2 rounded-full cursor-pointer hover:bg-surface-container-high transition-colors group">
+<code class="text-xs font-mono text-on-surface-variant group-hover:text-on-surface">
+<span class="text-on-surface">UQBx</span><span class="opacity-40">...</span><span class="text-on-surface">7f2K</span>
+</code>
+<span class="material-symbols-outlined text-sm text-outline" data-icon="content_copy">content_copy</span>
+</div>
+<div class="space-y-1">
+<h2 class="text-5xl font-extrabold tracking-tighter text-on-surface">
+                        5.230 <span class="text-primary text-3xl">TON</span>
+</h2>
+<p class="text-on-surface-variant text-sm font-medium tracking-wide">≈ $27.42 USD</p>
+</div>
+<!-- Action Buttons -->
+<div class="flex gap-3 pt-2">
+<button class="flex-1 flex items-center justify-center gap-2 py-4 bg-surface-container-high text-on-surface rounded-xl font-bold active:scale-95 duration-150 transition-all border border-white/5">
+<span class="material-symbols-outlined" data-icon="arrow_downward">arrow_downward</span>
+                        Receive
+                    </button>
+<button class="flex-1 flex items-center justify-center gap-2 py-4 bg-gradient-to-br from-primary to-primary-container text-on-primary-fixed rounded-xl font-extrabold active:scale-95 duration-150 transition-all shadow-lg shadow-primary/10">
+<span class="material-symbols-outlined" data-icon="send">send</span>
+                        Send
+                    </button>
+</div>
+</section>
+<!-- Transactions Section -->
+<section class="space-y-5">
+<div class="flex items-center justify-between">
+<h3 class="text-sm font-bold uppercase tracking-widest text-on-surface">Transactions</h3>
+<span class="text-[10px] font-medium text-tertiary uppercase tracking-tighter">Updated 5 sec ago</span>
+</div>
+<!-- Search & Filters -->
+<div class="space-y-4">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-full py-3 pl-12 pr-4 text-sm focus:ring-1 focus:ring-primary/30 transition-all placeholder:text-outline/50" placeholder="Search address or comment" type="text"/>
+</div>
+<div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+<button class="px-5 py-2 bg-primary text-on-primary-fixed rounded-full text-xs font-bold whitespace-nowrap">All</button>
+<button class="px-5 py-2 bg-surface-container text-on-surface-variant rounded-full text-xs font-bold whitespace-nowrap hover:text-on-surface transition-colors">Incoming</button>
+<button class="px-5 py-2 bg-surface-container text-on-surface-variant rounded-full text-xs font-bold whitespace-nowrap hover:text-on-surface transition-colors">Outgoing</button>
+</div>
+</div>
+<!-- Transaction List -->
+<div class="space-y-5 pt-2">
+<!-- Incoming Transaction -->
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-green-400">
+<span class="material-symbols-outlined" data-icon="call_received">call_received</span>
+</div>
+<div class="space-y-1">
+<p class="text-sm font-bold text-on-surface">Alice</p>
+<p class="text-[10px] font-mono text-outline uppercase tracking-tight">UQAz...9k1P</p>
+</div>
+</div>
+<div class="text-right space-y-1">
+<p class="text-sm font-extrabold text-green-400">+1.5 TON</p>
+<p class="text-[10px] text-outline">14:20</p>
+</div>
+</div>
+<!-- Outgoing Transaction -->
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-error">
+<span class="material-symbols-outlined" data-icon="call_made">call_made</span>
+</div>
+<div class="space-y-1">
+<p class="text-sm font-bold text-on-surface">Bob</p>
+<p class="text-[10px] font-medium text-primary/70 tracking-tight italic">“Payment”</p>
+</div>
+</div>
+<div class="text-right space-y-1">
+<p class="text-sm font-extrabold text-on-surface">-0.5 TON</p>
+<p class="text-[10px] text-outline">Yesterday</p>
+</div>
+</div>
+<!-- Empty State for padding/visual balance -->
+<div class="p-8 flex flex-col items-center justify-center opacity-20 select-none">
+<span class="material-symbols-outlined text-4xl mb-2" data-icon="receipt_long">receipt_long</span>
+<p class="text-[10px] font-bold uppercase tracking-[0.2em]">End of History</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar mapping -->
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-50 flex justify-around items-center h-20 pb-safe px-4 glass-nav rounded-t-xl border-t border-white/5">
+<a class="flex flex-col items-center justify-center text-[#a0caff] font-bold transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="account_balance_wallet" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-wider">Assets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="receipt_long">receipt_long</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-wider">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="swap_horiz">swap_horiz</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-wider">Swap</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="explore">explore</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-wider">Browser</span>
+</a>
+</nav>
+</div>
+</body></html>

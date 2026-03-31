@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Receive TON - Testnet Wallet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-fixed": "#001c37",
+              "on-tertiary-fixed-variant": "#633f00",
+              "on-secondary-container": "#b0b8cc",
+              "on-secondary": "#283140",
+              "on-error": "#690005",
+              "on-tertiary": "#452b00",
+              "tertiary": "#ffb955",
+              "primary": "#a0caff",
+              "secondary": "#bfc6db",
+              "tertiary-fixed-dim": "#ffb955",
+              "secondary-container": "#41495a",
+              "on-background": "#e2e2e6",
+              "on-tertiary-fixed": "#291800",
+              "inverse-surface": "#e2e2e6",
+              "tertiary-container": "#c68200",
+              "surface-bright": "#37393d",
+              "inverse-primary": "#0061a5",
+              "surface-container-highest": "#333538",
+              "on-primary-container": "#002b4e",
+              "primary-fixed": "#d2e4ff",
+              "tertiary-fixed": "#ffddb4",
+              "inverse-on-surface": "#2f3034",
+              "outline": "#8b919c",
+              "on-primary": "#003259",
+              "primary-container": "#4f94dd",
+              "secondary-fixed": "#dbe2f7",
+              "on-secondary-fixed-variant": "#3f4757",
+              "error-container": "#93000a",
+              "on-surface": "#e2e2e6",
+              "primary-fixed-dim": "#a0caff",
+              "surface": "#111317",
+              "background": "#111317",
+              "on-primary-fixed-variant": "#00497e",
+              "on-error-container": "#ffdad6",
+              "surface-container-low": "#1a1c1f",
+              "surface-container-lowest": "#0c0e11",
+              "surface-dim": "#111317",
+              "on-tertiary-container": "#3c2500",
+              "surface-variant": "#333538",
+              "outline-variant": "#414751",
+              "secondary-fixed-dim": "#bfc6db",
+              "surface-tint": "#a0caff",
+              "error": "#ffb4ab",
+              "on-secondary-fixed": "#141c2a",
+              "on-surface-variant": "#c1c7d2",
+              "surface-container-high": "#282a2d",
+              "surface-container": "#1E2023"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .mono-address {
+            font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#0F1114] text-on-surface font-body antialiased min-h-screen">
+<div class="max-w-[480px] mx-auto min-h-screen flex flex-col relative pb-24">
+<!-- Header -->
+<header class="flex justify-between items-center px-6 py-6 sticky top-0 z-10 bg-[#0F1114]/80 backdrop-blur-md">
+<button class="hover:opacity-80 transition-opacity flex items-center justify-center w-10 h-10 -ml-2">
+<span class="material-symbols-outlined text-on-surface" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="bg-tertiary-container text-on-tertiary-fixed-variant px-2.5 py-0.5 rounded-[4px] text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-fixed-variant"></span>
+                Testnet
+            </div>
+</header>
+<!-- Content -->
+<main class="flex-1 px-6 space-y-8">
+<!-- Title -->
+<div class="space-y-1">
+<h1 class="text-2xl font-bold tracking-tight text-white">Receive TON</h1>
+<p class="text-sm text-on-surface-variant">Your unique wallet address on the TON testnet.</p>
+</div>
+<!-- QR Code Section -->
+<div class="flex flex-col items-center">
+<div class="bg-white p-6 rounded-xl shadow-[0_20px_40px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.05)]">
+<img alt="QR Code for TON address" class="w-[200px] h-[200px]" data-alt="A clean minimalist QR code generated for a crypto wallet address on a solid white background with rounded corners" height="200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBa7G7MMLRN6qwyD0uPN-DixhaBrXAt55_IFn2OSiay9C7bkvxnzzIhlaYuUimVOknMg3bLBNWAKI-U0-k66tFX8r784pZS4lUvTUhz7GrHev4dwzimxFuQs_XAZh_Uj2x4mAqmvOYostXL0LDjlGhp9MgsbvzKm3rEJba1mDFwdOWkHF9qDOKzIP-0-2v4hwaYzvIFzuC-6WsM7T_8O2gGLcQtWUnD8Kkt-kqgpR4-2F3pad5iFTbWUrqqcR564l-Bjqqo1hQIYwLp" width="200"/>
+</div>
+</div>
+<!-- Address Section -->
+<div class="space-y-3">
+<label class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant px-1">Your Wallet Address</label>
+<div class="bg-surface-container-lowest p-5 rounded-lg border border-white/5 group transition-all duration-300">
+<div class="mono-address break-all text-sm leading-relaxed tracking-wide text-center">
+<span class="text-white font-bold">UQBx</span><span class="text-on-surface-variant">kl2Hf7...</span><span class="text-white font-bold">p4N7f2K</span>
+</div>
+</div>
+<button class="w-full flex items-center justify-center gap-2 py-4 px-6 rounded-lg border border-outline/20 bg-transparent hover:bg-white/5 active:scale-[0.98] transition-all text-sm font-bold uppercase tracking-wider text-primary">
+<span class="material-symbols-outlined text-[18px]" data-icon="content_copy">content_copy</span>
+                    Copy Address
+                </button>
+</div>
+<!-- Warning Card -->
+<div class="bg-tertiary-container/10 p-4 rounded-lg flex gap-4 items-start border border-tertiary-container/20">
+<div class="bg-tertiary-container/20 p-2 rounded-md">
+<span class="material-symbols-outlined text-tertiary text-xl" data-icon="warning">warning</span>
+</div>
+<div class="space-y-1">
+<p class="text-xs font-bold uppercase tracking-wider text-tertiary">Important Security Note</p>
+<p class="text-sm text-tertiary/90 leading-snug">This is a testnet address. Do not send real TON here. Funds sent on mainnet to this address may be lost.</p>
+</div>
+</div>
+</main>
+<!-- Integrated TopAppBar (The Anchor Logic) -->
+<div class="hidden">
+<!-- This represents the JSON TopAppBar structure adapted for the specific 'Receive' context -->
+<nav class="flex justify-between items-center max-w-[480px] mx-auto px-6 py-4 w-full bg-[#111317]">
+<span class="material-symbols-outlined text-[#4A90D9]" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-['Inter'] tracking-tight font-bold uppercase text-xs text-white">TON Wallet</span>
+<span class="material-symbols-outlined text-gray-500" data-icon="settings">settings</span>
+</nav>
+</div>
+<!-- Bottom Navigation Shell (Filter Applied: Hidden on Focused Task) -->
+<!-- Note: Suppression logic applied because this is a specific focused "Receive" action -->
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-50 flex justify-around items-center h-20 pb-safe px-4 bg-[#1E2023]/80 backdrop-blur-md border-t border-white/5 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-[#a0caff] font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-wider mt-1">Assets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-wider mt-1">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="swap_horiz">swap_horiz</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-wider mt-1">Swap</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-wider mt-1">Browser</span>
+</a>
+</nav>
+</div>
+</body></html>

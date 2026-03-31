@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-primary-fixed": "#001c37",
+            "on-tertiary-fixed-variant": "#633f00",
+            "on-secondary-container": "#b0b8cc",
+            "on-secondary": "#283140",
+            "on-error": "#690005",
+            "on-tertiary": "#452b00",
+            "tertiary": "#ffb955",
+            "primary": "#a0caff",
+            "secondary": "#bfc6db",
+            "tertiary-fixed-dim": "#ffb955",
+            "secondary-container": "#41495a",
+            "on-background": "#e2e2e6",
+            "on-tertiary-fixed": "#291800",
+            "inverse-surface": "#e2e2e6",
+            "tertiary-container": "#c68200",
+            "surface-bright": "#37393d",
+            "inverse-primary": "#0061a5",
+            "surface-container-highest": "#333538",
+            "on-primary-container": "#002b4e",
+            "primary-fixed": "#d2e4ff",
+            "tertiary-fixed": "#ffddb4",
+            "inverse-on-surface": "#2f3034",
+            "outline": "#8b919c",
+            "on-primary": "#003259",
+            "primary-container": "#4f94dd",
+            "secondary-fixed": "#dbe2f7",
+            "on-secondary-fixed-variant": "#3f4757",
+            "error-container": "#93000a",
+            "on-surface": "#e2e2e6",
+            "primary-fixed-dim": "#a0caff",
+            "surface": "#111317",
+            "background": "#111317",
+            "on-primary-fixed-variant": "#00497e",
+            "on-error-container": "#ffdad6",
+            "surface-container-low": "#1a1c1f",
+            "surface-container-lowest": "#0c0e11",
+            "surface-dim": "#111317",
+            "on-tertiary-container": "#3c2500",
+            "surface-variant": "#333538",
+            "outline-variant": "#414751",
+            "secondary-fixed-dim": "#bfc6db",
+            "surface-tint": "#a0caff",
+            "error": "#ffb4ab",
+            "on-secondary-fixed": "#141c2a",
+            "on-surface-variant": "#c1c7d2",
+            "surface-container-high": "#282a2d",
+            "surface-container": "#1e2023"
+          },
+          fontFamily: {
+            "headline": ["Inter", "sans-serif"],
+            "body": ["Inter", "sans-serif"],
+            "label": ["Inter", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"]
+          },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .custom-gradient-btn {
+      background: linear-gradient(135deg, #a0caff 0%, #4f94dd 100%);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body min-h-screen">
+<main class="max-w-[480px] mx-auto min-h-screen flex flex-col relative bg-surface-container-low">
+<!-- Header -->
+<header class="flex justify-between items-center px-6 py-4 sticky top-0 z-10 bg-surface-container-low/80 backdrop-blur-md">
+<button class="flex items-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<!-- Mandatory Testnet Badge -->
+<div class="bg-tertiary-container px-2 py-0.5 rounded-sm">
+<span class="text-on-tertiary-fixed-variant font-label text-[10px] font-extrabold uppercase tracking-widest">Testnet</span>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="px-6 pt-2 pb-24 flex-1">
+<!-- Page Title & Balance Section -->
+<div class="mb-10">
+<h1 class="text-3xl font-headline font-bold tracking-tight text-on-surface mb-2">Send TON</h1>
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant text-sm font-medium">Available:</span>
+<span class="text-primary font-mono text-sm font-bold">5.230 TON</span>
+</div>
+</div>
+<!-- Form Modules -->
+<div class="space-y-8">
+<!-- Recipient Address Input -->
+<div class="space-y-2">
+<label class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant px-1">Recipient Address</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-lowest border-none rounded-xl p-4 text-on-surface font-mono placeholder:text-outline-variant focus:ring-1 focus:ring-primary focus:bg-surface-container-high transition-all outline-none" placeholder="UQ..." type="text"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px] cursor-pointer hover:text-primary">qr_code_scanner</span>
+</div>
+</div>
+</div>
+<!-- Amount Input -->
+<div class="space-y-2">
+<label class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant px-1">Amount</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none rounded-xl p-4 pr-20 text-on-surface font-headline font-bold text-lg placeholder:text-outline-variant focus:ring-1 focus:ring-primary focus:bg-surface-container-high transition-all outline-none" placeholder="0.00" type="number"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 bg-surface-container-highest px-3 py-1.5 rounded-lg text-[10px] font-bold text-primary hover:bg-primary hover:text-on-primary transition-all">
+              MAX
+            </button>
+</div>
+</div>
+<!-- Comment Input -->
+<div class="space-y-2">
+<label class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant px-1">Comment (optional)</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none rounded-xl p-4 text-on-surface placeholder:text-outline-variant focus:ring-1 focus:ring-primary focus:bg-surface-container-high transition-all outline-none" placeholder="Gift for a friend" type="text"/>
+</div>
+<p class="text-[10px] text-outline px-1 leading-relaxed">
+            The comment will be visible to everyone on the blockchain.
+          </p>
+</div>
+</div>
+<!-- Asymmetric Decoration (Subtle Editoral Feel) -->
+<div class="mt-12 p-6 rounded-xl bg-surface-container border border-white/5 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+<div class="flex items-start gap-4 relative z-10">
+<span class="material-symbols-outlined text-tertiary mt-0.5">info</span>
+<div class="space-y-1">
+<h4 class="text-xs font-bold uppercase tracking-wider text-on-surface">Security Protocol</h4>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+              Ensure the destination address is on the <span class="text-tertiary">TON Testnet</span>. Sending assets to a mainnet address may result in permanent loss.
+            </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Footer Action -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] p-6 bg-surface-container-low/90 backdrop-blur-md">
+<button class="custom-gradient-btn w-full py-4 rounded-xl text-on-primary-fixed font-headline font-extrabold uppercase tracking-widest text-sm shadow-xl active:scale-[0.98] transition-transform">
+        Continue
+      </button>
+</div>
+</main>
+<!-- Background Texture (Subtle) -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] z-[-1]" data-alt="subtle grainy texture for digital background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCIGKXksXW60QOnsdcpM0Z-AlgUQ6g6fL0ZS_bwJvrsxoaab4LWl3NnjURhCCcxgbFn3Fd5HQJb7JxF4RDQ4v95eZ-GNydH_to_hhOF1tAaauU_zBzd0bYlq0yzEDavUfdN5Ntyjk9kzPa0ON5PZDxPlW8ovubysi56c2rL1A8C4BElqMeHPSPfjT3AxwV7-BZO-kyJ__sEXJfxbEjetV-TrqNV_eH-Dg4vtAibe5URbkgr0aiy42iLuof1i-wUOaYnLqKB4RXQgiJb');"></div>
+</body></html>

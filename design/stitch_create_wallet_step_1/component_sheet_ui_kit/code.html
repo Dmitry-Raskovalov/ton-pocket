@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TON Wallet Component Sheet - Testnet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary-fixed": "#291800",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#0c0e11",
+                        "surface-bright": "#37393d",
+                        "inverse-on-surface": "#2f3034",
+                        "primary": "#a0caff",
+                        "outline": "#8b919c",
+                        "on-tertiary-container": "#3c2500",
+                        "on-secondary-container": "#b0b8cc",
+                        "surface-container": "#1e2023",
+                        "on-tertiary-fixed-variant": "#633f00",
+                        "on-secondary": "#283140",
+                        "tertiary": "#ffb955",
+                        "on-background": "#e2e2e6",
+                        "tertiary-container": "#c68200",
+                        "surface-tint": "#a0caff",
+                        "surface-dim": "#111317",
+                        "surface-container-low": "#1a1c1f",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed": "#dbe2f7",
+                        "primary-fixed-dim": "#a0caff",
+                        "on-primary-container": "#002b4e",
+                        "on-primary-fixed": "#001c37",
+                        "on-secondary-fixed": "#141c2a",
+                        "background": "#111317",
+                        "inverse-surface": "#e2e2e6",
+                        "on-tertiary": "#452b00",
+                        "surface-variant": "#333538",
+                        "surface-container-high": "#282a2d",
+                        "inverse-primary": "#0061a5",
+                        "secondary-fixed-dim": "#bfc6db",
+                        "on-primary": "#003259",
+                        "secondary": "#bfc6db",
+                        "on-secondary-fixed-variant": "#3f4757",
+                        "on-surface": "#e2e2e6",
+                        "tertiary-fixed": "#ffddb4",
+                        "surface-container-highest": "#333538",
+                        "primary-fixed": "#d2e4ff",
+                        "outline-variant": "#414751",
+                        "primary-container": "#4f94dd",
+                        "on-surface-variant": "#c1c7d2",
+                        "tertiary-fixed-dim": "#ffb955",
+                        "surface": "#111317",
+                        "secondary-container": "#41495a",
+                        "on-primary-fixed-variant": "#00497e",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #111317;
+            color: #e2e2e6;
+            font-family: 'Inter', sans-serif;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-panel {
+            background: rgba(30, 32, 35, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-primary/30">
+<!-- Top Navigation Anchor (Shared Component) -->
+<header class="fixed top-0 w-full z-50 bg-slate-900/80 backdrop-blur-md">
+<div class="flex justify-between items-center h-16 px-6 max-w-[480px] mx-auto w-full">
+<div class="text-lg font-mono font-bold text-slate-100 tracking-tighter">TON Wallet</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-blue-400 cursor-pointer">account_balance_wallet</span>
+<span class="material-symbols-outlined text-slate-500 cursor-pointer">settings</span>
+</div>
+</div>
+</header>
+<main class="max-w-[480px] mx-auto pt-24 pb-32 px-6">
+<!-- Environment Indicator -->
+<div class="flex justify-between items-center mb-8">
+<h1 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Component Library</h1>
+<span class="px-2 py-0.5 rounded-sm bg-tertiary-container text-on-tertiary-fixed-variant font-mono text-[10px] font-bold tracking-tighter">TESTNET</span>
+</div>
+<!-- 4.1 Buttons Section -->
+<section class="mb-12">
+<h2 class="text-xs font-bold uppercase tracking-[0.15em] text-primary mb-6 border-b border-outline-variant pb-2">4.1 Buttons</h2>
+<div class="space-y-8">
+<!-- Sizes & Primary -->
+<div class="grid gap-4">
+<p class="text-[10px] text-on-surface-variant font-mono uppercase">Primary / Sizes</p>
+<div class="flex flex-wrap items-end gap-3">
+<button class="px-6 py-3 bg-primary-fixed-dim text-on-primary-fixed font-bold rounded-lg text-sm hover:opacity-90 active:scale-95 transition-all">Large Primary</button>
+<button class="px-4 py-2 bg-primary-fixed-dim text-on-primary-fixed font-bold rounded-lg text-xs hover:opacity-90 active:scale-95 transition-all">Medium</button>
+<button class="px-3 py-1 bg-primary-fixed-dim text-on-primary-fixed font-bold rounded-lg text-[10px] hover:opacity-90 active:scale-95 transition-all">Small</button>
+</div>
+</div>
+<!-- States -->
+<div class="grid gap-4">
+<p class="text-[10px] text-on-surface-variant font-mono uppercase">States</p>
+<div class="flex flex-wrap gap-3">
+<button class="px-4 py-2 bg-secondary-container text-on-secondary-container font-medium rounded-lg text-xs">Default</button>
+<button class="px-4 py-2 bg-secondary-container/80 text-on-secondary-container font-medium rounded-lg text-xs ring-1 ring-primary/50">Hover State</button>
+<button class="px-4 py-2 bg-secondary-container text-on-secondary-container font-medium rounded-lg text-xs opacity-50 cursor-not-allowed" disabled="">Disabled</button>
+<button class="px-4 py-2 bg-error-container text-on-error-container font-medium rounded-lg text-xs">Danger Action</button>
+</div>
+</div>
+<!-- Ghost & Icon -->
+<div class="grid gap-4">
+<p class="text-[10px] text-on-surface-variant font-mono uppercase">Ghost &amp; Icon</p>
+<div class="flex flex-wrap gap-3 items-center">
+<button class="px-4 py-2 border border-outline-variant text-on-surface font-medium rounded-lg text-xs hover:bg-surface-container-high transition-colors">Ghost Button</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-high text-primary">
+<span class="material-symbols-outlined">send</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 4.2 & 4.13 Inputs Section -->
+<section class="mb-12">
+<h2 class="text-xs font-bold uppercase tracking-[0.15em] text-primary mb-6 border-b border-outline-variant pb-2">4.2 &amp; 4.13 Inputs</h2>
+<div class="space-y-6">
+<div class="grid gap-2">
+<label class="text-[10px] font-mono uppercase text-on-surface-variant">Standard Input</label>
+<input class="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3 text-sm focus:ring-1 focus:ring-primary/40 placeholder:text-outline-variant transition-all" placeholder="Enter amount..." type="text"/>
+</div>
+<div class="grid gap-2">
+<label class="text-[10px] font-mono uppercase text-on-surface-variant">Focus State</label>
+<input class="w-full bg-surface-container-high ring-1 ring-primary/40 border-none rounded-lg px-4 py-3 text-sm font-mono" type="text" value="0.45 TON"/>
+</div>
+<div class="grid gap-2">
+<label class="text-[10px] font-mono uppercase text-on-surface-variant">Password Strength: High</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3 text-sm" type="password" value="••••••••••••"/>
+<div class="absolute bottom-0 left-0 h-1 w-full flex gap-1 px-1 pb-1">
+<div class="h-full flex-1 bg-primary rounded-full"></div>
+<div class="h-full flex-1 bg-primary rounded-full"></div>
+<div class="h-full flex-1 bg-primary rounded-full"></div>
+<div class="h-full flex-1 bg-primary rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="grid gap-2">
+<label class="text-[10px] font-mono uppercase text-error">Error State</label>
+<input class="w-full bg-surface-container-lowest ring-1 ring-error/50 border-none rounded-lg px-4 py-3 text-sm text-error" type="text" value="Invalid Address"/>
+<p class="text-[10px] text-error px-1">Please check the destination address format.</p>
+</div>
+</div>
+</section>
+<!-- 4.3, 4.14, 4.15 Address & Security -->
+<section class="mb-12">
+<h2 class="text-xs font-bold uppercase tracking-[0.15em] text-primary mb-6 border-b border-outline-variant pb-2">4.3 &amp; 4.14 Address &amp; Security</h2>
+<div class="space-y-6">
+<!-- Highlighted Address -->
+<div class="p-4 bg-surface-container rounded-lg space-y-3">
+<p class="text-[10px] font-mono uppercase text-on-surface-variant">TON Address (Security Focus)</p>
+<div class="bg-surface-container-lowest p-3 rounded font-mono text-xs break-all leading-relaxed">
+<span class="text-on-surface font-bold">EQA1</span><span class="text-on-surface-variant/40">_m-uN_p09_Xj4S_U1_7_v_Z_q_6_I_5_</span><span class="text-on-surface font-bold">X9m3</span>
+</div>
+</div>
+<!-- Mnemonic Grid -->
+<div class="space-y-3">
+<p class="text-[10px] font-mono uppercase text-on-surface-variant">Mnemonic Recovery Phrase (Input Mode)</p>
+<div class="grid grid-cols-3 gap-2">
+<div class="relative">
+<span class="absolute left-2 top-2 text-[8px] text-outline-variant">1</span>
+<input class="w-full bg-surface-container-lowest border-none pt-4 pb-1 px-2 text-[10px] font-mono text-center rounded focus:ring-1 focus:ring-primary/30" placeholder="word" type="text"/>
+</div>
+<div class="relative">
+<span class="absolute left-2 top-2 text-[8px] text-outline-variant">2</span>
+<input class="w-full bg-surface-container border-none pt-4 pb-1 px-2 text-[10px] font-mono text-center rounded text-primary" type="text" value="apple"/>
+</div>
+<div class="relative">
+<span class="absolute left-2 top-2 text-[8px] text-outline-variant">3</span>
+<input class="w-full bg-surface-container-lowest border-none pt-4 pb-1 px-2 text-[10px] font-mono text-center rounded" placeholder="word" type="text"/>
+</div>
+</div>
+</div>
+<!-- QR Code Representation -->
+<div class="flex flex-col items-center gap-4 py-6 bg-surface-container rounded-xl">
+<div class="w-32 h-32 bg-white p-2 rounded-lg">
+<div class="w-full h-full bg-slate-900 flex items-center justify-center relative">
+<!-- Abstract QR Pattern Simulation -->
+<div class="grid grid-cols-4 gap-1">
+<div class="w-4 h-4 bg-white"></div><div class="w-4 h-4 bg-white/20"></div><div class="w-4 h-4 bg-white"></div><div class="w-4 h-4 bg-white"></div>
+<div class="w-4 h-4 bg-white/40"></div><div class="w-4 h-4 bg-white"></div><div class="w-4 h-4 bg-white/10"></div><div class="w-4 h-4 bg-white"></div>
+<div class="w-4 h-4 bg-white"></div><div class="w-4 h-4 bg-white/20"></div><div class="w-4 h-4 bg-white"></div><div class="w-4 h-4 bg-white/40"></div>
+<div class="w-4 h-4 bg-white"></div><div class="w-4 h-4 bg-white"></div><div class="w-4 h-4 bg-white/30"></div><div class="w-4 h-4 bg-white"></div>
+</div>
+</div>
+</div>
+<p class="text-[10px] font-mono text-on-surface-variant">SCAN TO RECEIVE</p>
+</div>
+</div>
+</section>
+<!-- 4.4, 4.9, 4.10 Messaging -->
+<section class="mb-12">
+<h2 class="text-xs font-bold uppercase tracking-[0.15em] text-primary mb-6 border-b border-outline-variant pb-2">4.4, 4.9 Messaging</h2>
+<div class="space-y-4">
+<!-- Info -->
+<div class="p-4 bg-surface-container-high rounded-lg flex gap-3 items-start border-l-2 border-primary">
+<span class="material-symbols-outlined text-primary text-lg">info</span>
+<div>
+<p class="text-xs font-bold text-on-surface mb-1">Network Update</p>
+<p class="text-[10px] text-on-surface-variant leading-relaxed">The testnet will undergo maintenance in 2 hours. Some features may be limited.</p>
+</div>
+</div>
+<!-- Warning -->
+<div class="p-4 bg-tertiary/10 rounded-lg flex gap-3 items-start border-l-2 border-tertiary">
+<span class="material-symbols-outlined text-tertiary text-lg">warning</span>
+<div>
+<p class="text-xs font-bold text-tertiary mb-1">Insufficient Gas</p>
+<p class="text-[10px] text-on-surface-variant leading-relaxed">You need at least 0.05 TON to cover the transaction fee.</p>
+</div>
+</div>
+<!-- Critical/Error -->
+<div class="p-4 bg-error/10 rounded-lg flex gap-3 items-start border-l-2 border-error">
+<span class="material-symbols-outlined text-error text-lg">dangerous</span>
+<div>
+<p class="text-xs font-bold text-error mb-1">Malicious Address Detected</p>
+<p class="text-[10px] text-on-surface-variant leading-relaxed">This address has been flagged for phishing. Proceed with extreme caution.</p>
+</div>
+</div>
+<!-- Toast Example -->
+<div class="flex justify-center pt-4">
+<div class="px-4 py-2 bg-on-surface text-surface rounded-full flex items-center gap-2 shadow-xl animate-bounce">
+<span class="material-symbols-outlined text-sm font-bold">check_circle</span>
+<span class="text-[10px] font-bold">Transaction Confirmed</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 4.6, 4.7 Lists & Navigation -->
+<section class="mb-12">
+<h2 class="text-xs font-bold uppercase tracking-[0.15em] text-primary mb-6 border-b border-outline-variant pb-2">4.6 &amp; 4.7 Lists</h2>
+<div class="space-y-6">
+<!-- Search & Filters -->
+<div class="space-y-3">
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline-variant text-lg">search</span>
+<input class="w-full bg-surface-container-high border-none rounded-lg pl-10 pr-4 py-2 text-xs" placeholder="Search transactions..." type="text"/>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-primary text-on-primary text-[10px] font-bold rounded-full">All</button>
+<button class="px-3 py-1 bg-surface-container-high text-on-surface-variant text-[10px] font-medium rounded-full hover:bg-surface-variant">Inbound</button>
+<button class="px-3 py-1 bg-surface-container-high text-on-surface-variant text-[10px] font-medium rounded-full hover:bg-surface-variant">Outbound</button>
+</div>
+</div>
+<!-- Transaction Items -->
+<div class="space-y-1">
+<!-- Received -->
+<div class="flex items-center justify-between p-3 bg-surface-container rounded-lg group hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-400">
+<span class="material-symbols-outlined text-lg">south_west</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">Received</p>
+<p class="text-[10px] font-mono text-outline-variant">from EQA1...X9m3</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-green-400">+12.50 TON</p>
+<p class="text-[10px] text-outline-variant">12:45 PM</p>
+</div>
+</div>
+<!-- Sent -->
+<div class="flex items-center justify-between p-3 bg-surface-container rounded-lg group hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">north_east</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">Sent</p>
+<p class="text-[10px] font-mono text-outline-variant">to v4R2...K8n2</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-on-surface">-5.00 TON</p>
+<p class="text-[10px] text-outline-variant">Yesterday</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 4.5, 4.8 Indicators -->
+<section class="mb-12">
+<h2 class="text-xs font-bold uppercase tracking-[0.15em] text-primary mb-6 border-b border-outline-variant pb-2">4.5 &amp; 4.8 Indicators</h2>
+<div class="grid grid-cols-2 gap-6">
+<!-- Checkboxes -->
+<div class="space-y-3">
+<p class="text-[10px] font-mono uppercase text-on-surface-variant">Controls</p>
+<div class="space-y-2">
+<label class="flex items-center gap-3 cursor-pointer">
+<input checked="" class="w-4 h-4 rounded-sm border-outline bg-transparent text-primary focus:ring-offset-background focus:ring-primary" type="checkbox"/>
+<span class="text-xs text-on-surface">Enabled</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer">
+<input class="w-4 h-4 rounded-sm border-outline bg-transparent text-primary focus:ring-offset-background" disabled="" type="checkbox"/>
+<span class="text-xs text-outline-variant">Disabled</span>
+</label>
+</div>
+</div>
+<!-- Loaders -->
+<div class="space-y-3">
+<p class="text-[10px] font-mono uppercase text-on-surface-variant">Loaders</p>
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+<div class="w-8 h-8 border-2 border-outline-variant/30 border-t-primary rounded-full animate-spin"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Generic Modal Layout -->
+<section class="mb-12">
+<h2 class="text-xs font-bold uppercase tracking-[0.15em] text-primary mb-6 border-b border-outline-variant pb-2">Generic Modal</h2>
+<div class="relative w-full p-6 bg-surface-container rounded-xl shadow-2xl border border-white/5">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-sm font-bold">Confirm Transaction</h3>
+<span class="material-symbols-outlined text-outline-variant cursor-pointer">close</span>
+</div>
+<div class="space-y-4 mb-6">
+<div class="flex justify-between text-[10px]">
+<span class="text-on-surface-variant">Total Amount</span>
+<span class="text-on-surface font-mono">10.00 TON</span>
+</div>
+<div class="flex justify-between text-[10px]">
+<span class="text-on-surface-variant">Network Fee</span>
+<span class="text-on-surface font-mono">~0.012 TON</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 py-2 bg-surface-container-high rounded text-xs font-bold">Cancel</button>
+<button class="flex-1 py-2 bg-primary-fixed-dim text-on-primary-fixed rounded text-xs font-bold">Confirm</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Anchor (Shared Component) -->
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] flex justify-around items-center h-20 pb-safe px-4 bg-slate-900/80 backdrop-blur-md z-50">
+<div class="flex flex-col items-center justify-center text-blue-400 font-bold scale-105">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight">Assets</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500">
+<span class="material-symbols-outlined">history</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight">History</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight">Swap</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight">Settings</span>
+</div>
+</nav>
+</body></html>
