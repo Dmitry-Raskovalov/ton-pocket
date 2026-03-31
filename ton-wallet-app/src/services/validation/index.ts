@@ -8,3 +8,4 @@ export * from './address-format';
 export * from './self-send';
 export * from './account-state';
 export * from './balance-check';
+export * from './address-similarity';
