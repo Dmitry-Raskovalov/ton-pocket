@@ -843,7 +843,7 @@ Store для UI-состояния с механикой блокировки un
 
 #### 7.5 Проверка похожих адресов (clipboard poisoning)
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** доменная логика
 
@@ -856,10 +856,10 @@ Store для UI-состояния с механикой блокировки un
 **Зависимости:** зависит от `6.5`, `7.1`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Реализовать `checkAddressSimilarity(recipientRaw: string): Warning | null`.
-- [ ] Шаг 2: Вызвать `addressBook.findSimilar(recipientRaw)`.
-- [ ] Шаг 3: Если найдены похожие адреса — Warning severity='critical', blocking=true (чекбокс), включить в message детали совпадения (какой адрес, какая часть совпадает).
-- [ ] Шаг 4: Написать юнит-тесты с мокнутой адресной книгой.
+- [x] Шаг 1: Реализовать `checkAddressSimilarity(recipientRaw: string): Warning | null`.
+- [x] Шаг 2: Вызвать `addressBook.findSimilar(recipientRaw)`.
+- [x] Шаг 3: Если найдены похожие адреса — Warning severity='critical', blocking=true (чекбокс), включить в message детали совпадения (какой адрес, какая часть совпадает).
+- [x] Шаг 4: Написать юнит-тесты с мокнутой адресной книгой.
 
 **Ожидаемый результат:**
 Функция проверки clipboard poisoning.
@@ -875,7 +875,7 @@ Store для UI-состояния с механикой блокировки un
 
 #### 7.6 Оркестратор валидации
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** доменная логика
 
@@ -888,12 +888,12 @@ Store для UI-состояния с механикой блокировки un
 **Зависимости:** зависит от `7.1`, `7.2`, `7.3`, `7.4`, `7.5`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Определить типы `Warning` и `ValidationResult` в `src/services/validation/types.ts` (согласно разделу 7.1 ТЗ).
-- [ ] Шаг 2: Реализовать `validateSend(params: ValidateSendParams): Promise<ValidationResult>` — params содержит recipientAddress, amount, senderBalance, senderPublicKey.
-- [ ] Шаг 3: Шаг 1 — валидация формата адреса. Если невалиден → возврат с error, isValid=false.
-- [ ] Шаг 4: Шаг 2 (параллельно с 3, 4, 5) — self-send check, address similarity check, account state check, balance check.
-- [ ] Шаг 5: Собрать все Warning в единый массив, определить isValid (нет error-уровня) и canProceed (все blocking warnings подтверждены — на уровне оркестратора это всегда false, подтверждение — на уровне UI).
-- [ ] Шаг 6: Написать юнит-тесты: чистая отправка (0 warnings), комбинация нескольких warnings, ошибка формата адреса как early return.
+- [x] Шаг 1: Определить типы `Warning` и `ValidationResult` в `src/services/validation/types.ts` (согласно разделу 7.1 ТЗ).
+- [x] Шаг 2: Реализовать `validateSend(params: ValidateSendParams): Promise<ValidationResult>` — params содержит recipientAddress, amount, senderBalance, senderPublicKey.
+- [x] Шаг 3: Шаг 1 — валидация формата адреса. Если невалиден → возврат с error, isValid=false.
+- [x] Шаг 4: Шаг 2 (параллельно с 3, 4, 5) — self-send check, address similarity check, account state check, balance check.
+- [x] Шаг 5: Собрать все Warning в единый массив, определить isValid (нет error-уровня) и canProceed (все blocking warnings подтверждены — на уровне оркестратора это всегда false, подтверждение — на уровне UI).
+- [x] Шаг 6: Написать юнит-тесты: чистая отправка (0 warnings), комбинация нескольких warnings, ошибка формата адреса как early return.
 
 **Ожидаемый результат:**
 Единая точка входа для валидации перед отправкой, возвращающая полный список предупреждений.
@@ -923,10 +923,10 @@ Store для UI-состояния с механикой блокировки un
 Реализовать `src/components/PasswordInput.tsx` — переиспользуемое поле ввода пароля с toggle видимости, индикатором силы (цветная полоска + текстовая метка), feedback от zxcvbn-ts.
 
 **Контекст и исходные материалы:**
-- Документация: раздел 4.4 «Требования к паролю», раздел 6.2 «Create Wallet Screen» (шаг 1).
-- Зависимость от wireframes: компонент создаётся после утверждения макетов дизайнером.
+- Документация: [DESIGN_BRIEF.md:4.2 PasswordInput](../docs/DESIGN_BRIEF.md#L224), [4.4 Требования к паролю](../docs/DESIGN_BRIEF.md#L222)
+- Дизайн: [component_sheet_ui_kit](../design/stitch_create_wallet_step_1/component_sheet_ui_kit/)
 
-**Зависимости:** зависит от `3.3`, wireframes (задача `2.2`)
+**Зависимости:** зависит от `3.3`
 
 **Шаги выполнения:**
 - [ ] Шаг 1: Создать компонент с props: value, onChange, placeholder, showStrength (boolean), error (string).
@@ -957,9 +957,10 @@ Store для UI-состояния с механикой блокировки un
 Реализовать `src/components/HighlightedAddress.tsx` — отображение адреса с визуальным выделением первых 4 и последних 4 символов (другой цвет/вес шрифта) для верификации пользователем.
 
 **Контекст и исходные материалы:**
-- Документация: раздел 7.4 «Визуальное подтверждение адреса».
+- Документация: [DESIGN_BRIEF.md:4.3 HighlightedAddress](../docs/DESIGN_BRIEF.md#L267), [7.4 Визуальное подтверждение адреса](../docs/DESIGN_BRIEF.md#L1569)
+- Дизайн: [component_sheet_ui_kit](../design/stitch_create_wallet_step_1/component_sheet_ui_kit/)
 
-**Зависимости:** wireframes (задача `2.2`)
+**Зависимости:** нет
 
 **Шаги выполнения:**
 - [ ] Шаг 1: Создать компонент с props: address (string), truncate (boolean, для сокращённого отображения).
@@ -990,9 +991,10 @@ Store для UI-состояния с механикой блокировки un
 Реализовать `src/components/WarningCard.tsx` — карточка предупреждения с иконкой, текстом и опциональным чекбоксом (для blocking warnings). Реализовать `src/components/WarningList.tsx` — список WarningCard, агрегирующий состояние чекбоксов.
 
 **Контекст и исходные материалы:**
-- Документация: раздел 7.1 «Pipeline валидации» (типы Warning), раздел 6.6 «Send Screen» (шаг 2 — Confirmation).
+- Документация: [DESIGN_BRIEF.md:4.4 WarningCard](../docs/DESIGN_BRIEF.md#L291), [4.11 Checkbox](../docs/DESIGN_BRIEF.md#L472)
+- Дизайн: [component_sheet_ui_kit](../design/stitch_create_wallet_step_1/component_sheet_ui_kit/)
 
-**Зависимости:** wireframes (задача `2.2`)
+**Зависимости:** нет
 
 **Шаги выполнения:**
 - [ ] Шаг 1: Реализовать WarningCard — props: warning (Warning), checked (boolean), onCheck. Стилизация по severity (info=голубой, warning=жёлтый, critical=красный, error=красный).
@@ -1023,9 +1025,10 @@ Store для UI-состояния с механикой блокировки un
 Реализовать набор переиспользуемых UI-компонентов: CopyButton (копирование в буфер + feedback "Copied!"), TransactionItem (строка транзакции в списке), SearchBar (поле поиска), Loader (спиннер), Toast (уведомление с auto-dismiss).
 
 **Контекст и исходные материалы:**
-- Документация: раздел 6.4 «Main Screen» (TransactionItem, SearchBar), раздел 6.5 «Receive Screen» (CopyButton).
+- Документация: [DESIGN_BRIEF.md: Раздел 4 UI-компоненты](../docs/DESIGN_BRIEF.md#L186)
+- Дизайн: [component_sheet_ui_kit](../design/stitch_create_wallet_step_1/component_sheet_ui_kit/)
 
-**Зависимости:** wireframes (задача `2.2`), `8.2` (TransactionItem использует HighlightedAddress)
+**Зависимости:** `8.2`
 
 **Шаги выполнения:**
 - [ ] Шаг 1: CopyButton — props: text (string). При клике — navigator.clipboard.writeText(), смена label на "Copied!" на 2 секунды.
@@ -1061,9 +1064,10 @@ Store для UI-состояния с механикой блокировки un
 Реализовать `src/screens/Onboarding/WelcomeScreen.tsx` — точка входа для нового пользователя (когда vault отсутствует в localStorage). Содержит логотип, пометку Testnet, кнопки «Create New Wallet» и «Import Existing Wallet».
 
 **Контекст и исходные материалы:**
-- Документация: раздел 6.1 «Welcome Screen».
+- Документация: [DESIGN_BRIEF.md:5.1 Welcome Screen](../docs/DESIGN_BRIEF.md#L559)
+- Дизайн: [welcome_screen](../design/stitch_create_wallet_step_1/welcome_screen/)
 
-**Зависимости:** зависит от `5.1` (проверка наличия vault), wireframes
+**Зависимости:** зависит от `5.1` (проверка наличия vault)
 
 **Шаги выполнения:**
 - [ ] Шаг 1: Создать компонент WelcomeScreen с layout согласно wireframe.
@@ -1094,9 +1098,10 @@ Store для UI-состояния с механикой блокировки un
 Реализовать `src/screens/Onboarding/CreateWalletScreen.tsx` — двухшаговый экран создания кошелька: ввод пароля → показ мнемоники для backup.
 
 **Контекст и исходные материалы:**
-- Документация: раздел 5.2 «Создание кошелька», раздел 6.2 «Create Wallet Screen».
+- Документация: [DESIGN_BRIEF.md:5.2 Create Wallet Screen](../docs/DESIGN_BRIEF.md#L606)
+- Дизайн: [create_wallet_step_1](../design/stitch_create_wallet_step_1/create_wallet_step_1/), [create_wallet_step_2](../design/stitch_create_wallet_step_1/create_wallet_step_2/)
 
-**Зависимости:** зависит от `6.1`, `8.1`, `8.4` (CopyButton)
+**Зависимости:** зависит от `6.1`, `8.1`, `8.4`
 
 **Шаги выполнения:**
 - [ ] Шаг 1: Шаг 1 (Set Password) — два PasswordInput (пароль + подтверждение), индикатор силы, кнопка «Continue» (активна при score ≥ 2 + совпадение полей).
@@ -1130,9 +1135,10 @@ Store для UI-состояния с механикой блокировки un
 Реализовать `src/screens/Onboarding/ImportMnemonicScreen.tsx` — ввод 24 слов мнемоники, валидация, автодетекция версий, опциональный выбор версии, ввод пароля. Включает `SelectVersionScreen.tsx` как подшаг.
 
 **Контекст и исходные материалы:**
-- Документация: раздел 5.3 «Импорт по мнемонике», раздел 6.3 «Import Mnemonic Screen».
+- Документация: [DESIGN_BRIEF.md:5.3 Import Mnemonic](../docs/DESIGN_BRIEF.md#L717)
+- Дизайн: [import_wallet_step_1](../design/stitch_create_wallet_step_1/import_wallet_step_1_enter_mnemonic/), [import_wallet_step_2](../design/stitch_create_wallet_step_1/import_wallet_step_2_select_version/), [import_wallet_step_3](../design/stitch_create_wallet_step_1/import_wallet_step_3_set_password/)
 
-**Зависимости:** зависит от `6.2`, `8.1`, wireframes
+**Зависимости:** зависит от `6.2`, `8.1`
 
 **Шаги выполнения:**
 - [ ] Шаг 1: Реализовать UI ввода мнемоники — textarea (ввод через пробел/перенос) или сетка из 24 полей (определяется wireframe). Кнопка «Paste» для вставки из буфера.
@@ -1167,9 +1173,10 @@ Store для UI-состояния с механикой блокировки un
 Реализовать `src/screens/Main/MainScreen.tsx` — основной экран после входа: header с пометкой Testnet и кнопкой настроек, блок wallet info (адрес + баланс + кнопки Send/Receive), список транзакций с поиском и фильтрацией, пагинация.
 
 **Контекст и исходные материалы:**
-- Документация: раздел 6.4 «Main Screen», раздел 8 «Поиск по истории транзакций», раздел 9.1 «Получение баланса».
+- Документация: [DESIGN_BRIEF.md:5.5 Main Screen](../docs/DESIGN_BRIEF.md#L889)
+- Дизайн: [main_screen](../design/stitch_create_wallet_step_1/main_screen/), [main_screen_empty_state](../design/stitch_create_wallet_step_1/main_screen_empty_state/)
 
-**Зависимости:** зависит от `5.1`, `5.2`, `8.2`, `8.4`, `10.3` (polling — интегрируется позже, но UI готов)
+**Зависимости:** зависит от `5.1`, `5.2`, `8.2`, `8.4`
 
 **Шаги выполнения:**
 - [ ] Шаг 1: Реализовать Header — название + «Testnet» badge + кнопка Settings (навигация).
@@ -1206,9 +1213,10 @@ Store для UI-состояния с механикой блокировки un
 Реализовать `src/screens/Receive/ReceiveScreen.tsx` — QR-код с адресом, полный адрес текстом, кнопка копирования, предупреждение о testnet.
 
 **Контекст и исходные материалы:**
-- Документация: раздел 6.5 «Receive Screen».
+- Документация: [DESIGN_BRIEF.md:5.6 Receive Screen](../docs/DESIGN_BRIEF.md#L975)
+- Дизайн: [receive_screen](../design/stitch_create_wallet_step_1/receive_screen/)
 
-**Зависимости:** зависит от `5.1`, `8.4` (CopyButton), `qrcode.react`
+**Зависимости:** зависит от `5.1`, `8.4`, `qrcode.react`
 
 **Шаги выполнения:**
 - [ ] Шаг 1: Реализовать QR-код через `qrcode.react` (SVG), содержимое — полный адрес кошелька.
@@ -1241,9 +1249,10 @@ Store для UI-состояния с механикой блокировки un
 Реализовать `src/screens/Send/SendScreen.tsx` и `src/screens/Send/ConfirmScreen.tsx` — трёхшаговый экран отправки: ввод данных → подтверждение с warnings → результат (pending/success/error/timeout).
 
 **Контекст и исходные материалы:**
-- Документация: раздел 6.6 «Send Screen», раздел 7 «Защита от подмены адреса», раздел 9.3 «Отправка транзакции».
+- Документация: [DESIGN_BRIEF.md:5.7 Send Screen](../docs/DESIGN_BRIEF.md#L1020)
+- Дизайн: [send_ton_input](../design/stitch_create_wallet_step_1/send_ton_input/), [confirm_transaction](../design/stitch_create_wallet_step_1/confirm_transaction/), [send_result_pending](../design/stitch_create_wallet_step_1/send_result_pending/), [send_result_success](../design/stitch_create_wallet_step_1/send_result_success/), [send_result_error](../design/stitch_create_wallet_step_1/send_result_error/), [send_result_timeout](../design/stitch_create_wallet_step_1/send_result_timeout/)
 
-**Зависимости:** зависит от `7.6`, `4.4`, `6.3` (exportMnemonic для расшифровки), `8.1`, `8.2`, `8.3`, `8.4`
+**Зависимости:** зависит от `7.6`, `4.4`, `6.3`, `8.1`, `8.2`, `8.3`, `8.4`
 
 **Шаги выполнения:**
 - [ ] Шаг 1: Шаг 1 (Input Form) — поле Recipient address, поле Amount + кнопка MAX (balance - ESTIMATED_FEE), поле Comment (опционально), отображение баланса.
@@ -1281,7 +1290,8 @@ Store для UI-состояния с механикой блокировки un
 Реализовать `src/screens/Settings/SettingsScreen.tsx` и `src/screens/Settings/ExportScreen.tsx` — информация о кошельке, экспорт мнемоники, смена пароля.
 
 **Контекст и исходные материалы:**
-- Документация: раздел 6.7 «Settings Screen», раздел 5.5 «Экспорт мнемоники».
+- Документация: [DESIGN_BRIEF.md:5.8 Settings Screen](../docs/DESIGN_BRIEF.md#L1266)
+- Дизайн: [settings_screen](../design/stitch_create_wallet_step_1/settings_screen/), [export_recovery_step_1](../design/stitch_create_wallet_step_1/export_recovery_step_1_verify_password/), [export_recovery_step_2](../design/stitch_create_wallet_step_1/export_recovery_step_2_show_phrase/), [change_password_modal](../design/stitch_create_wallet_step_1/change_password_modal/), [delete_wallet_modal](../design/stitch_create_wallet_step_1/delete_wallet_modal/)
 
 **Зависимости:** зависит от `6.3`, `6.4`, `8.1`, `8.4`
 

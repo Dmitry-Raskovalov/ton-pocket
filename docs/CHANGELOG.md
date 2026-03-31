@@ -5,6 +5,27 @@
 
 ---
 
+## [2026-04-01] - Оркестратор валидации (Задача 7.6)
+
+### Добавлено
+- `src/services/validation/validate-send.ts` — `validateSend(params): Promise<SendValidationResult>`: единая точка входа для валидации перед отправкой
+- Типы `ValidateSendParams` и `SendValidationResult` в том же файле
+- Early return при невалидном адресе; параллельный запуск self-send, similarity, account state, balance
+- Ошибки сети в account state check обрабатываются gracefully (пустой массив)
+- `src/services/validation/validate-send.test.ts` — 12 юнит-тестов: early return, чистая отправка, комбинации warnings, устойчивость к сетевым ошибкам
+
+---
+
+## [2026-04-01] - Проверка похожих адресов (Задача 7.5)
+
+### Добавлено
+- `src/services/validation/address-similarity.ts` — `checkAddressSimilarity(recipientRaw)`: вызывает `addressBook.findSimilar()`, возвращает critical blocking Warning если найдены адреса с совпадающими первыми/последними 6 символами
+- Детали совпадения в message: label адреса, часть совпадения (начало/конец/оба), совпавшие символы
+- `src/services/validation/address-similarity.test.ts` — 7 юнит-тестов: prefix/suffix/both match, несколько совпадений, нет совпадений, полное совпадение (null), label fallback
+- Экспорт из `src/services/validation/index.ts`
+
+---
+
 ## [2026-03-31] - Проверка баланса и комиссии (Задача 7.4)
 
 ### Добавлено
