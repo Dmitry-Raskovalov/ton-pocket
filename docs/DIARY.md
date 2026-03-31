@@ -1,5 +1,23 @@
 # Дневник разработки TON Testnet Wallet
 
+## 2026-03-31 — Задача 3.2: Encrypted Vault
+
+### Наблюдения
+
+- `JSON.stringify/parse` уничтожает `Uint8Array` — после десериализации получается plain object `{0: 1, 1: 2, ...}`, который Web Crypto не принимает. Стандартная ловушка при хранении бинарных данных в localStorage.
+- Web Crypto API принимает `Uint8Array` (TypedArray = `BufferSource`) напрямую — не нужно `.buffer as ArrayBuffer`.
+
+### Решения
+
+- Введены serializable-типы `KdfParamsSerialized` с `salt: string` (base64). Vault хранит только JSON-совместимые данные, при операциях — восстановление через `deserializeKdfParams`.
+- `uint8ToBase64` / `base64ToUint8` используются как единая точка сериализации бинарных данных.
+
+### Проблемы
+
+- Нет. Архитектурное решение с отдельными serializable-типами устраняет проблему чисто.
+
+---
+
 ## 2026-03-31 — Задача 3.1: Модуль KDF
 
 ### Наблюдения

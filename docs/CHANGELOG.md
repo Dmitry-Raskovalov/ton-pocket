@@ -6,6 +6,21 @@
 
 ---
 
+## [2026-03-31] - Encrypted Vault (Задача 3.2)
+
+### Добавлено
+
+- `src/crypto/vault.ts` — AES-256-GCM шифрование/расшифровка: `encrypt`, `decrypt`, `saveVault`, `loadVault`, `hasVault`, `clearVault`
+- `src/crypto/vault.test.ts` — 16 юнит-тестов: round-trip, ошибка при неверном пароле, tampered ciphertext/IV, unicode, localStorage round-trip с декриптом
+- `src/crypto/types.ts` — добавлены `KdfParamsSerialized`, `Argon2ParamsSerialized`, `Pbkdf2ParamsSerialized` для JSON-совместимого хранения
+
+### Исправлено
+
+- `vault.ts`: `keyBytes.buffer`, `iv.buffer`, `ciphertext.buffer` → прямая передача TypedArray в Web Crypto
+- `vault.ts`: `kdfParams.salt` сериализуется в base64 при сохранении и восстанавливается в `Uint8Array` при загрузке (JSON.parse разрушал TypedArray)
+
+---
+
 ## [2026-03-31] - KDF модуль (Задача 3.1)
 
 ### Добавлено

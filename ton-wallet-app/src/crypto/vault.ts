@@ -3,7 +3,7 @@
  * Encrypts and decrypts mnemonic using AES-256-GCM.
  */
 
-import type { EncryptedVault } from './types';
+import type { EncryptedVault, KdfParamsSerialized, Argon2Params, Pbkdf2Params } from './types';
 import { deriveKey, deriveKeyWithParams } from './kdf';
 
 const VAULT_STORAGE_KEY = 'ton_wallet_vault';
@@ -28,12 +28,50 @@ function base64ToUint8(base64: string): Uint8Array {
 }
 
 /**
+ * Serialize KDF params: convert Uint8Array salt to base64 for JSON storage.
+ */
+function serializeKdfParams(params: Argon2Params | Pbkdf2Params): KdfParamsSerialized {
+  if ('parallelism' in params) {
+    return {
+      salt: uint8ToBase64(params.salt),
+      memory: params.memory,
+      iterations: params.iterations,
+      parallelism: params.parallelism,
+    };
+  }
+  return {
+    salt: uint8ToBase64(params.salt),
+    iterations: params.iterations,
+    hash: params.hash,
+  };
+}
+
+/**
+ * Deserialize KDF params: restore Uint8Array salt from base64.
+ */
+function deserializeKdfParams(params: KdfParamsSerialized): Argon2Params | Pbkdf2Params {
+  if ('parallelism' in params) {
+    return {
+      salt: base64ToUint8(params.salt),
+      memory: params.memory,
+      iterations: params.iterations,
+      parallelism: params.parallelism,
+    };
+  }
+  return {
+    salt: base64ToUint8(params.salt),
+    iterations: params.iterations,
+    hash: params.hash,
+  };
+}
+
+/**
  * Import raw key bytes into a CryptoKey for AES-GCM.
  */
 async function importAesKey(keyBytes: Uint8Array): Promise<CryptoKey> {
   return crypto.subtle.importKey(
     'raw',
-    keyBytes.buffer as ArrayBuffer,
+    keyBytes,
     { name: 'AES-GCM' },
     false,
     ['encrypt', 'decrypt']
@@ -45,24 +83,24 @@ async function importAesKey(keyBytes: Uint8Array): Promise<CryptoKey> {
  */
 export async function encrypt(plaintext: string, password: string): Promise<EncryptedVault> {
   const { key, algorithm, params } = await deriveKey(password);
-  
+
   // Generate 12-byte IV for AES-GCM
   const iv = new Uint8Array(12);
   crypto.getRandomValues(iv);
-  
+
   const cryptoKey = await importAesKey(key);
   const encoder = new TextEncoder();
-  
+
   const ciphertext = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv: iv.buffer as ArrayBuffer },
+    { name: 'AES-GCM', iv },
     cryptoKey,
     encoder.encode(plaintext)
   );
-  
+
   return {
     version: 1,
     kdf: algorithm,
-    kdfParams: params,
+    kdfParams: serializeKdfParams(params),
     cipher: 'AES-256-GCM',
     iv: uint8ToBase64(iv),
     ciphertext: uint8ToBase64(new Uint8Array(ciphertext)),
@@ -74,19 +112,20 @@ export async function encrypt(plaintext: string, password: string): Promise<Encr
  * Throws error if password is incorrect.
  */
 export async function decrypt(vault: EncryptedVault, password: string): Promise<string> {
-  const key = await deriveKeyWithParams(password, vault.kdfParams);
+  const kdfParams = deserializeKdfParams(vault.kdfParams);
+  const key = await deriveKeyWithParams(password, kdfParams);
   const cryptoKey = await importAesKey(key);
-  
+
   const iv = base64ToUint8(vault.iv);
   const ciphertext = base64ToUint8(vault.ciphertext);
-  
+
   try {
     const decrypted = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv: iv.buffer as ArrayBuffer },
+      { name: 'AES-GCM', iv },
       cryptoKey,
-      ciphertext.buffer as ArrayBuffer
+      ciphertext
     );
-    
+
     return new TextDecoder().decode(decrypted);
   } catch {
     throw new Error('Decryption failed: incorrect password or corrupted data');
@@ -109,7 +148,7 @@ export function loadVault(): EncryptedVault | null {
   if (!stored) {
     return null;
   }
-  
+
   try {
     return JSON.parse(stored) as EncryptedVault;
   } catch {
