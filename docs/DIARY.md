@@ -1,5 +1,22 @@
 # Дневник разработки TON Testnet Wallet
 
+## 2026-03-31 — Задача 6.3: Экспорт мнемоники
+
+### Наблюдения
+- `WalletService` уже содержит заглушку `exportMnemonic` — метод заменён на рабочую реализацию.
+- Мнемоника в vault хранится как `JSON.stringify(words[])` — при экспорте нужен `JSON.parse` для получения массива.
+- Ошибка при неверном пароле от `vault.decrypt` — generic "Decryption failed: incorrect password or corrupted data". Оборачиваем в типизированную `InvalidPasswordError` для удобной обработки в UI.
+
+### Решения
+- Два кастомных класса ошибок: `InvalidPasswordError` (неверный пароль) и `NoVaultError` (нет vault в localStorage) — UI может различать сценарии и показывать соответствующие сообщения.
+- Валидация формата данных после `JSON.parse`: проверка `Array.isArray` и `length > 0` — защита от повреждённого vault.
+- `exportMnemonic` не хранит мнемонику в памяти после возврата — вызывающий код (UI) отвечает за timely cleanup.
+
+### Проблемы
+- Нет. 6 тестов прошли с первого запуска (207 всего).
+
+---
+
 ## 2026-03-31 — Задача 5.2: Transaction Store
 
 ### Наблюдения

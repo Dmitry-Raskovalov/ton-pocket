@@ -5,6 +5,15 @@
 
 ---
 
+## [2026-03-31] - Экспорт мнемоники (Задача 6.3)
+
+### Добавлено
+- `src/services/wallet/WalletService.ts` — реализован `exportMnemonic(password)`: загрузка vault, расшифровка, парсинг JSON → массив из 24 слов
+- `src/services/wallet/types.ts` — типизированные ошибки `InvalidPasswordError` и `NoVaultError`
+- `src/services/wallet/WalletService.test.ts` — 6 юнит-тестов: успешный экспорт, неверный пароль, отсутствие vault, сохранение порядка слов, корректность name property ошибок
+
+---
+
 ## [2026-03-31] - Transaction Store (Задача 5.2)
 
 ### Добавлено
