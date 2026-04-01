@@ -265,17 +265,15 @@ export function SendScreen() {
           </div>
         </header>
 
-        {/* ── Progress bar (confirm/result steps) ────────────────────────── */}
-        {step !== 'input' && (
-          <div className="px-6 py-2 flex items-center justify-between gap-1">
-            <div className={`h-1 flex-1 rounded-full ${step === 'confirm' ? 'bg-primary opacity-40' : 'bg-primary'}`} />
-            <div className={`h-1 flex-1 rounded-full ${step === 'confirm' ? 'bg-primary' : 'bg-primary opacity-40'}`} />
-            <div className="h-1 flex-1 bg-surface-container-highest rounded-full" />
-            <span className="ml-3 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
-              Step {step === 'confirm' ? '2' : '3'} of 3
-            </span>
-          </div>
-        )}
+        {/* ── Progress bar (all steps) ───────────────────────────────────── */}
+        <div className="px-6 py-2 flex items-center justify-between gap-1">
+          <div className={`h-1 flex-1 rounded-full bg-primary ${step === 'input' ? 'opacity-40' : ''}`} />
+          <div className={`h-1 flex-1 rounded-full ${step === 'confirm' ? 'bg-primary' : step === 'result' ? 'bg-primary' : 'bg-surface-container-highest'}`} />
+          <div className={`h-1 flex-1 rounded-full ${step === 'result' ? 'bg-primary' : 'bg-surface-container-highest'}`} />
+          <span className="ml-3 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+            Step {step === 'input' ? '1' : step === 'confirm' ? '2' : '3'} of 3
+          </span>
+        </div>
 
         {/* ══════════════════════════════════════════════════════════════════ */}
         {/* STEP 1: INPUT FORM                                               */}
@@ -403,22 +401,6 @@ export function SendScreen() {
         {/* ══════════════════════════════════════════════════════════════════ */}
         {step === 'confirm' && (
           <>
-            <header className="px-6 py-3 flex items-center gap-4">
-              <button
-                onClick={handleCancelConfirm}
-                className="hover:opacity-80 transition-opacity active:scale-95 text-primary"
-                aria-label="Go back"
-              >
-                <ArrowLeft size={24} />
-              </button>
-              <h1 className="font-bold uppercase text-xs text-white tracking-tight">
-                Confirm Transaction
-              </h1>
-              <div className="ml-auto bg-tertiary-container text-on-tertiary-fixed-variant px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest">
-                TESTNET
-              </div>
-            </header>
-
             <main className="flex-1 px-6 pt-6 pb-44 space-y-8">
               {/* Transaction Summary Card */}
               <section className="space-y-4">
