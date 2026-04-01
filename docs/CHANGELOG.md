@@ -5,6 +5,20 @@
 
 ---
 
+## [2026-04-01] - ImportMnemonicScreen (Задача 9.3)
+
+### Добавлено
+- `src/screens/ImportMnemonicScreen.tsx` — трёхшаговый экран импорта кошелька по мнемонике:
+  - **StepMnemonic**: textarea для 24 слов, кнопка «Paste» (`navigator.clipboard`), счётчик слов (N/24), async валидация через `walletService.validateMnemonic`, inline ошибка, security info banner; Continue активна только при ровно 24 словах
+  - **StepPassword**: два `PasswordInput` (пароль + подтверждение), индикатор силы, inline ошибка несовпадения, info-баннер; идентичен StepPassword в CreateWalletScreen
+  - **StepSelectVersion**: radio-карточки для каждой найденной версии контракта (v3R2/v4R2/v5R1) с адресом (truncated), балансом (`formatTon`) и badge-ом (Recommended/BETA); показывается только при `needsVersionChoice=true`
+  - Интеграция с `walletService.importFromMnemonic` — если несколько версий, сохраняет пароль в state и переходит к выбору; затем вызывает повторно с выбранной версией
+  - Ошибки → toast через `useUIStore`; успех → `setWallet()` в store + `onComplete()`
+- `src/screens/ImportMnemonicScreen.test.tsx` — 17 юнит-тестов: кнопка disabled при < или > 24 слов, счётчик слов, ошибка при невалидной мнемонике, переходы между шагами, показ SelectVersion при `needsVersionChoice=true`, вызов `importFromMnemonic` с правильными аргументами, toast при ошибке
+- Добавлен экспорт в `src/screens/index.ts`
+
+---
+
 ## [2026-04-01] - CreateWalletScreen (Задача 9.2)
 
 ### Добавлено
