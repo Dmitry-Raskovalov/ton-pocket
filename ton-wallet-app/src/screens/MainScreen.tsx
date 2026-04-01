@@ -5,7 +5,7 @@
  * created: 2026-04-01
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocation } from 'wouter';
 import { Wallet, Settings, Send, ArrowDownToLine, Inbox, AlertTriangle } from 'lucide-react';
 import { Address } from '@ton/core';
@@ -76,12 +76,29 @@ export function MainScreen() {
     void refreshTx();
   }, [refreshTx]);
 
+  // Infinite scroll: load more when sentinel enters viewport
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasMore && !isLoading) {
+          void loadMore();
+        }
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, isLoading, loadMore]);
+
   return (
-    <div className="flex flex-col min-h-screen items-center bg-background text-on-background">
-      <div className="w-full max-w-[480px] min-h-screen flex flex-col">
+    <div className="flex flex-col h-dvh items-center bg-background text-on-background">
+      <div className="w-full max-w-[480px] h-full flex flex-col">
 
         {/* ── Header ──────────────────────────────────────────────────────── */}
-        <header className="sticky top-0 z-50 bg-background flex justify-between items-center px-6 py-4">
+        <header className="shrink-0 bg-background flex justify-between items-center px-6 py-4">
           <div className="flex items-center gap-2">
             <Wallet size={20} className="text-primary" />
             <span className="font-bold uppercase text-xs tracking-tight text-on-surface">
@@ -103,7 +120,7 @@ export function MainScreen() {
         </header>
 
         {/* ── Main ────────────────────────────────────────────────────────── */}
-        <main className="flex-1 px-6 pt-4 pb-10 space-y-8">
+        <main className="flex-1 flex flex-col overflow-hidden min-h-0 px-6 pt-4">
 
           {/* Balance section */}
           <section className="flex flex-col items-center text-center space-y-5 py-4">
@@ -140,7 +157,7 @@ export function MainScreen() {
 
           {/* Activation banner */}
           {!isActivated && balance === 0n && (
-            <section className="bg-surface-container-lowest p-4 rounded-lg border border-warning/20 space-y-3">
+            <section className="mt-8 bg-surface-container-lowest p-4 rounded-lg border border-warning/20 space-y-3">
               <div className="flex items-center gap-2 text-warning">
                 <AlertTriangle size={18} />
                 <span className="text-xs font-bold uppercase tracking-wider">Wallet Not Activated</span>
@@ -162,16 +179,12 @@ export function MainScreen() {
           )}
 
           {/* Transactions section */}
-          <section className="space-y-5">
-            {/* Section header */}
-            <div className="flex items-center justify-between">
+          <section className="flex-1 flex flex-col overflow-hidden min-h-0 mt-8">
+            {/* Fixed: section header + filters */}
+            <div className="space-y-4 pb-3 shrink-0">
               <h3 className="text-xs font-bold uppercase tracking-widest text-on-surface">
                 Transactions
               </h3>
-            </div>
-
-            {/* Search & direction filters */}
-            <div className="space-y-4">
               <SearchBar
                 value={searchQuery}
                 onChange={setSearchQuery}
@@ -193,62 +206,63 @@ export function MainScreen() {
               </div>
             </div>
 
-            {/* Initial loading spinner */}
-            {isLoading && transactions.length === 0 ? (
-              <div className="flex items-center justify-center py-16">
-                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-              </div>
+            {/* Scrollable list */}
+            <div className="flex-1 overflow-y-auto min-h-0">
+              {/* Initial loading spinner */}
+              {isLoading && transactions.length === 0 ? (
+                <div className="flex items-center justify-center py-16">
+                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
 
               /* Empty state */
-            ) : filteredTx.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 px-8 text-center bg-surface-container rounded-xl border border-white/[0.02]">
-                <div className="w-16 h-16 rounded-full bg-surface-container-lowest flex items-center justify-center mb-6">
-                  <Inbox size={28} className="text-on-surface-variant" />
+              ) : filteredTx.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 px-8 text-center bg-surface-container rounded-xl border border-white/[0.02]">
+                  <div className="w-16 h-16 rounded-full bg-surface-container-lowest flex items-center justify-center mb-6">
+                    <Inbox size={28} className="text-on-surface-variant" />
+                  </div>
+                  <h3 className="text-on-surface font-bold text-base mb-2">
+                    {searchQuery || directionFilter !== 'all'
+                      ? 'No matching transactions'
+                      : 'No transactions yet'}
+                  </h3>
+                  <p className="text-on-surface-variant text-sm leading-relaxed max-w-[240px]">
+                    {searchQuery || directionFilter !== 'all'
+                      ? 'Try changing your search or filter.'
+                      : 'Send or receive TON to see your transaction history.'}
+                  </p>
                 </div>
-                <h3 className="text-on-surface font-bold text-base mb-2">
-                  {searchQuery || directionFilter !== 'all'
-                    ? 'No matching transactions'
-                    : 'No transactions yet'}
-                </h3>
-                <p className="text-on-surface-variant text-sm leading-relaxed max-w-[240px]">
-                  {searchQuery || directionFilter !== 'all'
-                    ? 'Try changing your search or filter.'
-                    : 'Send or receive TON to see your transaction history.'}
-                </p>
-              </div>
 
               /* Transaction list */
-            ) : (
-              <div className="space-y-3 pt-2">
-                {filteredTx.map((tx) => (
-                  <TransactionItem
-                    key={tx.hash}
-                    transaction={tx}
-                    label={tx.counterpartyAddress ? labelMap[tx.counterpartyAddress] : undefined}
-                  />
-                ))}
+              ) : (
+                <div className="space-y-3 pt-2 pb-6">
+                  {filteredTx.map((tx) => (
+                    <TransactionItem
+                      key={tx.hash}
+                      transaction={tx}
+                      label={tx.counterpartyAddress ? labelMap[tx.counterpartyAddress] : undefined}
+                    />
+                  ))}
 
-                {/* Load more */}
-                {hasMore && (
-                  <button
-                    onClick={() => void loadMore()}
-                    disabled={isLoading}
-                    className="w-full py-3 text-xs font-bold text-primary uppercase tracking-widest hover:text-white transition-colors disabled:opacity-50"
-                  >
-                    {isLoading ? 'Loading…' : 'Load more'}
-                  </button>
-                )}
+                  {/* Infinite scroll sentinel */}
+                  {hasMore && (
+                    <div ref={sentinelRef} className="flex justify-center py-4">
+                      {isLoading && (
+                        <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                      )}
+                    </div>
+                  )}
 
-                {/* End of history marker */}
-                {!hasMore && (
-                  <div className="py-8 flex justify-center opacity-20 select-none">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em]">
-                      End of History
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
+                  {/* End of history marker */}
+                  {!hasMore && (
+                    <div className="py-8 flex justify-center opacity-20 select-none">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em]">
+                        End of History
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </section>
         </main>
       </div>
