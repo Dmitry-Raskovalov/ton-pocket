@@ -199,7 +199,7 @@ export function SendScreen() {
 
       // 3. Create contract & send
       const contract = createContract(keyPair.publicKey, version);
-      const secretKey = Buffer.concat([keyPair.publicKey, keyPair.secretKey]);
+      const secretKey = Buffer.from(keyPair.secretKey);
 
       setStep('result');
       setResultState('pending');
