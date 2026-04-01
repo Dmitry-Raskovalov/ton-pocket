@@ -22,8 +22,9 @@ vi.mock('@/services/wallet/WalletService', () => ({
 }));
 
 const mockSetWallet = vi.fn();
+const mockSetUnlocked = vi.fn();
 vi.mock('@/store/wallet-store', () => ({
-  useWalletStore: () => ({ setWallet: mockSetWallet }),
+  useWalletStore: () => ({ setWallet: mockSetWallet, setUnlocked: mockSetUnlocked }),
 }));
 
 const mockAddToast = vi.fn();
@@ -55,8 +56,13 @@ const DETECTED_WALLETS = [
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
-function renderScreen(onBack = vi.fn(), onComplete = vi.fn()) {
-  return render(<ImportMnemonicScreen onBack={onBack} onComplete={onComplete} />);
+const mockSetLocation = vi.fn();
+vi.mock('wouter', () => ({
+  useLocation: () => ['/import', mockSetLocation],
+}));
+
+function renderScreen() {
+  return render(<ImportMnemonicScreen />);
 }
 
 function fillTextarea(text: string) {
@@ -135,11 +141,10 @@ describe('ImportMnemonicScreen — Step 1: Enter Mnemonic', () => {
     expect(screen.queryByText(/invalid recovery phrase/i)).not.toBeInTheDocument();
   });
 
-  it('calls onBack when back button clicked', () => {
-    const onBack = vi.fn();
-    renderScreen(onBack);
+  it('calls setLocation(/) when back button clicked', () => {
+    renderScreen();
     fireEvent.click(screen.getByLabelText('Go back'));
-    expect(onBack).toHaveBeenCalledOnce();
+    expect(mockSetLocation).toHaveBeenCalledWith('/');
   });
 });
 
@@ -167,9 +172,8 @@ describe('ImportMnemonicScreen — Step 2: Set Password', () => {
     await waitFor(() => expect(screen.getByText('Recovery Phrase')).toBeInTheDocument());
   });
 
-  it('calls importFromMnemonic and onComplete on success (single version)', async () => {
-    const onComplete = vi.fn();
-    render(<ImportMnemonicScreen onBack={vi.fn()} onComplete={onComplete} />);
+  it('calls importFromMnemonic and setLocation(/main) on success (single version)', async () => {
+    render(<ImportMnemonicScreen />);
     await advanceToPassword();
 
     mockImportFromMnemonic.mockResolvedValueOnce({
@@ -193,7 +197,7 @@ describe('ImportMnemonicScreen — Step 2: Set Password', () => {
         version: 'v4R2',
         publicKey: '',
       });
-      expect(onComplete).toHaveBeenCalledOnce();
+      expect(mockSetLocation).toHaveBeenCalledWith('/main');
     });
   });
 
@@ -223,8 +227,7 @@ describe('ImportMnemonicScreen — Step 3: Select Version', () => {
   });
 
   async function advanceToVersionSelect() {
-    const onComplete = vi.fn();
-    render(<ImportMnemonicScreen onBack={vi.fn()} onComplete={onComplete} />);
+    render(<ImportMnemonicScreen />);
     await advanceToPassword();
 
     mockImportFromMnemonic.mockResolvedValueOnce({
@@ -240,7 +243,6 @@ describe('ImportMnemonicScreen — Step 3: Select Version', () => {
     fireEvent.click(screen.getByRole('button', { name: /continue/i }));
 
     await waitFor(() => expect(screen.getByText('Found multiple wallets')).toBeInTheDocument());
-    return onComplete;
   }
 
   it('shows version selection screen when needsVersionChoice=true', async () => {
@@ -264,7 +266,7 @@ describe('ImportMnemonicScreen — Step 3: Select Version', () => {
   });
 
   it('calls importFromMnemonic with selected version and completes', async () => {
-    const onComplete = await advanceToVersionSelect();
+    await advanceToVersionSelect();
 
     mockImportFromMnemonic.mockResolvedValueOnce({
       address: '0:abc',
@@ -281,7 +283,7 @@ describe('ImportMnemonicScreen — Step 3: Select Version', () => {
         'StrongPass123!',
         'v4R2'
       );
-      expect(onComplete).toHaveBeenCalledOnce();
+      expect(mockSetLocation).toHaveBeenCalledWith('/main');
     });
   });
 });

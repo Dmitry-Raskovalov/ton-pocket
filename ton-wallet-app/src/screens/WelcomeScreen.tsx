@@ -1,18 +1,16 @@
 /**
  * file: WelcomeScreen.tsx
  * description: Entry point screen for new users — create or import wallet
- * dependencies: lucide-react, crypto/vault
+ * dependencies: lucide-react, wouter
  * created: 2026-04-01
  */
 
+import { useLocation } from 'wouter';
 import { Diamond, Settings, PlusCircle, Download, Wallet } from 'lucide-react';
 
-interface WelcomeScreenProps {
-  onCreateWallet: () => void;
-  onImportWallet: () => void;
-}
+export function WelcomeScreen() {
+  const [, setLocation] = useLocation();
 
-export function WelcomeScreen({ onCreateWallet, onImportWallet }: WelcomeScreenProps) {
   return (
     <div className="flex flex-col min-h-screen items-center overflow-x-hidden bg-background">
       {/* Header */}
@@ -77,7 +75,7 @@ export function WelcomeScreen({ onCreateWallet, onImportWallet }: WelcomeScreenP
         style={{ background: 'rgba(30, 32, 35, 0.85)', backdropFilter: 'blur(12px)' }}
       >
         <button
-          onClick={onCreateWallet}
+          onClick={() => setLocation('/create')}
           className="w-full py-4 rounded-xl font-bold tracking-tight active:scale-[0.98] transition-transform flex items-center justify-center gap-2 text-on-primary"
           style={{ background: 'linear-gradient(135deg, #a0caff 0%, #4f94dd 100%)' }}
         >
@@ -86,7 +84,7 @@ export function WelcomeScreen({ onCreateWallet, onImportWallet }: WelcomeScreenP
         </button>
 
         <button
-          onClick={onImportWallet}
+          onClick={() => setLocation('/import')}
           className="w-full bg-surface-container-highest text-on-surface py-4 rounded-xl font-bold tracking-tight active:scale-[0.98] transition-transform flex items-center justify-center gap-2 border border-white/5 hover:bg-surface-bright transition-colors"
         >
           <Download size={20} />

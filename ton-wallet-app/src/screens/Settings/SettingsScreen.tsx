@@ -7,16 +7,13 @@
  */
 
 import { useState } from 'react';
+import { useLocation } from 'wouter';
 import { ArrowLeft, Shield, KeyRound, ChevronRight, Trash2 } from 'lucide-react';
 import { Address } from '@ton/core';
 import { useWalletStore } from '@/store/wallet-store';
 import { HighlightedAddress, CopyButton } from '@/components';
 import { ExportScreen } from './ExportScreen';
 import { ChangePasswordModal } from './ChangePasswordModal';
-
-export interface SettingsScreenProps {
-  onBack: () => void;
-}
 
 function toUserFriendly(raw: string): string {
   try {
@@ -26,9 +23,10 @@ function toUserFriendly(raw: string): string {
   }
 }
 
-export function SettingsScreen({ onBack }: SettingsScreenProps) {
+export function SettingsScreen() {
   const rawAddress = useWalletStore((s) => s.address);
   const version = useWalletStore((s) => s.version);
+  const [, setLocation] = useLocation();
 
   const [showExport, setShowExport] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -42,7 +40,7 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
         {/* ── Header ──────────────────────────────────────────────────────── */}
         <header className="sticky top-0 z-10 bg-background flex justify-between items-center px-6 py-4 w-full">
           <button
-            onClick={onBack}
+            onClick={() => setLocation('/main')}
             aria-label="Go back"
             className="flex items-center text-primary hover:opacity-80 transition-opacity active:scale-95 duration-150"
           >

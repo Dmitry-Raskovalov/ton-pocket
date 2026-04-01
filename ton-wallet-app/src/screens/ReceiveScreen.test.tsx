@@ -55,10 +55,13 @@ vi.mock('qrcode.react', () => ({
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
-function renderScreen(props: { onBack?: () => void } = {}) {
-  return render(
-    <ReceiveScreen onBack={props.onBack ?? vi.fn()} />
-  );
+const mockSetLocation = vi.fn();
+vi.mock('wouter', () => ({
+  useLocation: () => ['/receive', mockSetLocation],
+}));
+
+function renderScreen() {
+  return render(<ReceiveScreen />);
 }
 
 // ─── Tests ─────────────────────────────────────────────────────────────────────
@@ -84,10 +87,9 @@ describe('ReceiveScreen — header', () => {
   });
 
   it('calls onBack when Back button clicked', () => {
-    const onBack = vi.fn();
-    renderScreen({ onBack });
+    renderScreen();
     fireEvent.click(screen.getByLabelText('Go back'));
-    expect(onBack).toHaveBeenCalledOnce();
+    expect(mockSetLocation).toHaveBeenCalledWith('/main');
   });
 });
 

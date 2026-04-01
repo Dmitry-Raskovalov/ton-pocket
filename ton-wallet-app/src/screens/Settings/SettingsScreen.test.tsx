@@ -14,10 +14,15 @@ import { InvalidPasswordError, WeakPasswordError } from '@/services/wallet/types
 
 // ─── Hoisted mocks (must be before vi.mock calls) ─────────────────────────────
 
-const { mockExportMnemonic, mockChangePassword, mockAddToast } = vi.hoisted(() => ({
+const { mockExportMnemonic, mockChangePassword, mockAddToast, mockSetLocation } = vi.hoisted(() => ({
   mockExportMnemonic: vi.fn(),
   mockChangePassword: vi.fn(),
   mockAddToast: vi.fn(),
+  mockSetLocation: vi.fn(),
+}));
+
+vi.mock('wouter', () => ({
+  useLocation: () => ['/settings', mockSetLocation],
 }));
 
 // ─── Module mocks ─────────────────────────────────────────────────────────────
@@ -96,46 +101,45 @@ describe('SettingsScreen', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('renders settings heading', () => {
-    render(<SettingsScreen onBack={vi.fn()} />);
+    render(<SettingsScreen />);
     expect(screen.getByText('Settings')).toBeInTheDocument();
   });
 
   it('renders wallet version', () => {
-    render(<SettingsScreen onBack={vi.fn()} />);
+    render(<SettingsScreen />);
     expect(screen.getByText('v4R2')).toBeInTheDocument();
   });
 
   it('renders TON Testnet network label', () => {
-    render(<SettingsScreen onBack={vi.fn()} />);
+    render(<SettingsScreen />);
     expect(screen.getByText('TON Testnet')).toBeInTheDocument();
   });
 
   it('renders Testnet badge', () => {
-    render(<SettingsScreen onBack={vi.fn()} />);
+    render(<SettingsScreen />);
     expect(screen.getByText('Testnet')).toBeInTheDocument();
   });
 
-  it('calls onBack when back button clicked', () => {
-    const onBack = vi.fn();
-    render(<SettingsScreen onBack={onBack} />);
+  it('calls setLocation(/main) when back button clicked', () => {
+    render(<SettingsScreen />);
     fireEvent.click(screen.getByLabelText('Go back'));
-    expect(onBack).toHaveBeenCalledOnce();
+    expect(mockSetLocation).toHaveBeenCalledWith('/main');
   });
 
   it('opens ExportScreen when Export Recovery Phrase clicked', () => {
-    render(<SettingsScreen onBack={vi.fn()} />);
+    render(<SettingsScreen />);
     fireEvent.click(screen.getByText('Export Recovery Phrase'));
     expect(screen.getByText('Export Recovery Phrase', { selector: 'h2' })).toBeInTheDocument();
   });
 
   it('opens ChangePasswordModal when Change Password clicked', () => {
-    render(<SettingsScreen onBack={vi.fn()} />);
+    render(<SettingsScreen />);
     fireEvent.click(screen.getByText('Change Password'));
     expect(screen.getByText('Change Password', { selector: 'h3' })).toBeInTheDocument();
   });
 
   it('Delete Wallet button is disabled', () => {
-    render(<SettingsScreen onBack={vi.fn()} />);
+    render(<SettingsScreen />);
     const deleteBtn = screen.getByText('Delete Wallet').closest('button');
     expect(deleteBtn).toBeDisabled();
   });

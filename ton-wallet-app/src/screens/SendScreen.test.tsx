@@ -102,8 +102,13 @@ vi.mock('@/components/WarningList', () => ({
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
-function renderScreen(props: { onBack?: () => void } = {}) {
-  return render(<SendScreen onBack={props.onBack ?? vi.fn()} />);
+const mockSetLocation = vi.fn();
+vi.mock('wouter', () => ({
+  useLocation: () => ['/send', mockSetLocation],
+}));
+
+function renderScreen() {
+  return render(<SendScreen />);
 }
 
 // ─── Tests ─────────────────────────────────────────────────────────────────────
@@ -161,11 +166,10 @@ describe('SendScreen — Step 1: Input Form', () => {
     expect(input.value).toBe('9.99');
   });
 
-  it('calls onBack when back arrow clicked', () => {
-    const onBack = vi.fn();
-    renderScreen({ onBack });
+  it('calls setLocation(/main) when back arrow clicked from input step', () => {
+    renderScreen();
     fireEvent.click(screen.getByLabelText('Go back'));
-    expect(onBack).toHaveBeenCalledOnce();
+    expect(mockSetLocation).toHaveBeenCalledWith('/main');
   });
 
   it('renders Security Protocol info note', () => {

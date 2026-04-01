@@ -93,16 +93,13 @@ function makeTx(overrides: Partial<ParsedTransaction> = {}): ParsedTransaction {
   };
 }
 
-function renderScreen(
-  props: { onSend?: () => void; onReceive?: () => void; onSettings?: () => void } = {}
-) {
-  return render(
-    <MainScreen
-      onSend={props.onSend ?? vi.fn()}
-      onReceive={props.onReceive ?? vi.fn()}
-      onSettings={props.onSettings ?? vi.fn()}
-    />
-  );
+const mockSetLocation = vi.fn();
+vi.mock('wouter', () => ({
+  useLocation: () => ['/main', mockSetLocation],
+}));
+
+function renderScreen() {
+  return render(<MainScreen />);
 }
 
 // ─── Tests ─────────────────────────────────────────────────────────────────────
@@ -132,24 +129,21 @@ describe('MainScreen — header and balance', () => {
   });
 
   it('calls onSettings when Settings button is clicked', () => {
-    const onSettings = vi.fn();
-    renderScreen({ onSettings });
+    renderScreen();
     fireEvent.click(screen.getByLabelText('Settings'));
-    expect(onSettings).toHaveBeenCalledOnce();
+    expect(mockSetLocation).toHaveBeenCalledWith('/settings');
   });
 
   it('calls onSend when Send button is clicked', () => {
-    const onSend = vi.fn();
-    renderScreen({ onSend });
+    renderScreen();
     fireEvent.click(screen.getByRole('button', { name: /send/i }));
-    expect(onSend).toHaveBeenCalledOnce();
+    expect(mockSetLocation).toHaveBeenCalledWith('/send');
   });
 
   it('calls onReceive when Receive button is clicked', () => {
-    const onReceive = vi.fn();
-    renderScreen({ onReceive });
+    renderScreen();
     fireEvent.click(screen.getByRole('button', { name: /receive/i }));
-    expect(onReceive).toHaveBeenCalledOnce();
+    expect(mockSetLocation).toHaveBeenCalledWith('/receive');
   });
 });
 

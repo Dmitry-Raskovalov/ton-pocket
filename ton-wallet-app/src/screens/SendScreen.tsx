@@ -10,6 +10,7 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { useLocation } from 'wouter';
 import {
   ArrowLeft, ArrowRight, Lock, Info, RefreshCw,
   ExternalLink, CheckCircle, XCircle, AlertTriangle, Clock,
@@ -32,10 +33,6 @@ import type { TransferResult } from '@/services/ton/transfer';
 type Step = 'input' | 'confirm' | 'result';
 
 type ResultState = 'pending' | 'success' | 'error' | 'timeout';
-
-export interface SendScreenProps {
-  onBack: () => void;
-}
 
 const TON_NANO = 1_000_000_000n;
 const REDIRECT_DELAY_MS = 3000;
@@ -68,7 +65,8 @@ function formatAmountInput(nanotons: bigint): string {
 
 // ─── Component ──────────────────────────────────────────────────────────────────
 
-export function SendScreen({ onBack }: SendScreenProps) {
+export function SendScreen() {
+  const [, setLocation] = useLocation();
   // Store
   const rawAddress = useWalletStore((s) => s.address);
   const balance = useWalletStore((s) => s.balance);
@@ -255,9 +253,9 @@ export function SendScreen({ onBack }: SendScreenProps) {
   // Auto-redirect after success/timeout
   useEffect(() => {
     if (resultState !== 'success' && resultState !== 'timeout') return;
-    const timer = setTimeout(onBack, REDIRECT_DELAY_MS);
+    const timer = setTimeout(() => setLocation('/main'), REDIRECT_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [resultState, onBack]);
+  }, [resultState, setLocation]);
 
   const handleTryAgain = () => {
     setResultState('pending');
@@ -276,7 +274,7 @@ export function SendScreen({ onBack }: SendScreenProps) {
         {/* ── Header ──────────────────────────────────────────────────────── */}
         <header className="flex justify-between items-center px-6 py-4 sticky top-0 z-10 bg-surface-container-low/80 backdrop-blur-md">
           <button
-            onClick={step === 'input' ? onBack : handleCancelConfirm}
+            onClick={step === 'input' ? () => setLocation('/main') : handleCancelConfirm}
             aria-label="Go back"
             className="flex items-center text-on-surface-variant hover:text-primary transition-colors"
           >
@@ -654,7 +652,7 @@ export function SendScreen({ onBack }: SendScreenProps) {
 
                   <div className="w-full pt-6 space-y-3">
                     <button
-                      onClick={onBack}
+                      onClick={() => setLocation('/main')}
                       className="w-full py-4 px-6 bg-primary-fixed-dim hover:opacity-90 active:scale-[0.98] transition-all rounded-xl flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(0,0,0,0.3)] text-on-primary-fixed font-bold tracking-tight"
                     >
                       Back to Wallet
@@ -694,7 +692,7 @@ export function SendScreen({ onBack }: SendScreenProps) {
                       Try Again
                     </button>
                     <button
-                      onClick={onBack}
+                      onClick={() => setLocation('/main')}
                       className="w-full py-4 bg-transparent border border-white/10 text-on-surface font-semibold rounded-lg active:scale-[0.98] transition-all hover:bg-white/5"
                     >
                       Back to Wallet
@@ -724,7 +722,7 @@ export function SendScreen({ onBack }: SendScreenProps) {
 
                   <div className="mt-12 w-full space-y-3">
                     <button
-                      onClick={onBack}
+                      onClick={() => setLocation('/main')}
                       className="w-full bg-primary-fixed-dim text-on-primary-fixed font-bold py-4 rounded-xl active:scale-[0.98] transition-all hover:opacity-90 shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
                     >
                       Back to Wallet

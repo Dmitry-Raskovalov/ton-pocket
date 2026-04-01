@@ -2,19 +2,16 @@
  * file: ReceiveScreen.tsx
  * description: Receive TON screen — QR code with wallet address, full address display,
  *   copy button, and testnet warning
- * dependencies: qrcode.react, wallet-store, HighlightedAddress, CopyButton, lucide-react
+ * dependencies: qrcode.react, wallet-store, HighlightedAddress, CopyButton, lucide-react, wouter
  * created: 2026-04-01
  */
 
 import { ArrowLeft } from 'lucide-react';
+import { useLocation } from 'wouter';
 import { QRCodeSVG } from 'qrcode.react';
 import { Address } from '@ton/core';
 import { useWalletStore } from '@/store/wallet-store';
 import { HighlightedAddress, CopyButton } from '@/components';
-
-export interface ReceiveScreenProps {
-  onBack: () => void;
-}
 
 /** Convert raw "0:hex" address to user-friendly EQ.../UQ... */
 function toUserFriendly(raw: string): string {
@@ -25,8 +22,9 @@ function toUserFriendly(raw: string): string {
   }
 }
 
-export function ReceiveScreen({ onBack }: ReceiveScreenProps) {
+export function ReceiveScreen() {
   const rawAddress = useWalletStore((s) => s.address);
+  const [, setLocation] = useLocation();
   const displayAddress = rawAddress ? toUserFriendly(rawAddress) : '';
 
   return (
@@ -36,7 +34,7 @@ export function ReceiveScreen({ onBack }: ReceiveScreenProps) {
         {/* ── Header ────────────────────────────────────────────────────── */}
         <header className="flex justify-between items-center px-6 py-6 sticky top-0 z-10 bg-background/80 backdrop-blur-md">
           <button
-            onClick={onBack}
+            onClick={() => setLocation('/main')}
             aria-label="Go back"
             className="hover:opacity-80 transition-opacity flex items-center justify-center w-10 h-10 -ml-2"
           >
@@ -104,7 +102,7 @@ export function ReceiveScreen({ onBack }: ReceiveScreenProps) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 1.73-3Z" />
                 <path d="M12 9v4" />
                 <path d="M12 17h.01" />
               </svg>

@@ -1323,7 +1323,7 @@ Store для UI-состояния с механикой блокировки un
 
 #### 10.1 Роутинг и навигационные guards
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** инфраструктура
 
@@ -1336,11 +1336,11 @@ Store для UI-состояния с механикой блокировки un
 **Зависимости:** зависит от `9.1`–`9.7`, `5.1`, `3.2`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Определить маршруты в App.tsx: `/` (Welcome или Main, зависит от состояния), `/create`, `/import`, `/main`, `/send`, `/confirm`, `/receive`, `/settings`, `/export`.
-- [ ] Шаг 2: Реализовать логику guards: нет vault → redirect на `/`; есть vault + not unlocked → показать Unlock Modal; unlocked → доступ к protected routes.
-- [ ] Шаг 3: Реализовать Unlock Modal (поле пароля, счётчик попыток, блокировка на 5 минут) — использует UI store и vault.decrypt для проверки пароля.
-- [ ] Шаг 4: При успешном unlock — setUnlocked(true) в wallet store, загрузить баланс и транзакции.
-- [ ] Шаг 5: Написать юнит-тесты: guard редиректы, unlock modal — 5 попыток → блокировка.
+- [x] Шаг 1: Определить маршруты в App.tsx: `/welcome`, `/create`, `/import`, `/main`, `/send`, `/receive`, `/settings`.
+- [x] Шаг 2: Реализовать логику guards: нет vault → redirect на `/welcome`; есть vault + not unlocked → показать Unlock Modal; unlocked → доступ к protected routes.
+- [x] Шаг 3: Реализовать Unlock Modal (поле пароля, счётчик попыток, блокировка на 5 минут) — использует UI store и vault.decrypt для проверки пароля.
+- [x] Шаг 4: При успешном unlock — setUnlocked(true) в wallet store, загрузить баланс и транзакции.
+- [x] Шаг 5: Написать юнит-тесты: guard редиректы, unlock modal — 5 попыток → блокировка.
 
 **Ожидаемый результат:**
 Полностью настроенный роутинг с protection guards и unlock flow.

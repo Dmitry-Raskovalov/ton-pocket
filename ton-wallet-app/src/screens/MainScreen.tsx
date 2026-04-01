@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useCallback, useState, useRef } from 'react';
+import { useLocation } from 'wouter';
 import { Wallet, Settings, Send, ArrowDownToLine, Inbox } from 'lucide-react';
 import { Address } from '@ton/core';
 import { useWalletStore } from '@/store/wallet-store';
@@ -14,13 +15,6 @@ import { getBalance, formatTon } from '@/services/ton/balance';
 import { getTransactions } from '@/services/ton/transactions';
 import { addressBook } from '@/services/address-book';
 import { CopyButton, HighlightedAddress, TransactionItem, SearchBar } from '@/components';
-import type { DirectionFilter } from '@/store/types';
-
-export interface MainScreenProps {
-  onSend: () => void;
-  onReceive: () => void;
-  onSettings: () => void;
-}
 
 const POLL_INTERVAL_MS = 30_000;
 const PAGE_SIZE = 20;
@@ -56,7 +50,8 @@ function toUserFriendly(raw: string): string {
   }
 }
 
-export function MainScreen({ onSend, onReceive, onSettings }: MainScreenProps) {
+export function MainScreen() {
+  const [, setLocation] = useLocation();
   const { address: rawAddress, balance, updateBalance } = useWalletStore();
   const {
     transactions,
@@ -162,7 +157,7 @@ export function MainScreen({ onSend, onReceive, onSettings }: MainScreenProps) {
               Testnet
             </span>
             <button
-              onClick={onSettings}
+              onClick={() => setLocation('/settings')}
               aria-label="Settings"
               className="text-on-surface-variant hover:text-on-surface transition-colors"
             >
@@ -191,14 +186,14 @@ export function MainScreen({ onSend, onReceive, onSettings }: MainScreenProps) {
             {/* Action buttons */}
             <div className="flex gap-3 pt-2 w-full">
               <button
-                onClick={onReceive}
+                onClick={() => setLocation('/receive')}
                 className="flex-1 flex items-center justify-center gap-2 py-4 bg-surface-container-high text-on-surface rounded-xl font-bold active:scale-95 transition-transform border border-white/5"
               >
                 <ArrowDownToLine size={18} />
                 Receive
               </button>
               <button
-                onClick={onSend}
+                onClick={() => setLocation('/send')}
                 className="flex-1 flex items-center justify-center gap-2 py-4 bg-gradient-to-br from-primary to-primary-container text-on-primary-fixed rounded-xl font-extrabold active:scale-95 transition-transform shadow-lg shadow-primary/10"
               >
                 <Send size={18} />
