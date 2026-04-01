@@ -5,6 +5,32 @@
 
 ---
 
+## [2026-04-01] - SendScreen (Задача 9.6)
+
+### Добавлено
+- `src/screens/SendScreen.tsx` — трёхшаговый экран отправки TON:
+  - Step 1 (Input Form): поля Recipient Address, Amount (с кнопкой MAX), Comment (optional), отображение баланса, inline-предупреждения с debounce 500ms
+ sticky Continue button
+  - Step 2 (Confirmation): карточка транзакции (адres, amount, fee, comment), WarningList с blocking-чекбоксами, поле пароля, кнопки Confirm & Send / Cancel
+  - Step 3 (Result): Pending (спиннер), Success (tx hash + auto-redirect 3 сек), Error (Try Again), Timeout (status unknown)
+  - Интеграция с validateSend, sendTransfer, vault decrypt, address book
+ auto-refresh баланса после success
+- `src/screens/SendScreen.test.tsx` — 23 юнит-теста: Step 1 (7), validation warnings (2), Step 2 navigation (4), Step 3 results (4), Step 1 fields (3), MAX (2), wrong password (1)
+
+---
+
+## [2026-04-01] - ReceiveScreen (Задача 9.5)
+
+### Добавлено
+- `src/screens/ReceiveScreen.tsx` — экран получения TON:
+  - Sticky header с кнопкой Back и Testnet badge
+  - QR-код (`QRCodeSVG` из `qrcode.react`, 200x200, уровень коррекции M)
+  - Полный адрес кошелька через `HighlightedAddress` (full mode)
+  - `CopyButton` (variant=with-text) для копирования адреса
+  - Предупреждение о testnet (inline SVG alert icon, стилизовано под дизайн)
+
+---
+
 ## [2026-04-01] - MainScreen (Задача 9.4)
 
 ### Добавлено

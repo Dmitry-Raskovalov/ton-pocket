@@ -1,5 +1,40 @@
 # Дневник разработки TON Testnet Wallet
 
+## 2026-04-01 — Задача 9.6: SendScreen
+
+### Наблюдения
+- Трёхшаговый state machine (input → confirm → result) реализован через `useState<Step>` внутри одного компонента. Альтернатива с вложенными route нерами слишком сложна для управления.
+- Debounce валидации (500ms) реализован через `useRef` + `setTimeout` в `useEffect`, который очищает предыдущий таймер при каждом изменении. Это проще чем `useDebounce` хук из библиотеки.
+- `allBlockingConfirmed` — когда `validationWarnings` пуст (нет blocking warnings), подтверждать автоматически `true`, иначе `false` и пользователь должен нажать чекбоксы в WarningList.
+- `parseAmountTon` использует `parseFloat` + `BigInt(Math.round(...))` для конвертации строки в нанотоны. `formatAmountInput` делает обратную конвертацию.
+- Динамический `import('@ton/crypto')` внутри `handleSend` — чтобы не загружать тяжёлый крипто-модуль при рендере, только при фактической отправке.
+
+### Решения
+- Неверный пароль не возвращает ошибку до вызова `sendTransfer` — `decrypt` бросает, ловим в компоненте, устанавливаем `passwordError` и `return` до перехода на result step.
+- Авто-redirect после success/timeout — `useEffect` с `setTimeout(onBack, 3000)`.
+- Tests: статические моки без hoisting-проблем — `vi.mock()` с инлайн-значениями, не ссылками на переменные. Для динамического поведения используем `vi.mocked()`.
+
+### Проблемы
+- 23/23 тестов с первого запуска после исправления hoisting issue.
+
+---
+
+## 2026-04-01 — Задача 9.5: ReceiveScreen
+
+### Наблюдения
+- Дизайн из `receive_screen/code.html` использует inline SVG для иконки предупреждения вместо Lucide. В текущей реализации WarningCard из `components/` требует объект `Warning` с severity/blocking/type — это избыточно для простого статичного предупреждения. Решено использовать inline SVG из дизайна напрямую, что сохраняет pixel-perfect соответствие с макетом.
+- `QRCodeSVG` из `qrcode.react` — экспортирует чистый SVG, что предпочтительнее `QRCodeCanvas` (canvas) для SPA: лучше масштабируется, доступнее для скринридеров, меньше весит в DOM.
+- `CopyButton` с `variant="with-text"` и кастомным className позволяет полностью стилизовать кнопку под дизайн (full-width, uppercase, border) без модификации самого компонента.
+
+### Решения
+- Предупреждение о testnet реализовано как inline-блок (не через `WarningCard`), т.к. `WarningCard` требует controlled checkbox и объект `Warning` — избыточно для некликабельного информационного блока.
+- Адрес читается из `useWalletStore` через селектор `(s) => s.address`, конвертируется через `Address.parseRaw(raw).toString({ bounceable: false })` — тот же паттерн что в MainScreen.
+
+### Проблемы
+- Нет. TypeScript компиляция прошла без ошибок.
+
+---
+
 ## 2026-04-01 — Задача 9.4: MainScreen
 
 ### Наблюдения
