@@ -1,73 +1,107 @@
-# React + TypeScript + Vite
+# TON Pocket 💎
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**TON Pocket** — это современный, безопасный и интуитивно понятный self-custodial криптокошелёк для сети **TON Testnet**.  
+Приложение представляет собой Single Page Application (SPA), работающее полностью на стороне клиента, обеспечивая максимальную приватность и контроль над вашими средствами.
 
-Currently, two official plugins are available:
+![TON Pocket Preview](https://img.shields.io/badge/TON-Testnet-blue?style=for-the-badge&logo=ton&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## ✨ Основные возможности
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 🛡️ **Безопасность**: Шифрование мнемоники по стандарту AES-256-GCM. Ключ деривируется с использованием Argon2id (с автоматическим fallback на PBKDF2).
+- 🔐 **Self-Custodial**: Все секретные данные хранятся только в зашифрованном виде в локальном хранилище вашего браузера.
+- 📦 **Поддержка версий**: Работа с контрактами кошельков версий **v3R2**, **v4R2** и **v5R1**. Автоматическая детекция активных версий при импорте.
+- 💸 **Управление токенами**: Просмотр баланса, истории транзакций и отправка TON в тестовой сети.
+- 🔍 **Умная валидация**: Многоуровневый Pipeline валидации при отправке:
+  - Проверка формата адреса.
+  - Предупреждение при отправке самому себе.
+  - Защита от **Clipboard Poisoning** (проверка на схожесть адресов).
+  - Проверка состояния аккаунта получателя (uninit/frozen).
+- 📒 **Адресная книга**: Автоматическое и ручное сохранение контактов с возможностью присвоения меток.
+- 🎨 **Современный UI**: Премиальный дизайн в стиле Material You с поддержкой глубокой тёмной темы и микро-анимаций.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠 Технологический стек
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Core**: React 18, TypeScript, Vite
+- **Styling**: Tailwind CSS 4
+- **State Management**: Zustand (с persist middleware)
+- **Routing**: Wouter
+- **Blockchain Interface**: `@ton/ton`, `@ton/crypto`
+- **Security**: `argon2-browser`, `zxcvbn-ts` (оценка силы пароля)
+- **Testing**: Vitest, React Testing Library
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🚀 Быстрый старт
+
+### Требования
+- Node.js 18+
+- npm или yarn
+
+### Установка
+1. Клонируйте репозиторий:
+   ```bash
+   git clone https://github.com/Dmitry-Raskovalov/ton-pocket.git
+   cd ton-pocket/ton-wallet-app
+   ```
+
+2. Установите зависимости:
+   ```bash
+   npm install
+   ```
+
+3. Запустите в режиме разработки:
+   ```bash
+   npm run dev
+   ```
+
+### Переменные окружения
+Создайте файл `.env` на основе `.env.example`:
+- `VITE_TON_ENDPOINT`: URL TON Center API (по умолчанию testnet).
+- `VITE_TON_API_KEY`: Ваш API ключ от TON Center.
+
+---
+
+## 🧪 Тестирование
+
+Запуск всех юнит-тестов:
+```bash
+npm run test
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Просмотр покрытия тестами:
+```bash
+npm run test:coverage
 ```
+
+---
+
+## 🏗 Архитектура проекта
+
+- `src/crypto/` — Модули шифрования (KDF, Vault).
+- `src/services/` — Взаимодействие с TON API, валидация и бизнес-логика.
+- `src/store/` — Глобальное состояние приложения (Wallet, Transactions, UI).
+- `src/screens/` — Основные экраны приложения (Onboarding, Main, Send, Receive).
+- `src/components/` — Переиспользуемые UI-компоненты.
+
+---
+
+## 🗺 Планы (Roadmap)
+
+- [ ] Интеграция TON Connect.
+- [ ] Поддержка Mainnet.
+- [ ] Управление NFT и Jettons.
+- [ ] Перевод интерфейса на несколько языков.
+- [ ] Мобильное приложение (React Native).
+
+---
+
+## 📄 Лицензия
+
+Проект распространяется под лицензией MIT. Подробности в файле [LICENSE](../LICENSE).
