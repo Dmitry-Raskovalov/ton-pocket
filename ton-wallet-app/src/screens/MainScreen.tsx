@@ -5,7 +5,7 @@
  * created: 2026-04-01
  */
 
-import { useEffect, useCallback, useState, useRef } from 'react';
+import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Wallet, Settings, Send, ArrowDownToLine, Inbox, AlertTriangle } from 'lucide-react';
 import { Address } from '@ton/core';
@@ -35,13 +35,6 @@ function formatBalance(nanotons: bigint): string {
   return `${whole}.${trimmed.slice(0, 4)}`;
 }
 
-/** "Updated X sec ago" / "Updated X min ago" */
-function formatUpdateAge(timestamp: number | null): string {
-  if (timestamp === null) return '';
-  const sec = Math.floor((Date.now() - timestamp) / 1000);
-  if (sec < 60) return `Updated ${sec} sec ago`;
-  return `Updated ${Math.floor(sec / 60)} min ago`;
-}
 
 /** Convert raw "0:hex" address to user-friendly EQ.../UQ... */
 function toUserFriendly(raw: string): string {
@@ -61,16 +54,12 @@ export function MainScreen() {
     hasMore,
     searchQuery,
     directionFilter,
-    lastUpdateTimestamp,
     setSearchQuery,
     setDirectionFilter,
   } = useTransactionStore();
 
   const { refresh: refreshTx, loadMore } = useTransactions();
   useBalance(refreshTx);
-
-  const [updateAgeLabel, setUpdateAgeLabel] = useState('');
-  const lastUpdateTimestampRef = useRef(lastUpdateTimestamp);
 
   const displayAddress = rawAddress ? toUserFriendly(rawAddress) : '';
 
@@ -86,19 +75,6 @@ export function MainScreen() {
   useEffect(() => {
     void refreshTx();
   }, [refreshTx]);
-
-  // Keep ref in sync so the interval always reads the latest timestamp
-  useEffect(() => {
-    lastUpdateTimestampRef.current = lastUpdateTimestamp;
-  }, [lastUpdateTimestamp]);
-
-  // "Updated X sec ago" ticker
-  useEffect(() => {
-    const tick = () => setUpdateAgeLabel(formatUpdateAge(lastUpdateTimestampRef.current));
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex flex-col min-h-screen items-center bg-background text-on-background">
@@ -192,11 +168,6 @@ export function MainScreen() {
               <h3 className="text-xs font-bold uppercase tracking-widest text-on-surface">
                 Transactions
               </h3>
-              {lastUpdateTimestamp !== null && updateAgeLabel && (
-                <span className="text-[10px] font-medium text-tertiary uppercase tracking-tighter">
-                  {updateAgeLabel}
-                </span>
-              )}
             </div>
 
             {/* Search & direction filters */}

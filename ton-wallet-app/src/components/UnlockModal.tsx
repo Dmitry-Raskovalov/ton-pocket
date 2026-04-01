@@ -25,6 +25,7 @@ export function UnlockModal() {
   const [remainingSeconds, setRemainingSeconds] = useState(0);
 
   const setUnlocked = useWalletStore((s) => s.setUnlocked);
+  const setSessionPassword = useWalletStore((s) => s.setSessionPassword);
   const unlockAttempts = useUIStore((s) => s.unlockAttempts);
   const lockedUntil = useUIStore((s) => s.lockedUntil);
   const incrementUnlockAttempts = useUIStore((s) => s.incrementUnlockAttempts);
@@ -67,6 +68,7 @@ export function UnlockModal() {
       // Success — unlock wallet
       resetUnlockAttempts();
       setUnlocked(true);
+      setSessionPassword(password);
 
       // Load initial data
       const { address, updateBalance } = useWalletStore.getState();

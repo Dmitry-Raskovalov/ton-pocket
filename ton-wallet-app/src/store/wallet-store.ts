@@ -19,6 +19,7 @@ const initialState = {
   isUnlocked: false,
   publicKey: null,
   isActivated: false,
+  sessionPassword: null,
 } as const;
 
 export const useWalletStore = create<WalletStore>()(
@@ -36,6 +37,8 @@ export const useWalletStore = create<WalletStore>()(
       setUnlocked: (isUnlocked) => set({ isUnlocked }),
 
       setActivated: (isActivated) => set({ isActivated }),
+
+      setSessionPassword: (sessionPassword) => set({ sessionPassword }),
     }),
     {
       name: STORE_NAME,

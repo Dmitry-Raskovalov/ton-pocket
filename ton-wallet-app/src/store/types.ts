@@ -24,6 +24,8 @@ export interface WalletState {
   publicKey: string | null;
   /** Развернут ли контракт на блокчейне (не персистируется) */
   isActivated: boolean;
+  /** Пароль текущей сессии в памяти (не персистируется, очищается при блокировке) */
+  sessionPassword: string | null;
 }
 
 export interface WalletActions {
@@ -37,6 +39,8 @@ export interface WalletActions {
   setUnlocked: (isUnlocked: boolean) => void;
   /** Установить статус активации (развернут ли контракт) */
   setActivated: (isActivated: boolean) => void;
+  /** Сохранить пароль сессии в памяти */
+  setSessionPassword: (password: string | null) => void;
 }
 
 export type WalletStore = WalletState & WalletActions;

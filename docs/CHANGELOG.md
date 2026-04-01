@@ -5,6 +5,23 @@
 
 ---
 
+## [2026-04-01] - Улучшение UX подтверждения транзакций
+
+### Добавлено
+- `src/store/types.ts` — поле `sessionPassword: string | null` в `WalletState` (не персистируется) и action `setSessionPassword` в `WalletActions`.
+- `src/store/wallet-store.ts` — реализовано `setSessionPassword`, поле добавлено в `initialState`, не включено в `partialize`.
+
+### Изменено
+- `src/components/UnlockModal.tsx` — при успешном вводе пароля он сохраняется в `sessionPassword` стора.
+- `src/screens/SendScreen.tsx` — радикально упрощён процесс отправки:
+  - Удалена секция "Confirm Identity" с полем пароля на втором шаге.
+  - `handleSend` теперь берет пароль напрямую из `sessionPassword`.
+  - Удалены локальные состояния `password` и `passwordError`.
+  - Удалена неиспользуемая функция `toUserFriendly` и очищены импорты.
+- `src/screens/MainScreen.tsx` — удалена надпись "Updated X min ago" в заголовке списка транзакций.
+
+---
+
 ## [2026-04-01] - Поддержка неактивированных кошельков (Задача 10.4)
 
 ### Добавлено

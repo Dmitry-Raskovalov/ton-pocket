@@ -2,18 +2,18 @@
  * file: SendScreen.tsx
  * description: Three-step send flow — Input Form → Confirmation → Result
  *   Step 1: Recipient address, amount (MAX), comment, inline validation
- *   Step 2: Transaction summary, WarningList with blocking checkboxes, password
+ *   Step 2: Transaction summary, WarningList with blocking checkboxes
  *   Step 3: Pending / Success / Error / Timeout result states
  * dependencies: wallet-store, validate-send, transfer, vault, address-book,
- *               HighlightedAddress, CopyButton, WarningList, PasswordInput, Loader
+ *               HighlightedAddress, CopyButton, WarningList
  * created: 2026-04-01
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import {
-  ArrowLeft, ArrowRight, Lock, Info, RefreshCw,
-  ExternalLink, CheckCircle, XCircle, AlertTriangle, Clock,
+  ArrowLeft, ArrowRight, Info, RefreshCw,
+  CheckCircle, XCircle, AlertTriangle, Clock,
 } from 'lucide-react';
 import { Address } from '@ton/core';
 import { useWalletStore } from '@/store/wallet-store';
@@ -25,7 +25,7 @@ import { formatTon } from '@/services/ton/balance';
 import { loadVault, decrypt } from '@/crypto/vault';
 import { createContract } from '@/services/wallet/contract-factory';
 import { addressBook } from '@/services/address-book/address-book';
-import { HighlightedAddress, CopyButton, WarningList, PasswordInput } from '@/components';
+import { HighlightedAddress, CopyButton, WarningList } from '@/components';
 import type { TransferResult } from '@/services/ton/transfer';
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
@@ -37,15 +37,6 @@ type ResultState = 'pending' | 'success' | 'error' | 'timeout';
 const TON_NANO = 1_000_000_000n;
 const REDIRECT_DELAY_MS = 3000;
 
-// ─── Helpers ────────────────────────────────────────────────────────────────────
-
-function toUserFriendly(raw: string): string {
-  try {
-    return Address.parseRaw(raw).toString({ bounceable: false });
-  } catch {
-    return raw;
-  }
-}
 
 function parseAmountTon(value: string): bigint {
   const trimmed = value.replace(/,/g, '.').trim();
@@ -72,10 +63,9 @@ export function SendScreen() {
   const balance = useWalletStore((s) => s.balance);
   const version = useWalletStore((s) => s.version);
   const publicKeyHex = useWalletStore((s) => s.publicKey);
+  const sessionPassword = useWalletStore((s) => s.sessionPassword);
   const updateBalance = useWalletStore((s) => s.updateBalance);
   const addToast = useUIStore((s) => s.addToast);
-
-  const displayAddress = rawAddress ? toUserFriendly(rawAddress) : '';
 
   // ─── Step state ───────────────────────────────────────────────────────────
   const [step, setStep] = useState<Step>('input');
@@ -92,8 +82,6 @@ export function SendScreen() {
 
   // Step 2: Confirm
   const [allBlockingConfirmed, setAllBlockingConfirmed] = useState(true);
-  const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const [isSending, setIsSending] = useState(false);
 
   // Step 3: Result
@@ -163,8 +151,6 @@ export function SendScreen() {
   const handleContinue = () => {
     setStep('confirm');
     setAllBlockingConfirmed(true);
-    setPassword('');
-    setPasswordError('');
   };
 
   const handleCancelConfirm = () => {
@@ -172,25 +158,19 @@ export function SendScreen() {
   };
 
   const handleSend = async () => {
-    if (!rawAddress || !publicKeyHex || !version) return;
-    setPasswordError('');
+    if (!rawAddress || !publicKeyHex || !version || !sessionPassword) return;
     setIsSending(true);
 
     try {
       // 1. Decrypt vault
       const vault = loadVault();
       if (!vault) {
-        setPasswordError('Wallet vault not found');
+        addToast({ type: 'error', message: 'Wallet vault not found', duration: 4000 });
+        setIsSending(false);
         return;
       }
 
-      let mnemonicJson: string;
-      try {
-        mnemonicJson = await decrypt(vault, password);
-      } catch {
-        setPasswordError('Incorrect password');
-        return;
-      }
+      const mnemonicJson = await decrypt(vault, sessionPassword);
 
       // 2. Derive keypair
       const { mnemonicToPrivateKey } = await import('@ton/crypto');
@@ -509,36 +489,13 @@ export function SendScreen() {
                 </section>
               )}
 
-              {/* Password */}
-              <section className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant px-1">
-                    Confirm Identity
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                      <Lock size={16} className="text-on-surface-variant" />
-                    </div>
-                    <input
-                      type="password"
-                      value={password}
-                      onChange={(e) => { setPassword(e.target.value); setPasswordError(''); }}
-                      placeholder="Enter Wallet Password"
-                      className="w-full bg-surface-container-lowest border-none focus:ring-1 focus:ring-primary/50 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-outline/50 font-mono outline-none"
-                    />
-                  </div>
-                  {passwordError && (
-                    <p className="text-xs text-error px-1">{passwordError}</p>
-                  )}
-                </div>
-              </section>
             </main>
 
             {/* Sticky footer: Confirm + Cancel */}
             <footer className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] p-6 bg-background/80 backdrop-blur-xl space-y-3">
               <button
                 onClick={() => void handleSend()}
-                disabled={!allBlockingConfirmed || !password || isSending}
+                disabled={!allBlockingConfirmed || isSending}
                 className="w-full py-4 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-extrabold uppercase tracking-widest text-sm shadow-xl shadow-primary/10 active:scale-[0.98] transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100"
               >
                 Confirm & Send TON
