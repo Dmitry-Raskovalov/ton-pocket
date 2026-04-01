@@ -23,12 +23,24 @@ export async function isArgon2Available(): Promise<boolean> {
   if (argon2Available !== null) {
     return argon2Available;
   }
-  
+
   try {
-    // Dynamic import to check if argon2-browser is available
-    await import('argon2-browser');
-    argon2Available = true;
-    return true;
+    const argon2 = await import('argon2-browser');
+    // Verify WASM actually loads by running a minimal hash
+    const testResult = await Promise.race([
+      argon2.hash({
+        pass: 'test',
+        salt: new Uint8Array(16),
+        time: 1,
+        mem: 1024,
+        parallelism: 1,
+        hashLen: 32,
+        distPath: '/',
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Argon2 WASM timeout')), 5000)),
+    ]);
+    argon2Available = !!testResult;
+    return argon2Available;
   } catch {
     argon2Available = false;
     return false;
@@ -48,7 +60,7 @@ async function deriveKeyArgon2(password: string, salt: Uint8Array): Promise<KdfR
     mem: 65536, // 64MB
     parallelism: 1,
     hashLen: 32, // 256 bits
-    distPath: '' // Use default
+    distPath: '/',
   });
   
   const params: Argon2Params = {
