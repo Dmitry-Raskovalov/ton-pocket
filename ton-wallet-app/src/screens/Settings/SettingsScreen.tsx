@@ -8,9 +8,10 @@
 
 import { useState } from 'react';
 import { useLocation } from 'wouter';
-import { ArrowLeft, Shield, KeyRound, ChevronRight, Trash2 } from 'lucide-react';
+import { ArrowLeft, Shield, KeyRound, ChevronRight, Trash2, AlertTriangle } from 'lucide-react';
 import { Address } from '@ton/core';
 import { useWalletStore } from '@/store/wallet-store';
+import { clearVault } from '@/crypto/vault';
 import { HighlightedAddress, CopyButton } from '@/components';
 import { ExportScreen } from './ExportScreen';
 import { ChangePasswordModal } from './ChangePasswordModal';
@@ -28,8 +29,16 @@ export function SettingsScreen() {
   const version = useWalletStore((s) => s.version);
   const [, setLocation] = useLocation();
 
+  const clearWallet = useWalletStore((s) => s.clearWallet);
   const [showExport, setShowExport] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  function handleDeleteWallet() {
+    clearVault();
+    clearWallet();
+    setLocation('/');
+  }
 
   const displayAddress = rawAddress ? toUserFriendly(rawAddress) : '';
 
@@ -135,9 +144,8 @@ export function SettingsScreen() {
             </p>
             <div className="bg-surface-container rounded-xl overflow-hidden border border-error/20">
               <button
-                disabled
-                title="Not available in this version"
-                className="w-full flex items-center justify-between p-5 group cursor-not-allowed opacity-50"
+                onClick={() => setShowDeleteConfirm(true)}
+                className="w-full flex items-center justify-between p-5 hover:bg-error/10 transition-colors active:scale-[0.98] duration-150"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-error-container/20 flex items-center justify-center text-error">
@@ -145,9 +153,7 @@ export function SettingsScreen() {
                   </div>
                   <span className="font-bold text-error">Delete Wallet</span>
                 </div>
-                <span className="text-[10px] uppercase tracking-tighter text-error/40 font-bold">
-                  Unavailable
-                </span>
+                <ChevronRight size={18} className="text-error/50" />
               </button>
             </div>
           </section>
@@ -158,6 +164,51 @@ export function SettingsScreen() {
       {/* Modals */}
       {showExport && <ExportScreen onClose={() => setShowExport(false)} />}
       {showChangePassword && <ChangePasswordModal onClose={() => setShowChangePassword(false)} />}
+
+      {/* Delete Wallet Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-[480px] bg-surface-container rounded-2xl overflow-hidden shadow-2xl">
+            <div className="p-6 space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-error/15 flex items-center justify-center text-error shrink-0">
+                  <AlertTriangle size={20} />
+                </div>
+                <h3 className="text-lg font-bold text-on-surface">Delete Wallet</h3>
+              </div>
+
+              <div className="bg-error/10 border border-error/20 rounded-xl p-4 space-y-2">
+                <p className="text-sm text-on-surface font-medium">
+                  The wallet will be removed from browser storage only.
+                </p>
+                <p className="text-sm text-on-surface-variant">
+                  Your funds remain on the blockchain. You can restore access at any time by importing your recovery phrase.
+                </p>
+              </div>
+
+              <p className="text-xs text-on-surface-variant">
+                Make sure your recovery phrase is saved — without it, access cannot be restored.
+              </p>
+            </div>
+
+            <div className="flex border-t border-white/10">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 py-4 text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high transition-colors"
+              >
+                Cancel
+              </button>
+              <div className="w-px bg-white/10" />
+              <button
+                onClick={handleDeleteWallet}
+                className="flex-1 py-4 text-sm font-bold text-error hover:bg-error/10 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
