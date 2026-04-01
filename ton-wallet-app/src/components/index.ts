@@ -11,3 +11,4 @@ export * from './Toast';
 export * from './TransactionItem';
 export * from './WarningCard';
 export * from './WarningList';
+export * from './UnlockModal';

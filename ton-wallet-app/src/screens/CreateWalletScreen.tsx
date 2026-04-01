@@ -1,11 +1,12 @@
 /**
  * file: CreateWalletScreen.tsx
  * description: Two-step wallet creation screen: set password → backup mnemonic.
- * dependencies: WalletService, wallet-store, ui-store, PasswordInput, CopyButton
+ * dependencies: WalletService, wallet-store, ui-store, PasswordInput, CopyButton, wouter
  * created: 2026-04-01
  */
 
 import { useState } from 'react';
+import { useLocation } from 'wouter';
 import { ChevronLeft, Settings, ArrowRight, AlertTriangle, Info } from 'lucide-react';
 import { PasswordInput } from '@/components/PasswordInput';
 import { CopyButton } from '@/components/CopyButton';
@@ -13,11 +14,6 @@ import { evaluatePassword } from '@/crypto/password-strength';
 import { walletService } from '@/services/wallet/WalletService';
 import { useWalletStore } from '@/store/wallet-store';
 import { useUIStore } from '@/store/ui-store';
-
-interface CreateWalletScreenProps {
-  onBack: () => void;
-  onComplete: () => void;
-}
 
 // ─── Step 1: Set Password ──────────────────────────────────────────────────────
 
@@ -265,14 +261,15 @@ function StepMnemonic({ mnemonic, onBack, onContinue }: StepMnemonicProps) {
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 
-export function CreateWalletScreen({ onBack, onComplete }: CreateWalletScreenProps) {
+export function CreateWalletScreen() {
   const [step, setStep] = useState<'password' | 'mnemonic'>('password');
   const [mnemonic, setMnemonic] = useState<string[]>([]);
   const [walletData, setWalletData] = useState<{ address: string; version: string; publicKey: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { setWallet } = useWalletStore();
+  const { setWallet, setUnlocked } = useWalletStore();
   const { addToast } = useUIStore();
+  const [, setLocation] = useLocation();
 
   const handlePassword = async (password: string) => {
     setIsLoading(true);
@@ -295,7 +292,8 @@ export function CreateWalletScreen({ onBack, onComplete }: CreateWalletScreenPro
       version: walletData.version as 'v3R2' | 'v4R2' | 'v5R1',
       publicKey: walletData.publicKey,
     });
-    onComplete();
+    setUnlocked(true);
+    setLocation('/main');
   };
 
   if (step === 'mnemonic') {
@@ -310,7 +308,7 @@ export function CreateWalletScreen({ onBack, onComplete }: CreateWalletScreenPro
 
   return (
     <StepPassword
-      onBack={onBack}
+      onBack={() => setLocation('/')}
       onContinue={handlePassword}
       isLoading={isLoading}
     />

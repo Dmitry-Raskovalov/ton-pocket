@@ -1,11 +1,12 @@
 /**
  * file: ImportMnemonicScreen.tsx
  * description: Three-step wallet import screen: enter mnemonic → set password → (optional) select version.
- * dependencies: WalletService, wallet-store, ui-store, PasswordInput
+ * dependencies: WalletService, wallet-store, ui-store, PasswordInput, wouter
  * created: 2026-04-01
  */
 
 import { useState } from 'react';
+import { useLocation } from 'wouter';
 import { ChevronLeft, ArrowRight, ClipboardPaste, ShieldCheck, Info } from 'lucide-react';
 import { PasswordInput } from '@/components/PasswordInput';
 import { evaluatePassword } from '@/crypto/password-strength';
@@ -14,11 +15,6 @@ import { formatTon } from '@/services/ton/balance';
 import { useWalletStore } from '@/store/wallet-store';
 import { useUIStore } from '@/store/ui-store';
 import type { DetectedWallet, WalletVersion } from '@/services/wallet/contract-factory';
-
-interface ImportMnemonicScreenProps {
-  onBack: () => void;
-  onComplete: () => void;
-}
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -486,15 +482,16 @@ function StepSelectVersion({
 
 type Step = 'mnemonic' | 'password' | 'version';
 
-export function ImportMnemonicScreen({ onBack, onComplete }: ImportMnemonicScreenProps) {
+export function ImportMnemonicScreen() {
   const [step, setStep] = useState<Step>('mnemonic');
   const [words, setWords] = useState<string[]>([]);
   const [password, setPassword] = useState('');
   const [detectedWallets, setDetectedWallets] = useState<DetectedWallet[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { setWallet } = useWalletStore();
+  const { setWallet, setUnlocked } = useWalletStore();
   const { addToast } = useUIStore();
+  const [, setLocation] = useLocation();
 
   const handleMnemonicContinue = (validatedWords: string[]) => {
     setWords(validatedWords);
@@ -508,17 +505,16 @@ export function ImportMnemonicScreen({ onBack, onComplete }: ImportMnemonicScree
       const result = await walletService.importFromMnemonic(words, pwd);
 
       if (result.needsVersionChoice) {
-        // Multiple versions found — show selection screen
         setDetectedWallets(result.detectedWallets);
         setStep('version');
         return;
       }
 
-      // Single version auto-selected and vault saved
       if (result.address && result.version) {
         setWallet({ address: result.address, version: result.version, publicKey: '' });
       }
-      onComplete();
+      setUnlocked(true);
+      setLocation('/main');
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Failed to import wallet. Please try again.';
@@ -535,7 +531,8 @@ export function ImportMnemonicScreen({ onBack, onComplete }: ImportMnemonicScree
       if (result.address && result.version) {
         setWallet({ address: result.address, version: result.version, publicKey: '' });
       }
-      onComplete();
+      setUnlocked(true);
+      setLocation('/main');
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Failed to import wallet. Please try again.';
@@ -566,5 +563,5 @@ export function ImportMnemonicScreen({ onBack, onComplete }: ImportMnemonicScree
     );
   }
 
-  return <StepMnemonic onBack={onBack} onContinue={handleMnemonicContinue} />;
+  return <StepMnemonic onBack={() => setLocation('/')} onContinue={handleMnemonicContinue} />;
 }

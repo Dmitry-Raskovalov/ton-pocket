@@ -61,8 +61,6 @@
    npm run dev
    ```
 
-4. Чтобы остановить сервер, нажмите `Ctrl+C` в терминале.
-
 ### Переменные окружения
 Создайте файл `.env` на основе `.env.example`:
 - `VITE_TON_ENDPOINT`: URL TON Center API (по умолчанию testnet).

@@ -11,19 +11,21 @@ import { Wallet, Settings, Send, ArrowDownToLine, Inbox } from 'lucide-react';
 import { Address } from '@ton/core';
 import { useWalletStore } from '@/store/wallet-store';
 import { useTransactionStore, getFilteredTransactions } from '@/store/transaction-store';
-import { getBalance, formatTon } from '@/services/ton/balance';
-import { getTransactions } from '@/services/ton/transactions';
 import { addressBook } from '@/services/address-book';
 import { CopyButton, HighlightedAddress, TransactionItem, SearchBar } from '@/components';
+import { useBalance } from '@/hooks/useBalance';
+import { useTransactions } from '@/hooks/useTransactions';
+import type { DirectionFilter } from '@/store/types';
 
-const POLL_INTERVAL_MS = 30_000;
-const PAGE_SIZE = 20;
+
 
 const FILTER_TABS: { key: DirectionFilter; label: string }[] = [
   { key: 'all', label: 'All' },
   { key: 'in', label: 'Incoming' },
   { key: 'out', label: 'Outgoing' },
 ];
+
+import { formatTon } from '@/services/ton/balance';
 
 /** Format nanotons: max 4 decimal places, trailing zeros stripped */
 function formatBalance(nanotons: bigint): string {
@@ -52,7 +54,7 @@ function toUserFriendly(raw: string): string {
 
 export function MainScreen() {
   const [, setLocation] = useLocation();
-  const { address: rawAddress, balance, updateBalance } = useWalletStore();
+  const { address: rawAddress, balance } = useWalletStore();
   const {
     transactions,
     isLoading,
@@ -60,12 +62,12 @@ export function MainScreen() {
     searchQuery,
     directionFilter,
     lastUpdateTimestamp,
-    setTransactions,
-    appendTransactions,
     setSearchQuery,
     setDirectionFilter,
-    setLoading,
   } = useTransactionStore();
+
+  const { refresh: refreshTx, loadMore } = useTransactions();
+  useBalance(refreshTx);
 
   const [updateAgeLabel, setUpdateAgeLabel] = useState('');
   const lastUpdateTimestampRef = useRef(lastUpdateTimestamp);
@@ -80,52 +82,10 @@ export function MainScreen() {
 
   const filteredTx = getFilteredTransactions(labelMap);
 
-  // ─── Data loading ─────────────────────────────────────────────────────────
-
-  const loadInitial = useCallback(async () => {
-    if (!rawAddress) return;
-    setLoading(true);
-    try {
-      const txs = await getTransactions(rawAddress, PAGE_SIZE + 1);
-      setTransactions(txs.slice(0, PAGE_SIZE), txs.length > PAGE_SIZE);
-    } finally {
-      setLoading(false);
-    }
-  }, [rawAddress, setTransactions, setLoading]);
-
-  const loadMore = useCallback(async () => {
-    if (!rawAddress || isLoading || !hasMore || transactions.length === 0) return;
-    setLoading(true);
-    try {
-      const last = transactions[transactions.length - 1];
-      const txs = await getTransactions(rawAddress, PAGE_SIZE + 1, last.lt, last.hash);
-      appendTransactions(txs.slice(0, PAGE_SIZE), txs.length > PAGE_SIZE);
-    } finally {
-      setLoading(false);
-    }
-  }, [rawAddress, isLoading, hasMore, transactions, appendTransactions, setLoading]);
-
-  const refreshBalance = useCallback(async () => {
-    if (!rawAddress) return;
-    try {
-      const bal = await getBalance(rawAddress);
-      updateBalance(bal);
-    } catch {
-      // keep last known value on error
-    }
-  }, [rawAddress, updateBalance]);
-
-  // Mount: load transactions and balance
+  // Mount: load transactions
   useEffect(() => {
-    void loadInitial();
-    void refreshBalance();
-  }, [loadInitial, refreshBalance]);
-
-  // Poll balance every 30 sec
-  useEffect(() => {
-    const id = setInterval(() => void refreshBalance(), POLL_INTERVAL_MS);
-    return () => clearInterval(id);
-  }, [refreshBalance]);
+    void refreshTx();
+  }, [refreshTx]);
 
   // Keep ref in sync so the interval always reads the latest timestamp
   useEffect(() => {
@@ -228,11 +188,10 @@ export function MainScreen() {
                   <button
                     key={key}
                     onClick={() => setDirectionFilter(key)}
-                    className={`px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${
-                      directionFilter === key
-                        ? 'bg-primary text-on-primary-fixed'
-                        : 'bg-surface-container text-on-surface-variant hover:text-on-surface'
-                    }`}
+                    className={`px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${directionFilter === key
+                      ? 'bg-primary text-on-primary-fixed'
+                      : 'bg-surface-container text-on-surface-variant hover:text-on-surface'
+                      }`}
                   >
                     {label}
                   </button>
@@ -246,7 +205,7 @@ export function MainScreen() {
                 <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
 
-            /* Empty state */
+              /* Empty state */
             ) : filteredTx.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-8 text-center bg-surface-container rounded-xl border border-white/[0.02]">
                 <div className="w-16 h-16 rounded-full bg-surface-container-lowest flex items-center justify-center mb-6">
@@ -264,7 +223,7 @@ export function MainScreen() {
                 </p>
               </div>
 
-            /* Transaction list */
+              /* Transaction list */
             ) : (
               <div className="space-y-3 pt-2">
                 {filteredTx.map((tx) => (
