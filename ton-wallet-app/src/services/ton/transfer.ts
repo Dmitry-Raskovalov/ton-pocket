@@ -5,13 +5,12 @@
  * created: 2026-03-31
  */
 
-import { Address, Cell, comment as makeComment } from '@ton/core';
+import { Address, comment as makeComment } from '@ton/core';
 import type {
   WalletContractV3R2,
-  WalletContractV4,
   WalletContractV5R1,
 } from '@ton/ton';
-import { internal } from '@ton/ton';
+import { internal, WalletContractV4 } from '@ton/ton';
 import { getTonClient, NetworkError, RateLimitError, ApiError } from './client';
 
 // --- Types ---
@@ -58,18 +57,16 @@ function sleep(ms: number): Promise<void> {
 
 /**
  * Get current seqno from the blockchain for a wallet contract.
+ * Uses contract's get-method via client.open() — the only correct way.
  */
 async function getSeqno(contract: WalletContract): Promise<number> {
   const client = getTonClient();
   try {
-    return await client.getContractState(contract.address).then((state) => {
-      if (state.state === 'active' && state.seqno !== undefined) {
-        return state.seqno;
-      }
-      return 0;
-    });
+    // Cast to V4 is safe: all wallet versions share the same getSeqno() signature
+    const opened = client.open(contract as WalletContractV4);
+    return await opened.getSeqno();
   } catch {
-    // Contract not deployed yet
+    // Contract not yet deployed (seqno = 0)
     return 0;
   }
 }
@@ -92,10 +89,27 @@ export async function sendTransfer(params: TransferParams): Promise<TransferResu
   const { recipient, amount, comment, contract, secretKey } = params;
   const client = getTonClient();
 
-  // Parse recipient address
-  const recipientAddress = typeof recipient === 'string'
-    ? (recipient.includes(':') ? Address.parseRaw(recipient) : Address.parse(recipient))
-    : recipient;
+  // Parse recipient address and determine bounce flag
+  let recipientAddress: Address;
+  let bounce: boolean;
+
+  if (typeof recipient === 'string') {
+    if (recipient.includes(':')) {
+      // Raw format "0:hex" — non-bounceable by default
+      recipientAddress = Address.parseRaw(recipient);
+      bounce = false;
+    } else {
+      // Friendly format — extract bounce flag from address encoding
+      // URL-safe base64 may contain '-' and '_' instead of '+' and '/'
+      const parsed = Address.parseFriendly(recipient);
+      recipientAddress = parsed.address;
+      bounce = parsed.isBounceable;
+    }
+  } else {
+    // Address object — default to non-bounceable
+    recipientAddress = recipient;
+    bounce = false;
+  }
 
   try {
     // Step 1: Get current seqno
@@ -109,7 +123,7 @@ export async function sendTransfer(params: TransferParams): Promise<TransferResu
         internal({
           to: recipientAddress,
           value: amount,
-          bounce: true,
+          bounce,
           body: comment ? makeComment(comment) : undefined,
         }),
       ],

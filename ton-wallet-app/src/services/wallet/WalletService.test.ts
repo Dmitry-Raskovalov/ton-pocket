@@ -39,15 +39,18 @@ vi.mock('./contract-factory', async () => {
   const actual = await vi.importActual<typeof import('./contract-factory')>('./contract-factory');
   return {
     ...actual,
-    detectVersions: vi.fn().mockResolvedValue([
-      {
-        version: 'v4R2',
-        addressRaw: '0:' + 'ab'.repeat(32),
-        addressFriendly: 'EQ' + 'ab'.repeat(32),
-        balance: 0n,
-        isDeployed: false,
-      },
-    ]),
+    detectVersions: vi.fn().mockResolvedValue({
+      wallets: [
+        {
+          version: 'v4R2',
+          addressRaw: '0:' + 'ab'.repeat(32),
+          addressFriendly: 'EQ' + 'ab'.repeat(32),
+          balance: 0n,
+          isDeployed: false,
+        },
+      ],
+      hadNetworkError: false,
+    }),
   };
 });
 
@@ -198,15 +201,18 @@ describe('WalletService.importFromMnemonic', () => {
   });
 
   it('creates wallet with v4R2 when auto-detection returns single version', async () => {
-    vi.mocked(detectVersions).mockResolvedValueOnce([
-      {
-        version: 'v4R2',
-        addressRaw: '0:' + 'ab'.repeat(32),
-        addressFriendly: 'EQ' + 'ab'.repeat(32),
-        balance: 0n,
-        isDeployed: false,
-      },
-    ]);
+    vi.mocked(detectVersions).mockResolvedValueOnce({
+      wallets: [
+        {
+          version: 'v4R2',
+          addressRaw: '0:' + 'ab'.repeat(32),
+          addressFriendly: 'EQ' + 'ab'.repeat(32),
+          balance: 0n,
+          isDeployed: false,
+        },
+      ],
+      hadNetworkError: false,
+    });
 
     const result = await service.importFromMnemonic(MNEMONIC, PASSWORD);
 
@@ -216,15 +222,18 @@ describe('WalletService.importFromMnemonic', () => {
   });
 
   it('creates wallet with v4R2 when auto-detection finds no deployed wallets', async () => {
-    vi.mocked(detectVersions).mockResolvedValueOnce([
-      {
-        version: 'v4R2',
-        addressRaw: '0:' + 'ab'.repeat(32),
-        addressFriendly: 'EQ' + 'ab'.repeat(32),
-        balance: 0n,
-        isDeployed: false,
-      },
-    ]);
+    vi.mocked(detectVersions).mockResolvedValueOnce({
+      wallets: [
+        {
+          version: 'v4R2',
+          addressRaw: '0:' + 'ab'.repeat(32),
+          addressFriendly: 'EQ' + 'ab'.repeat(32),
+          balance: 0n,
+          isDeployed: false,
+        },
+      ],
+      hadNetworkError: false,
+    });
 
     const result = await service.importFromMnemonic(MNEMONIC, PASSWORD);
 
@@ -233,22 +242,25 @@ describe('WalletService.importFromMnemonic', () => {
   });
 
   it('returns needsVersionChoice=true when multiple versions found', async () => {
-    vi.mocked(detectVersions).mockResolvedValueOnce([
-      {
-        version: 'v3R2',
-        addressRaw: '0:' + '11'.repeat(32),
-        addressFriendly: 'EQ' + '11'.repeat(32),
-        balance: 1_000_000_000n,
-        isDeployed: true,
-      },
-      {
-        version: 'v4R2',
-        addressRaw: '0:' + '22'.repeat(32),
-        addressFriendly: 'EQ' + '22'.repeat(32),
-        balance: 2_000_000_000n,
-        isDeployed: true,
-      },
-    ]);
+    vi.mocked(detectVersions).mockResolvedValueOnce({
+      wallets: [
+        {
+          version: 'v3R2',
+          addressRaw: '0:' + '11'.repeat(32),
+          addressFriendly: 'EQ' + '11'.repeat(32),
+          balance: 1_000_000_000n,
+          isDeployed: true,
+        },
+        {
+          version: 'v4R2',
+          addressRaw: '0:' + '22'.repeat(32),
+          addressFriendly: 'EQ' + '22'.repeat(32),
+          balance: 2_000_000_000n,
+          isDeployed: true,
+        },
+      ],
+      hadNetworkError: false,
+    });
 
     const result = await service.importFromMnemonic(MNEMONIC, PASSWORD);
 
@@ -261,22 +273,25 @@ describe('WalletService.importFromMnemonic', () => {
   });
 
   it('uses selectedVersion when provided (skips version choice)', async () => {
-    vi.mocked(detectVersions).mockResolvedValueOnce([
-      {
-        version: 'v3R2',
-        addressRaw: '0:' + '11'.repeat(32),
-        addressFriendly: 'EQ' + '11'.repeat(32),
-        balance: 1n,
-        isDeployed: true,
-      },
-      {
-        version: 'v4R2',
-        addressRaw: '0:' + '22'.repeat(32),
-        addressFriendly: 'EQ' + '22'.repeat(32),
-        balance: 2n,
-        isDeployed: true,
-      },
-    ]);
+    vi.mocked(detectVersions).mockResolvedValueOnce({
+      wallets: [
+        {
+          version: 'v3R2',
+          addressRaw: '0:' + '11'.repeat(32),
+          addressFriendly: 'EQ' + '11'.repeat(32),
+          balance: 1n,
+          isDeployed: true,
+        },
+        {
+          version: 'v4R2',
+          addressRaw: '0:' + '22'.repeat(32),
+          addressFriendly: 'EQ' + '22'.repeat(32),
+          balance: 2n,
+          isDeployed: true,
+        },
+      ],
+      hadNetworkError: false,
+    });
 
     const result = await service.importFromMnemonic(MNEMONIC, PASSWORD, 'v3R2');
 
@@ -313,22 +328,25 @@ describe('WalletService.importFromMnemonic', () => {
   });
 
   it('does not save vault when multiple versions found', async () => {
-    vi.mocked(detectVersions).mockResolvedValueOnce([
-      {
-        version: 'v3R2',
-        addressRaw: '0:' + '11'.repeat(32),
-        addressFriendly: 'EQ' + '11'.repeat(32),
-        balance: 0n,
-        isDeployed: true,
-      },
-      {
-        version: 'v4R2',
-        addressRaw: '0:' + '22'.repeat(32),
-        addressFriendly: 'EQ' + '22'.repeat(32),
-        balance: 0n,
-        isDeployed: true,
-      },
-    ]);
+    vi.mocked(detectVersions).mockResolvedValueOnce({
+      wallets: [
+        {
+          version: 'v3R2',
+          addressRaw: '0:' + '11'.repeat(32),
+          addressFriendly: 'EQ' + '11'.repeat(32),
+          balance: 0n,
+          isDeployed: true,
+        },
+        {
+          version: 'v4R2',
+          addressRaw: '0:' + '22'.repeat(32),
+          addressFriendly: 'EQ' + '22'.repeat(32),
+          balance: 0n,
+          isDeployed: true,
+        },
+      ],
+      hadNetworkError: false,
+    });
 
     await service.importFromMnemonic(MNEMONIC, PASSWORD);
 

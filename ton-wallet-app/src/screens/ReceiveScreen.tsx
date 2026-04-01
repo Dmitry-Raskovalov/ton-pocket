@@ -6,7 +6,7 @@
  * created: 2026-04-01
  */
 
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, AlertTriangle } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { QRCodeSVG } from 'qrcode.react';
 import { Address } from '@ton/core';
@@ -24,6 +24,7 @@ function toUserFriendly(raw: string): string {
 
 export function ReceiveScreen() {
   const rawAddress = useWalletStore((s) => s.address);
+  const isActivated = useWalletStore((s) => s.isActivated);
   const [, setLocation] = useLocation();
   const displayAddress = rawAddress ? toUserFriendly(rawAddress) : '';
 
@@ -87,6 +88,24 @@ export function ReceiveScreen() {
               className="w-full justify-center gap-2 py-4 px-6 rounded-lg border border-outline/20 bg-transparent hover:bg-white/5 active:scale-[0.98] transition-all text-sm font-bold uppercase tracking-wider text-primary"
             />
           </div>
+
+          {/* Activation info */}
+          {!isActivated && (
+            <div className="bg-warning/10 p-4 rounded-lg flex gap-4 items-start border border-warning/20">
+              <div className="bg-warning/20 p-2 rounded-md">
+                <AlertTriangle size={20} className="text-warning" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-bold uppercase tracking-wider text-warning">
+                  Wallet Not Activated
+                </p>
+                <p className="text-sm text-warning/90 leading-snug">
+                  Your wallet contract is not deployed yet. Funds sent to this address will be credited,
+                  but you will need to make an outgoing transaction to fully activate the wallet.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Testnet Warning */}
           <div className="bg-tertiary-container/10 p-4 rounded-lg flex gap-4 items-start border border-tertiary-container/20">

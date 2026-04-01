@@ -1426,6 +1426,48 @@ Graceful обработка всех ошибок сети с информати
 
 ---
 
+#### 10.4 Поддержка неактивированных кошельков
+
+**Статус:** DONE
+
+**Тип:** интеграция / исправление ошибки
+
+**Описание:**
+Новый кошелёк TON существует только как адрес — контракт на блокчейне не развёрнут (состояние `uninit`). Токены, отправленные на такой адрес через bounceable-адрес, возвращаются отправителю. Задача: корректно обрабатывать это состояние на уровне отправки, валидации и UI.
+
+**Контекст и исходные материалы:**
+- `transfer.ts` — хардкод `bounce: true` блокирует получение токенов на uninit-кошелёк
+- `account-state.ts` — `account_uninit` помечен `blocking: true` даже для non-bounceable адресов
+- `TonClient.sendExternalMessage` — уже автоматически включает `stateInit` для неразвёрнутого отправителя (деплой происходит при первом исходящем TX)
+- `ReceiveScreen` — уже показывает non-bounceable адрес (`bounceable: false`) — корректно
+
+**Зависимости:** зависит от `4.1`, `5.1`, `10.2`
+
+**Шаги выполнения:**
+- [x] Шаг 1: `transfer.ts` — определять флаг `bounce` из формата адреса получателя: `Address.parseFriendly()` для friendly-формата, `false` по умолчанию для raw-формата (`0:hex`). Передавать в `internal({ bounce })`.
+- [x] Шаг 2: `account-state.ts` — ослабить ограничение: uninit + non-bounceable адрес → `severity: 'warning', blocking: false` (информируем, не блокируем). Uninit + bounceable остаётся `error, blocking: true`.
+- [x] Шаг 3: `store/types.ts` + `store/wallet-store.ts` — добавить поле `isActivated: boolean` (default: `false`, не персистируется) и action `setActivated(value: boolean)`.
+- [x] Шаг 4: `hooks/useBalance.ts` — при каждом polling вызывать `getContractState(address)`, обновлять `isActivated` через `setActivated(state === 'active')`.
+- [x] Шаг 5: `screens/MainScreen.tsx` — показывать баннер «Wallet not activated» когда `!isActivated && balance === 0n`: non-bounceable адрес для пополнения, объяснение что деплой произойдёт при первом исходящем TX.
+- [x] Шаг 6: `screens/ReceiveScreen.tsx` — показывать инфо-плашку «Wallet not activated» когда `!isActivated` с инструкцией.
+- [x] Шаг 7: Обновить/написать юнит-тесты: `transfer.ts` (bounce флаг), `account-state.ts` (non-bounceable uninit), `useBalance.ts` (setActivated вызывается), `wallet-store.ts` (новый action). Все тесты проходят (включая `useBalance.test.ts` с поправленными моками).
+
+**Ожидаемый результат:**
+Токены корректно поступают на неактивированный кошелёк; UI информирует пользователя о статусе активации; первый исходящий TX автоматически деплоит контракт.
+
+**Критерии проверки:**
+- Отправка TON на uninit-кошелёк через non-bounceable адрес — не блокируется, средства доходят.
+- Отправка через bounceable-адрес на uninit-кошелёк — заблокирована с ошибкой.
+- MainScreen показывает баннер активации для нового кошелька.
+- После первого исходящего TX баннер исчезает (кошелёк active).
+- Все тесты проходят.
+
+**Допущения и риски:**
+- `TonClient.sendExternalMessage` автоматически добавляет `stateInit` — дополнительный код деплоя не нужен.
+- `getContractState` делает дополнительный RPC-запрос при каждом polling — умеренная нагрузка на API.
+
+---
+
 ### 11. Тестирование
 
 ---

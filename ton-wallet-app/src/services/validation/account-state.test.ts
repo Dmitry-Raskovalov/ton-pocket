@@ -33,13 +33,13 @@ describe('checkAccountState', () => {
     expect(result).toEqual([]);
   });
 
-  it('возвращает [account_uninit] для uninit + non-bounceable адреса', async () => {
+  it('возвращает [account_uninit] для uninit + non-bounceable адреса (non-blocking)', async () => {
     mockGetContractState.mockResolvedValue({ state: 'uninit' });
     const result = await checkAccountState(NON_BOUNCEABLE);
     expect(result).toHaveLength(1);
     expect(result[0].type).toBe('account_uninit');
     expect(result[0].severity).toBe('warning');
-    expect(result[0].blocking).toBe(true);
+    expect(result[0].blocking).toBe(false);
   });
 
   it('возвращает [account_uninit, bounce_risk] для uninit + bounceable адреса', async () => {
@@ -47,6 +47,8 @@ describe('checkAccountState', () => {
     const result = await checkAccountState(BOUNCEABLE);
     expect(result).toHaveLength(2);
     expect(result[0].type).toBe('account_uninit');
+    expect(result[0].severity).toBe('error');
+    expect(result[0].blocking).toBe(true);
     expect(result[1].type).toBe('bounce_risk');
     expect(result[1].severity).toBe('error');
     expect(result[1].blocking).toBe(true);

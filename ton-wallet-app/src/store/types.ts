@@ -22,6 +22,8 @@ export interface WalletState {
   isUnlocked: boolean;
   /** Публичный ключ в hex (персистируется) */
   publicKey: string | null;
+  /** Развернут ли контракт на блокчейне (не персистируется) */
+  isActivated: boolean;
 }
 
 export interface WalletActions {
@@ -33,6 +35,8 @@ export interface WalletActions {
   updateBalance: (balance: bigint) => void;
   /** Установить статус авторизации */
   setUnlocked: (isUnlocked: boolean) => void;
+  /** Установить статус активации (развернут ли контракт) */
+  setActivated: (isActivated: boolean) => void;
 }
 
 export type WalletStore = WalletState & WalletActions;

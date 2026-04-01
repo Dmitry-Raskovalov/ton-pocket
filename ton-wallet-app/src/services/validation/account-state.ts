@@ -47,19 +47,27 @@ export async function checkAccountState(recipientAddress: string): Promise<Warni
   }
 
   if (state.state === 'uninit') {
-    warnings.push({
-      type: 'account_uninit',
-      message: 'Аккаунт получателя не инициализирован.',
-      severity: 'warning',
-      blocking: true,
-    });
-
     if (parsed.bounceable) {
+      // Bounceable + uninit: funds will bounce back — error, blocking
+      warnings.push({
+        type: 'account_uninit',
+        message: 'Аккаунт получателя не инициализирован. Средства вернутся отправителю.',
+        severity: 'error',
+        blocking: true,
+      });
       warnings.push({
         type: 'bounce_risk',
         message: 'Адрес bounceable — средства вернутся отправителю, если аккаунт не инициализирован.',
         severity: 'error',
         blocking: true,
+      });
+    } else {
+      // Non-bounceable + uninit: funds will be credited — inform, don't block
+      warnings.push({
+        type: 'account_uninit',
+        message: 'Аккаунт получателя не инициализирован. Средства будут зачислены, но получатель не сможет ими воспользоваться до активации.',
+        severity: 'warning',
+        blocking: false,
       });
     }
   }

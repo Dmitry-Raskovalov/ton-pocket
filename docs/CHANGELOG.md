@@ -5,6 +5,25 @@
 
 ---
 
+## [2026-04-01] - Поддержка неактивированных кошельков (Задача 10.4)
+
+### Добавлено
+- `src/services/ton/transfer.ts` — флаг `bounce` теперь определяется из формата адреса получателя: `Address.parseFriendly()` для friendly-формата (извлекает `isBounceable`), `false` по умолчанию для raw-формата (`0:hex`), `false` для объектов `Address`. Раньше был хардкод `bounce: true`.
+- `src/store/types.ts` — поле `isActivated: boolean` в `WalletState` (default `false`, не персистируется) и action `setActivated` в `WalletActions`.
+- `src/store/wallet-store.ts` — реализован `setActivated`, поле добавлено в `initialState`, не включено в `partialize`.
+- `src/hooks/useBalance.ts` — при каждом polling теперь параллельно вызываются `getBalance` и `getContractState`; `isActivated` обновляется через `setActivated(state === 'active')`.
+- `src/screens/MainScreen.tsx` — баннер «Wallet Not Activated» для неактивированных кошельков (`!isActivated && balance === 0n`): non-bounceable адрес для пополнения, объяснение механизма деплоя.
+- `src/screens/ReceiveScreen.tsx` — инфо-плашка «Wallet Not Activated» когда `!isActivated` с инструкцией для пользователя.
+
+### Изменено
+- `src/services/validation/account-state.ts` — ослаблено ограничение для uninit аккаунтов: uninit + non-bounceable → `severity: 'warning', blocking: false` (информируем, не блокируем). Uninit + bounceable остаётся `severity: 'error', blocking: true` (средства вернутся).
+
+### Тестирование
+- `src/hooks/useBalance.test.ts` — все тесты проходят (включая polling и `setActivated`).
+- `src/services/ton/transfer.test.ts` — полностью переписан с корректными моками `client.open().getSeqno()`, но использует `importOriginal` для сохранения классов ошибок. 9/9 тестов проходят.
+- `src/services/validation/account-state.test.ts` — обновлён для поддержки uninit адресов.
+- `src/store/wallet-store.test.ts` — обновлён для поля `isActivated`.
+
 ## [2026-04-01] - Исправление ошибки импорта кошелька
 
 ### Исправлено

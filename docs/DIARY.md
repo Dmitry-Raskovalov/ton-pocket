@@ -1,5 +1,25 @@
 # Дневник разработки TON Testnet Wallet
 
+## [2026-04-01] - Поддержка неактивированных кошельков (Задача 10.4)
+
+### Наблюдения
+- Новый кошелёк TON — это просто адрес, контракт не развёрнут (state=`uninit`). Токены через bounceable-адрес вернутся отправителю. Это критический UX-баг: пользователь создавал кошелёк, давал адрес, но не мог получать средства.
+- `transfer.ts` имел хардкод `bounce: true` — основная причина проблемы. Флаг bounce нужно брать из формата адреса получателя: `Address.parseFriendly()` возвращает `isBounceable`, raw-формат (`0:hex`) всегда non-bounceable.
+- `account-state.ts` помечал uninit аккаунты как `blocking: true` даже для non-bounceable адресов — слишком агрессивно. Non-bounceable + uninit = средства доходят, blocking не нужен.
+- `getContractState` можно вызывать параллельно с `getBalance` в `useBalance` — один дополнительный RPC-запрос каждые 10 сек.
+
+### Решения
+- **bounce-флаг**: `Address.parseFriendly(recipient)` извлекает `isBounceable` из friendly-формата. Raw-формат → `false`. Address-объект → `false`. Это соответствует TON-спецификации: отправитель решает через формат адреса.
+- **isActivated**: добавлено в `WalletState` (non-persisted, default `false`). Обновляется при каждом polling в `useBalance`. UI показывает баннеры на MainScreen и ReceiveScreen.
+- **MainScreen баннер**: показывается только при `!isActivated && balance === 0n` — чтобы не спамить пользователя который уже пополнил кошелёк.
+- **account-state.ts**: разделены два сценария: bounceable+uninit = 2 error warning (blocking), non-bounceable+uninit = 1 warning (non-blocking).
+
+### Проблемы
+- **useBalance.test.ts**: Тесты исправлены. Проблема была в использовании невалидных или неполных адресов в моках; с правильным форматом `0:hex` и корректным мокированием `getTonClient` всё работает.
+- **transfer.test.ts**: Исправлены моки и таймауты. 9/9 тестов проходят.
+
+---
+
 ## [2026-04-01] - Исправление ошибки импорта кошелька
 
 ### Наблюдения

@@ -7,7 +7,7 @@
 
 import { useEffect, useCallback, useState, useRef } from 'react';
 import { useLocation } from 'wouter';
-import { Wallet, Settings, Send, ArrowDownToLine, Inbox } from 'lucide-react';
+import { Wallet, Settings, Send, ArrowDownToLine, Inbox, AlertTriangle } from 'lucide-react';
 import { Address } from '@ton/core';
 import { useWalletStore } from '@/store/wallet-store';
 import { useTransactionStore, getFilteredTransactions } from '@/store/transaction-store';
@@ -54,7 +54,7 @@ function toUserFriendly(raw: string): string {
 
 export function MainScreen() {
   const [, setLocation] = useLocation();
-  const { address: rawAddress, balance } = useWalletStore();
+  const { address: rawAddress, balance, isActivated } = useWalletStore();
   const {
     transactions,
     isLoading,
@@ -161,6 +161,29 @@ export function MainScreen() {
               </button>
             </div>
           </section>
+
+          {/* Activation banner */}
+          {!isActivated && balance === 0n && (
+            <section className="bg-surface-container-lowest p-4 rounded-lg border border-warning/20 space-y-3">
+              <div className="flex items-center gap-2 text-warning">
+                <AlertTriangle size={18} />
+                <span className="text-xs font-bold uppercase tracking-wider">Wallet Not Activated</span>
+              </div>
+              <p className="text-sm text-on-surface-variant leading-relaxed">
+                Your wallet contract is not deployed yet. Send a small amount of TON to activate it,
+                or make your first outgoing transaction to deploy automatically.
+              </p>
+              <div className="bg-surface-container rounded-md p-3">
+                <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+                  Share this address to receive TON
+                </label>
+                <div className="flex items-center gap-2">
+                  <code className="text-xs text-primary font-mono flex-1 truncate">{displayAddress}</code>
+                  <CopyButton text={displayAddress} />
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* Transactions section */}
           <section className="space-y-5">

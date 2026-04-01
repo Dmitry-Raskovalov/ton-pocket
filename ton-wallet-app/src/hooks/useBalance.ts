@@ -5,10 +5,11 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react';
+import { Address } from '@ton/core';
 import { useWalletStore } from '@/store/wallet-store';
 import { getBalance } from '@/services/ton/balance';
+import { getTonClient, RateLimitError } from '@/services/ton/client';
 import { useUIStore } from '@/store/ui-store';
-import { RateLimitError } from '@/services/ton/client';
 
 const DEFAULT_POLL_INTERVAL = 10000;
 const RATE_LIMIT_POLL_INTERVAL = 30000;
@@ -28,8 +29,15 @@ export function useBalance(onBalanceChange?: () => void) {
     const fetchBalanceAction = useCallback(async () => {
         if (!address) return;
         try {
-            const newBalance = await getBalance(address);
+            const [newBalance, contractState] = await Promise.all([
+                getBalance(address),
+                getTonClient().getContractState(Address.parseRaw(address)),
+            ]);
             const currentBalance = useWalletStore.getState().balance;
+
+            // Update activation status
+            const isActive = contractState.state === 'active';
+            useWalletStore.getState().setActivated(isActive);
 
             if (newBalance !== currentBalance) {
                 useWalletStore.getState().updateBalance(newBalance);

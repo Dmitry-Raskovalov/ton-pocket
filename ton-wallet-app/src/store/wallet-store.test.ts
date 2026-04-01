@@ -23,6 +23,7 @@ function resetStore() {
     balance: 0n,
     isUnlocked: false,
     publicKey: null,
+    isActivated: false,
   });
 }
 
@@ -124,6 +125,19 @@ describe('useWalletStore', () => {
     });
   });
 
+  describe('setActivated', () => {
+    it('устанавливает isActivated в true', () => {
+      useWalletStore.getState().setActivated(true);
+      expect(useWalletStore.getState().isActivated).toBe(true);
+    });
+
+    it('устанавливает isActivated в false', () => {
+      useWalletStore.getState().setActivated(true);
+      useWalletStore.getState().setActivated(false);
+      expect(useWalletStore.getState().isActivated).toBe(false);
+    });
+  });
+
   describe('persist: только address, version, publicKey', () => {
     it('persist сохраняет address, version, publicKey в localStorage', async () => {
       useWalletStore.getState().setWallet({
@@ -144,10 +158,11 @@ describe('useWalletStore', () => {
       expect(parsed.state.publicKey).toBe('pubkey123');
     });
 
-    it('persist НЕ сохраняет balance и isUnlocked', async () => {
+    it('persist НЕ сохраняет balance, isUnlocked и isActivated', async () => {
       useWalletStore.getState().setWallet({ address: 'EQ', version: 'v4R2', publicKey: 'pk' });
       useWalletStore.getState().updateBalance(999n);
       useWalletStore.getState().setUnlocked(true);
+      useWalletStore.getState().setActivated(true);
 
       await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -156,6 +171,7 @@ describe('useWalletStore', () => {
       const parsed = JSON.parse(stored!);
       expect(parsed.state.balance).toBeUndefined();
       expect(parsed.state.isUnlocked).toBeUndefined();
+      expect(parsed.state.isActivated).toBeUndefined();
     });
   });
 });

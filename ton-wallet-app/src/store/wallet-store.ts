@@ -18,6 +18,7 @@ const initialState = {
   balance: 0n,
   isUnlocked: false,
   publicKey: null,
+  isActivated: false,
 } as const;
 
 export const useWalletStore = create<WalletStore>()(
@@ -33,6 +34,8 @@ export const useWalletStore = create<WalletStore>()(
       updateBalance: (balance) => set({ balance }),
 
       setUnlocked: (isUnlocked) => set({ isUnlocked }),
+
+      setActivated: (isActivated) => set({ isActivated }),
     }),
     {
       name: STORE_NAME,

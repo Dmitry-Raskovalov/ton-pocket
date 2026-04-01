@@ -7,6 +7,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useBalance } from './useBalance';
 import { useWalletStore } from '@/store/wallet-store';
 import { getBalance } from '@/services/ton/balance';
+import { getTonClient } from '@/services/ton/client';
 import { useUIStore } from '@/store/ui-store';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
@@ -23,18 +24,36 @@ vi.mock('@/services/ton/balance', () => ({
     getBalance: vi.fn(),
 }));
 
+vi.mock('@/services/ton/client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/services/ton/client')>();
+    return {
+        ...actual,
+        getTonClient: vi.fn(),
+    };
+});
+
 vi.mock('@/store/ui-store', () => ({
     useUIStore: vi.fn(),
 }));
 
 describe('useBalance', () => {
+    const mockGetContractState = vi.fn();
+
     beforeEach(() => {
         vi.useFakeTimers();
-        vi.mocked(useWalletStore).mockImplementation((selector: any) => selector({ address: 'test-address' }));
-        vi.mocked((useWalletStore as any).getState).mockReturnValue({ balance: 100n, updateBalance: vi.fn() });
+        // Mock useWalletStore as a selector hook
+        vi.mocked(useWalletStore).mockImplementation((selector: any) =>
+            selector({ address: '0:' + 'a'.repeat(64) })
+        );
 
-        // Mock UI store addToast to do nothing
-        vi.mocked(useUIStore).mockReturnValue(vi.fn());
+        // Mock getTonClient to return object with getContractState
+        vi.mocked(getTonClient).mockReturnValue({
+            getContractState: mockGetContractState,
+        } as any);
+        mockGetContractState.mockResolvedValue({ state: 'active' });
+
+        // Mock UI store addToast
+        vi.mocked(useUIStore).mockReturnValue(vi.fn() as any);
     });
 
     afterEach(() => {
@@ -45,36 +64,48 @@ describe('useBalance', () => {
     it('fetches balance initially and starts polling', async () => {
         vi.mocked(getBalance).mockResolvedValue(200n);
         const updateBalanceMock = vi.fn();
-        vi.mocked((useWalletStore as any).getState).mockReturnValue({ balance: 100n, updateBalance: updateBalanceMock });
+        const setActivatedMock = vi.fn();
+        vi.mocked((useWalletStore as any).getState).mockReturnValue({
+            balance: 100n,
+            updateBalance: updateBalanceMock,
+            setActivated: setActivatedMock,
+        });
 
-        const { result } = renderHook(() => useBalance());
+        renderHook(() => useBalance());
 
-        // Should fetch initially immediately on mount
+        // Wait for the initial fetch
         await act(async () => {
-            // Wait for the initial promise loop
             await Promise.resolve();
         });
 
-        expect(getBalance).toHaveBeenCalledWith('test-address');
-        expect(updateBalanceMock).toHaveBeenCalledWith(200n);
-
-        // Initial fetch (1)
         expect(getBalance).toHaveBeenCalledTimes(1);
+        expect(updateBalanceMock).toHaveBeenCalledWith(200n);
+        expect(setActivatedMock).toHaveBeenCalledWith(true);
 
-        // Advance 10 seconds
+        // Advance 10 seconds for next poll
         vi.mocked(getBalance).mockResolvedValue(300n);
+        vi.mocked((useWalletStore as any).getState).mockReturnValue({
+            balance: 200n,
+            updateBalance: updateBalanceMock,
+            setActivated: setActivatedMock,
+        });
+
         await act(async () => {
             vi.advanceTimersByTime(10000);
             await Promise.resolve();
         });
 
-        // Should have polled again
         expect(getBalance).toHaveBeenCalledTimes(2);
         expect(updateBalanceMock).toHaveBeenCalledWith(300n);
     });
 
     it('calls onBalanceChange callback when balance changes', async () => {
         vi.mocked(getBalance).mockResolvedValue(200n);
+        vi.mocked((useWalletStore as any).getState).mockReturnValue({
+            balance: 100n,
+            updateBalance: vi.fn(),
+            setActivated: vi.fn(),
+        });
         const cb = vi.fn();
 
         renderHook(() => useBalance(cb));
@@ -86,17 +117,71 @@ describe('useBalance', () => {
         expect(cb).toHaveBeenCalled();
     });
 
-    it('cleans up interval on unmount', () => {
+    it('calls setActivated(true) when contract state is active', async () => {
+        vi.mocked(getBalance).mockResolvedValue(100n);
+        const setActivatedMock = vi.fn();
+        vi.mocked((useWalletStore as any).getState).mockReturnValue({
+            balance: 100n,
+            updateBalance: vi.fn(),
+            setActivated: setActivatedMock,
+        });
+        mockGetContractState.mockResolvedValue({ state: 'active' });
+
+        renderHook(() => useBalance());
+
+        await act(async () => {
+            await Promise.resolve();
+            await Promise.resolve();
+            await Promise.resolve();
+        });
+
+        expect(setActivatedMock).toHaveBeenCalledWith(true);
+    });
+
+    it('calls setActivated(false) when contract state is uninit', async () => {
+        vi.mocked(getBalance).mockResolvedValue(100n);
+        const setActivatedMock = vi.fn();
+        vi.mocked((useWalletStore as any).getState).mockReturnValue({
+            balance: 100n,
+            updateBalance: vi.fn(),
+            setActivated: setActivatedMock,
+        });
+        mockGetContractState.mockResolvedValue({ state: 'uninit' });
+
+        renderHook(() => useBalance());
+
+        await act(async () => {
+            await Promise.resolve();
+            await Promise.resolve();
+            await Promise.resolve();
+        });
+
+        expect(setActivatedMock).toHaveBeenCalledWith(false);
+    });
+
+    it('cleans up interval on unmount', async () => {
+        vi.mocked(getBalance).mockResolvedValue(200n);
+        vi.mocked((useWalletStore as any).getState).mockReturnValue({
+            balance: 100n,
+            updateBalance: vi.fn(),
+            setActivated: vi.fn(),
+        });
+
         const { unmount } = renderHook(() => useBalance());
+
+        // Wait for initial fetch
+        await act(async () => {
+            await Promise.resolve();
+        });
 
         unmount();
 
-        // Changing balance and advancing time should not trigger anything
-        vi.mocked(getBalance).mockResolvedValue(500n);
+        // After unmount, advancing time should not trigger more calls
         act(() => {
             vi.advanceTimersByTime(10000);
         });
 
-        expect(getBalance).toHaveBeenCalledTimes(1); // Only the initial call
+        // Only the initial fetch (1 call), no polling after unmount
+        expect(getBalance).toHaveBeenCalledTimes(1);
     });
 });

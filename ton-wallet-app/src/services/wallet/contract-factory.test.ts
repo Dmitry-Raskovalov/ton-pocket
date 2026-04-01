@@ -9,9 +9,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { WalletContractV3R2, WalletContractV4, WalletContractV5R1 } from '@ton/ton';
 import { createContract, detectVersions, pickDefaultWallet } from './contract-factory';
 
-vi.mock('../ton/client', () => ({
-  getTonClient: vi.fn(),
-}));
+vi.mock('../ton/client', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../ton/client')>();
+  return {
+    ...actual,
+    getTonClient: vi.fn(),
+  };
+});
 
 import { getTonClient } from '../ton/client';
 
@@ -74,10 +78,10 @@ describe('detectVersions', () => {
 
     const result = await detectVersions(PUBLIC_KEY);
 
-    expect(result).toHaveLength(1);
-    expect(result[0].version).toBe('v4R2');
-    expect(result[0].isDeployed).toBe(true);
-    expect(result[0].balance).toBe(5_000_000_000n);
+    expect(result.wallets).toHaveLength(1);
+    expect(result.wallets[0].version).toBe('v4R2');
+    expect(result.wallets[0].isDeployed).toBe(true);
+    expect(result.wallets[0].balance).toBe(5_000_000_000n);
   });
 
   it('returns all three when all versions are active', async () => {
@@ -85,8 +89,8 @@ describe('detectVersions', () => {
 
     const result = await detectVersions(PUBLIC_KEY);
 
-    expect(result).toHaveLength(3);
-    expect(result.map((r) => r.version)).toEqual(['v3R2', 'v4R2', 'v5R1']);
+    expect(result.wallets).toHaveLength(3);
+    expect(result.wallets.map((r) => r.version)).toEqual(['v3R2', 'v4R2', 'v5R1']);
   });
 
   it('returns default v4R2 (isDeployed=false) when none are found', async () => {
@@ -94,10 +98,10 @@ describe('detectVersions', () => {
 
     const result = await detectVersions(PUBLIC_KEY);
 
-    expect(result).toHaveLength(1);
-    expect(result[0].version).toBe('v4R2');
-    expect(result[0].isDeployed).toBe(false);
-    expect(result[0].balance).toBe(0n);
+    expect(result.wallets).toHaveLength(1);
+    expect(result.wallets[0].version).toBe('v4R2');
+    expect(result.wallets[0].isDeployed).toBe(false);
+    expect(result.wallets[0].balance).toBe(0n);
   });
 
   it('ignores version when getContractState throws', async () => {
@@ -108,8 +112,8 @@ describe('detectVersions', () => {
 
     const result = await detectVersions(PUBLIC_KEY);
 
-    expect(result).toHaveLength(1);
-    expect(result[0].version).toBe('v4R2');
+    expect(result.wallets).toHaveLength(1);
+    expect(result.wallets[0].version).toBe('v4R2');
   });
 
   it('all queries run in parallel (all three calls made)', async () => {
@@ -125,8 +129,8 @@ describe('detectVersions', () => {
 
     const result = await detectVersions(PUBLIC_KEY);
 
-    expect(result[0].addressRaw).toMatch(/^0:/);
-    expect(result[0].addressFriendly).toMatch(/^[EkQ]/);
+    expect(result.wallets[0].addressRaw).toMatch(/^0:/);
+    expect(result.wallets[0].addressFriendly).toMatch(/^[EkQ]/);
   });
 });
 
