@@ -1,5 +1,22 @@
 # Дневник разработки TON Testnet Wallet
 
+## 2026-04-01 — Задача 9.7: SettingsScreen
+
+### Наблюдения
+- ExportScreen и ChangePasswordModal встроены в SettingsScreen как внутреннее состояние (`showExport`, `showChangePassword`) — аналогично паттерну SendScreen/ConfirmScreen. Роутинг — задача 10.1.
+- Двухшаговый экспорт использует `useState<'verify' | 'show'>` — минимальный state machine.
+- Автоскрытие реализовано через `useEffect` с `setTimeout(() => setCountdown(c => c - 1), 1000)` и `if (countdown <= 0) onClose()`. Компонент не знает абсолютного времени — только декрементирует счётчик.
+- `vi.hoisted()` — единственный корректный способ объявить переменные для использования в `vi.mock()` factory (hoisting issue).
+
+### Решения
+- Тест auto-hide: `vi.useFakeTimers()` нужно вызывать ДО рендера компонента, иначе `useEffect` регистрирует `setTimeout` с реальным id, который fake timers не контролируют. Промисы (`mockResolvedValue`) резолвятся через microtask queue, которая не затрагивается fake timers.
+- `waitFor` после `vi.useFakeTimers()` не работает (использует реальные таймеры внутри). Заменено на `expect().toBeInTheDocument()` без `waitFor` + несколько `await Promise.resolve()` для flush.
+
+### Проблемы
+- 22/22 тестов, исправлены через vi.hoisted + правильную последовательность fake timers.
+
+---
+
 ## 2026-04-01 — Задача 9.6: SendScreen
 
 ### Наблюдения

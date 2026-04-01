@@ -10,7 +10,7 @@ function App() {
     return (
       <CreateWalletScreen
         onBack={() => setScreen('welcome')}
-        onComplete={() => {/* navigate to main when ready */}}
+        onComplete={() => {/* navigate to main when ready */ }}
       />
     );
   }
@@ -18,7 +18,7 @@ function App() {
   return (
     <WelcomeScreen
       onCreateWallet={() => setScreen('create')}
-      onImportWallet={() => {}}
+      onImportWallet={() => { }}
     />
   );
 }

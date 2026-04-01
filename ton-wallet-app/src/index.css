@@ -1,7 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 @config "../tailwind.config.js";
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @layer base {
   body {
@@ -29,9 +28,11 @@
   ::-webkit-scrollbar {
     width: 4px;
   }
+
   ::-webkit-scrollbar-track {
     background-color: theme(colors.surface-container);
   }
+
   ::-webkit-scrollbar-thumb {
     background-color: theme(colors.outline-variant);
     border-radius: 9999px;
@@ -42,4 +43,3 @@
     background-color: rgb(from theme(colors.primary) r g b / 0.3);
   }
 }
-

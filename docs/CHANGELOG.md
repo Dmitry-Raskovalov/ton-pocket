@@ -5,6 +5,27 @@
 
 ---
 
+## [2026-04-01] - SettingsScreen (Задача 9.7)
+
+### Добавлено
+- `src/screens/Settings/SettingsScreen.tsx` — экран настроек:
+  - Sticky header с кнопкой Back и Testnet badge
+  - Карточка Wallet Architecture: версия контракта + Network "TON Testnet"
+  - Карточка Address: `HighlightedAddress` + `CopyButton`
+  - Секция Security & Access: кнопки Export Recovery Phrase и Change Password
+  - Секция Danger Zone: кнопка Delete Wallet (disabled, следующий спринт)
+- `src/screens/Settings/ExportScreen.tsx` — двухшаговый экспорт мнемоники:
+  - Step 1: ввод пароля, предупреждение, чекбокс «I understand the risks»
+  - Step 2: грид 24 слов (2 колонки), CopyButton, автоскрытие через 60 секунд
+  - Обработка `InvalidPasswordError`
+- `src/screens/Settings/ChangePasswordModal.tsx` — модальное окно смены пароля:
+  - Три поля (current/new/confirm) с strength indicator на новом
+  - Обработка `InvalidPasswordError` (current), `WeakPasswordError` (new), mismatch (confirm)
+  - Toast success + onClose при успехе
+- `src/screens/Settings/SettingsScreen.test.tsx` — 22 юнит-теста (22/22 pass)
+
+---
+
 ## [2026-04-01] - SendScreen (Задача 9.6)
 
 ### Добавлено
