@@ -31,14 +31,14 @@ Self-custodial криптокошелёк для TON testnet — одностр�
 **Зависимости:** нет
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Создать проект через `npm create vite@latest` с шаблоном `react-ts`.
-- [ ] Шаг 2: Установить и настроить Tailwind CSS (postcss, tailwind.config).
-- [ ] Шаг 3: Установить Wouter, Zustand, `@ton/ton`, `@ton/crypto`, `argon2-browser`, `zxcvbn-ts`, `qrcode.react`.
-- [ ] Шаг 4: Установить и настроить Vitest + React Testing Library + jsdom для юнит-тестов.
-- [ ] Шаг 5: Настроить TypeScript strict mode, path aliases (`@/` → `src/`).
-- [ ] Шаг 6: Создать полную структуру пустых директорий и файлов-заглушек согласно разделу 3.2 ТЗ (crypto/, services/, store/, screens/, components/, hooks/).
-- [ ] Шаг 7: Добавить `.env.example` с переменной `VITE_TON_API_KEY` и `VITE_TON_ENDPOINT` (по умолчанию testnet).
-- [ ] Шаг 8: Проверить, что `npm run dev`, `npm run build`, `npm run test` выполняются без ошибок.
+- [x] Шаг 1: Создать проект через `npm create vite@latest` с шаблоном `react-ts`.
+- [x] Шаг 2: Установить и настроить Tailwind CSS (postcss, tailwind.config).
+- [x] Шаг 3: Установить Wouter, Zustand, `@ton/ton`, `@ton/crypto`, `argon2-browser`, `zxcvbn-ts`, `qrcode.react`.
+- [x] Шаг 4: Установить и настроить Vitest + React Testing Library + jsdom для юнит-тестов.
+- [x] Шаг 5: Настроить TypeScript strict mode, path aliases (`@/` → `src/`).
+- [x] Шаг 6: Создать полную структуру пустых директорий и файлов-заглушек согласно разделу 3.2 ТЗ (crypto/, services/, store/, screens/, components/, hooks/).
+- [x] Шаг 7: Добавить `.env.example` с переменной `VITE_TON_API_KEY` и `VITE_TON_ENDPOINT` (по умолчанию testnet).
+- [x] Шаг 8: Проверить, что `npm run dev`, `npm run build`, `npm run test` выполняются без ошибок.
 
 **Ожидаемый результат:**
 Рабочий проект, который собирается и запускается на dev-сервере. Все зависимости установлены. Структура файлов соответствует ТЗ. Тестовый фреймворк настроен и запускает пустой тестовый файл.
@@ -60,7 +60,7 @@ Self-custodial криптокошелёк для TON testnet — одностр�
 
 #### 2.1 Формирование общего ТЗ на дизайн
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** документация / дизайн
 
@@ -73,11 +73,11 @@ Self-custodial криптокошелёк для TON testnet — одностр�
 **Зависимости:** нет
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Описать общие требования к дизайну: минималистичный стиль, тёмная/светлая тема (выбрать одну для MVP), обязательная пометка «Testnet» во всех состояниях, адаптивность для десктопа (минимум 360px ширины).
-- [ ] Шаг 2: Определить дизайн-систему: цветовая палитра (primary, secondary, success, warning, error, background, surface, text), типографика (заголовки, body, mono для адресов), скругления, тени, spacing-система.
-- [ ] Шаг 3: Составить список UI-компонентов с описанием: PasswordInput (с индикатором силы), HighlightedAddress, WarningCard (с severity-уровнями и чекбоксом), CopyButton, TransactionItem, SearchBar, Loader, Toast, кнопки (primary, secondary, danger), модальные окна.
-- [ ] Шаг 4: Описать требования к каждому экрану (см. задачу 2.2).
-- [ ] Шаг 5: Собрать всё в единый markdown-документ `DESIGN_BRIEF.md`.
+- [x] Шаг 1: Описать общие требования к дизайну: минималистичный стиль, тёмная/светлая тема (выбрать одну для MVP), обязательная пометка «Testnet» во всех состояниях, адаптивность для десктопа (минимум 360px ширины).
+- [x] Шаг 2: Определить дизайн-систему: цветовая палитра (primary, secondary, success, warning, error, background, surface, text), типографика (заголовки, body, mono для адресов), скругления, тени, spacing-система.
+- [x] Шаг 3: Составить список UI-компонентов с описанием: PasswordInput (с индикатором силы), HighlightedAddress, WarningCard (с severity-уровнями и чекбоксом), CopyButton, TransactionItem, SearchBar, Loader, Toast, кнопки (primary, secondary, danger), модальные окна.
+- [x] Шаг 4: Описать требования к каждому экрану (см. задачу 2.2).
+- [x] Шаг 5: Собрать всё в единый markdown-документ `DESIGN_BRIEF.md`.
 
 **Ожидаемый результат:**
 Документ `DESIGN_BRIEF.md`, достаточный для того, чтобы AI-ассистент по дизайну мог создать полный набор wireframes / макетов для всех экранов и компонентов приложения.
@@ -95,7 +95,7 @@ Self-custodial криптокошелёк для TON testnet — одностр�
 
 #### 2.2 Поэкранное описание для дизайна
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** документация / дизайн
 
@@ -108,15 +108,15 @@ Self-custodial криптокошелёк для TON testnet — одностр�
 **Зависимости:** зависит от `2.1`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Welcome Screen — описать layout, расположение логотипа, двух CTA-кнопок, пометки Testnet. Одно состояние.
-- [ ] Шаг 2: Create Wallet Screen — два шага (Set Password, Backup Mnemonic). Описать поля, индикатор силы, нумерованный список из 24 слов, чекбокс, состояния кнопок.
-- [ ] Шаг 3: Import Mnemonic Screen — описать вариант ввода 24 слов (textarea vs. сетка полей), кнопку Paste, состояния ошибок, экран выбора версии (карточки с адресами и балансами).
-- [ ] Шаг 4: Main Screen — описать header, блок с балансом и адресом, кнопки Send/Receive, список транзакций, SearchBar, фильтры, состояния пустого/загрузки/ошибки, индикатор последнего обновления.
-- [ ] Шаг 5: Receive Screen — описать QR-код, полный адрес, кнопку копирования, предупреждение о testnet.
-- [ ] Шаг 6: Send Screen — три шага (Input Form, Confirmation, Result). Описать поля, inline-предупреждения, WarningList с чекбоксами на confirmation, highlight адреса, состояния Pending/Success/Error/Timeout.
-- [ ] Шаг 7: Settings Screen — описать информационный блок, кнопки Export/Change Password, блок сетевой информации. Кнопка Delete Wallet отсутствует в MVP.
-- [ ] Шаг 8: Unlock Modal — описать модальное окно с полем пароля, счётчиком оставшихся попыток (5), состояние блокировки на 5 минут с таймером обратного отсчёта.
-- [ ] Шаг 9: Описать toast-уведомления (success, error, info) и Loader-состояния.
+- [x] Шаг 1: Welcome Screen — описать layout, расположение логотипа, двух CTA-кнопок, пометки Testnet. Одно состояние.
+- [x] Шаг 2: Create Wallet Screen — два шага (Set Password, Backup Mnemonic). Описать поля, индикатор силы, нумерованный список из 24 слов, чекбокс, состояния кнопок.
+- [x] Шаг 3: Import Mnemonic Screen — описать вариант ввода 24 слов (textarea vs. сетка полей), кнопку Paste, состояния ошибок, экран выбора версии (карточки с адресами и балансами).
+- [x] Шаг 4: Main Screen — описать header, блок с балансом и адресом, кнопки Send/Receive, список транзакций, SearchBar, фильтры, состояния пустого/загрузки/ошибки, индикатор последнего обновления.
+- [x] Шаг 5: Receive Screen — описать QR-код, полный адрес, кнопку копирования, предупреждение о testnet.
+- [x] Шаг 6: Send Screen — три шага (Input Form, Confirmation, Result). Описать поля, inline-предупреждения, WarningList с чекбоксами на confirmation, highlight адреса, состояния Pending/Success/Error/Timeout.
+- [x] Шаг 7: Settings Screen — описать информационный блок, кнопки Export/Change Password, блок сетевой информации. Кнопка Delete Wallet отсутствует в MVP.
+- [x] Шаг 8: Unlock Modal — описать модальное окно с полем пароля, счётчиком оставшихся попыток (5), состояние блокировки на 5 минут с таймером обратного отсчёта.
+- [x] Шаг 9: Описать toast-уведомления (success, error, info) и Loader-состояния.
 
 **Ожидаемый результат:**
 Детальное поэкранное описание всех UI-состояний, достаточное для генерации wireframes AI-ассистентом по дизайну.
@@ -150,14 +150,14 @@ Self-custodial криптокошелёк для TON testnet — одностр�
 **Зависимости:** зависит от `1.1`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Определить типы в `src/crypto/types.ts`: `KdfAlgorithm` (`'argon2id' | 'pbkdf2'`), `KdfParams` (salt, memory, iterations, parallelism, hash), `KdfResult` (key: Uint8Array, algorithm: KdfAlgorithm, params: KdfParams).
-- [ ] Шаг 2: Реализовать функцию генерации 16-байтового случайного salt через `crypto.getRandomValues()`.
-- [ ] Шаг 3: Реализовать Argon2id-деривацию: memory=65536 (64MB), iterations=3, parallelism=1, output=256 bit, используя `argon2-browser`.
-- [ ] Шаг 4: Реализовать PBKDF2-деривацию через Web Crypto API: iterations=600000, hash=SHA-256, output=256 bit.
-- [ ] Шаг 5: Реализовать функцию определения доступности WASM (проверка поддержки Argon2) с кешированием результата.
-- [ ] Шаг 6: Реализовать основную функцию `deriveKey(password: string, salt?: Uint8Array): Promise<KdfResult>`, которая выбирает алгоритм автоматически.
-- [ ] Шаг 7: Реализовать функцию `deriveKeyWithParams(password: string, params: KdfParams): Promise<Uint8Array>` для повторной деривации при расшифровке (используя сохранённые параметры).
-- [ ] Шаг 8: Написать юнит-тесты: корректность деривации (одинаковый пароль + salt = одинаковый ключ), различие при разных паролях, fallback на PBKDF2 при мокнутом недоступном WASM, корректность длины ключа (32 байта).
+- [x] Шаг 1: Определить типы в `src/crypto/types.ts`: `KdfAlgorithm` (`'argon2id' | 'pbkdf2'`), `KdfParams` (salt, memory, iterations, parallelism, hash), `KdfResult` (key: Uint8Array, algorithm: KdfAlgorithm, params: KdfParams).
+- [x] Шаг 2: Реализовать функцию генерации 16-байтового случайного salt через `crypto.getRandomValues()`.
+- [x] Шаг 3: Реализовать Argon2id-деривация: memory=65536 (64MB), iterations=3, parallelism=1, output=256 bit, используя `argon2-browser`.
+- [x] Шаг 4: Реализовать PBKDF2-деривацию через Web Crypto API: iterations=600000, hash=SHA-256, output=256 bit.
+- [x] Шаг 5: Реализовать функцию определения доступности WASM (проверка поддержки Argon2) с кешированием результата.
+- [x] Шаг 6: Реализовать основную функцию `deriveKey(password: string, salt?: Uint8Array): Promise<KdfResult>`, которая выбирает алгоритм автоматически.
+- [x] Шаг 7: Реализовать функцию `deriveKeyWithParams(password: string, params: KdfParams): Promise<Uint8Array>` для повторной деривации при расшифровке (используя сохранённые параметры).
+- [x] Шаг 8: Написать юнит-тесты: корректность деривации (одинаковый пароль + salt = одинаковый ключ), различие при разных паролях, fallback на PBKDF2 при мокнутом недоступном WASM, корректность длины ключа (32 байта).
 
 **Ожидаемый результат:**
 Модуль `kdf.ts`, который деривирует 256-битный ключ из пароля, автоматически определяя доступный алгоритм, и модуль `types.ts` с типами крипто-слоя.
@@ -189,13 +189,13 @@ Self-custodial криптокошелёк для TON testnet — одностр�
 **Зависимости:** зависит от `3.1`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Определить интерфейс `EncryptedVault` в `types.ts` (version, kdf, kdfParams, cipher, iv, ciphertext — всё согласно разделу 4.2 ТЗ).
-- [ ] Шаг 2: Реализовать функцию `encrypt(plaintext: string, password: string): Promise<EncryptedVault>` — генерация IV (12 bytes), деривация ключа, шифрование AES-256-GCM через Web Crypto API, кодирование в base64.
-- [ ] Шаг 3: Реализовать функцию `decrypt(vault: EncryptedVault, password: string): Promise<string>` — деривация ключа с сохранёнными параметрами, дешифрование, обработка ошибки неверного пароля.
-- [ ] Шаг 4: Реализовать функции `saveVault(vault: EncryptedVault): void` и `loadVault(): EncryptedVault | null` для работы с localStorage.
-- [ ] Шаг 5: Реализовать функцию `hasVault(): boolean` для проверки наличия сохранённого vault.
-- [ ] Шаг 6: Реализовать функцию `clearVault(): void` для полного удаления vault из localStorage.
-- [ ] Шаг 7: Написать юнит-тесты: round-trip (encrypt → decrypt = original), ошибка при неверном пароле, корректность формата EncryptedVault, save/load из localStorage (мокнутый), IV уникален при каждом вызове encrypt.
+- [x] Шаг 1: Определить интерфейс `EncryptedVault` в `types.ts` (version, kdf, kdfParams, cipher, iv, ciphertext — всё согласно разделу 4.2 ТЗ).
+- [x] Шаг 2: Реализовать функцию `encrypt(plaintext: string, password: string): Promise<EncryptedVault>` — генерация IV (12 bytes), деривация ключа, шифрование AES-256-GCM через Web Crypto API, кодирование в base64.
+- [x] Шаг 3: Реализовать функцию `decrypt(vault: EncryptedVault, password: string): Promise<string>` — деривация ключа с сохранёнными параметрами, дешифрование, обработка ошибки неверного пароля.
+- [x] Шаг 4: Реализовать функции `saveVault(vault: EncryptedVault): void` и `loadVault(): EncryptedVault | null` для работы с localStorage.
+- [x] Шаг 5: Реализовать функцию `hasVault(): boolean` для проверки наличия сохранённого vault.
+- [x] Шаг 6: Реализовать функцию `clearVault(): void` для полного удаления vault из localStorage.
+- [x] Шаг 7: Написать юнит-тесты: round-trip (encrypt → decrypt = original), ошибка при неверном пароле, корректность формата EncryptedVault, save/load из localStorage (мокнутый), IV уникален при каждом вызове encrypt.
 
 **Ожидаемый результат:**
 Модуль `vault.ts`, обеспечивающий полный цикл шифрования, расшифровки и персистентности мнемоники в localStorage. Неверный пароль корректно определяется (AES-GCM бросает ошибку аутентификации).
@@ -225,11 +225,11 @@ Self-custodial криптокошелёк для TON testnet — одностр�
 **Зависимости:** зависит от `1.1`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Создать модуль `src/crypto/password-strength.ts`.
-- [ ] Шаг 2: Настроить tree-shakeable импорт `zxcvbn-ts` (core + language pack en).
-- [ ] Шаг 3: Реализовать функцию `evaluatePassword(password: string): PasswordStrength` — возвращает score, feedback (warning + suggestions), isAcceptable (score ≥ 2 && length ≥ 8).
-- [ ] Шаг 4: Определить маппинг score → текстовая метка (0: "Very weak", 1: "Weak", 2: "Fair", 3: "Strong", 4: "Very strong") и цвет для UI.
-- [ ] Шаг 5: Написать юнит-тесты: простые пароли получают низкий score, сложные — высокий, пароль < 8 символов — isAcceptable = false даже при высоком score.
+- [x] Шаг 1: Создать модуль `src/crypto/password-strength.ts`.
+- [x] Шаг 2: Настроить tree-shakeable импорт `zxcvbn-ts` (core + language pack en).
+- [x] Шаг 3: Реализовать функцию `evaluatePassword(password: string): PasswordStrength` — возвращает score, feedback (warning + suggestions), isAcceptable (score ≥ 2 && length ≥ 8).
+- [x] Шаг 4: Определить маппинг score → текстовая метка (0: "Very weak", 1: "Weak", 2: "Fair", 3: "Strong", 4: "Very strong") и цвет для UI.
+- [x] Шаг 5: Написать юнит-тесты: простые пароли получают низкий score, сложные — высокий, пароль < 8 символов — isAcceptable = false даже при высоком score.
 
 **Ожидаемый результат:**
 Модуль, предоставляющий оценку пароля для использования в UI и логике валидации при создании/смене пароля.
@@ -365,13 +365,13 @@ Singleton `TonClient`, через который все сервисы обра�
 **Зависимости:** зависит от `4.1`, `4.5`
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Определить интерфейс `TransferParams` — recipient (Address), amount (bigint), comment (string | undefined), contract (WalletContractV3R2 | V4 | V5R1), secretKey (Buffer).
-- [ ] Шаг 2: Реализовать функцию `sendTransfer(params: TransferParams): Promise<TransferResult>`, которая создаёт transfer через contract.createTransfer(), отправляет через client.sendExternalMessage().
-- [ ] Шаг 3: Реализовать polling seqno для ожидания подтверждения: опрашивать каждые 2 секунды, если seqno увеличился — транзакция подтверждена.
-- [ ] Шаг 4: Реализовать таймаут 30 секунд — если seqno не увеличился, вернуть статус `timeout` с предупреждением.
-- [ ] Шаг 5: Определить `TransferResult` — status ('confirmed' | 'timeout' | 'error'), hash (if confirmed).
-- [ ] Шаг 6: Определить константу `ESTIMATED_FEE = 0.01 TON` (10000000n нанотон) — хардкод, покрывающий 95% случаев.
-- [ ] Шаг 7: Написать юнит-тесты с мокнутым TonClient: успешная отправка, таймаут, ошибка сети.
+- [x] Шаг 1: Определить интерфейс `TransferParams` — recipient (Address), amount (bigint), comment (string | undefined), contract (WalletContractV3R2 | V4 | V5R1), secretKey (Buffer).
+- [x] Шаг 2: Реализовать функцию `sendTransfer(params: TransferParams): Promise<TransferResult>`, которая создаёт transfer через contract.createTransfer(), отправляет через client.sendExternalMessage().
+- [x] Шаг 3: Реализовать polling seqno для ожидания подтверждения: опрашивать каждые 2 секунды, если seqno увеличился — транзакция подтверждена.
+- [x] Шаг 4: Реализовать таймаут 30 секунд — если seqno не увеличился, вернуть статус `timeout` с предупреждением.
+- [x] Шаг 5: Определить `TransferResult` — status ('confirmed' | 'timeout' | 'error'), hash (if confirmed).
+- [x] Шаг 6: Определить константу `ESTIMATED_FEE = 0.01 TON` (10000000n нанотон) — хардкод, покрывающий 95% случаев.
+- [x] Шаг 7: Написать юнит-тесты с мокнутым TonClient: успешная отправка, таймаут, ошибка сети.
 
 **Ожидаемый результат:**
 Сервис отправки транзакций с подтверждением через seqno polling и таймаутом. Константа комиссии экспортируется для использования в валидации и UI (кнопка MAX).
@@ -1109,7 +1109,7 @@ Store для UI-состояния с механикой блокировки un
 - [x] Шаг 3: Шаг 2 (Backup Mnemonic) — нумерованный список из 24 слов, CopyButton для копирования всех слов, предупреждение, чекбокс «I have saved my recovery phrase», кнопка «Continue» (активна после чекбокса).
 - [x] Шаг 4: При клике «Continue» на шаге 2 — обновить wallet store (setWallet), навигация на MainScreen.
 - [x] Шаг 5: Обработка ошибок (генерация провалилась) → toast с ошибкой.
-- [ ] Шаг 6: Написать юнит-тесты: кнопка «Continue» неактивна при слабом пароле, кнопка «Continue» неактивна без чекбокса.
+- [x] Шаг 6: Написать юнит-тесты: кнопка «Continue» неактивна при слабом пароле, кнопка «Continue» неактивна без чекбокса.
 
 **Ожидаемый результат:**
 Экран создания кошелька с двумя шагами, валидацией пароля и backup-подтверждением.
