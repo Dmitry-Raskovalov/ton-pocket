@@ -6,7 +6,7 @@
 import { mnemonicNew, mnemonicToPrivateKey, mnemonicValidate } from '@ton/crypto';
 import { encrypt, saveVault, loadVault, decrypt } from '@/crypto/vault';
 import { createContract, detectVersions } from './contract-factory';
-import type { WalletVersion } from './contract-factory';
+import type { WalletVersion, DetectVersionsResult } from './contract-factory';
 import type { WalletCreateResult, WalletImportResult, WalletState } from './types';
 import { InvalidPasswordError, InvalidMnemonicError, NoVaultError, WeakPasswordError } from './types';
 import { evaluatePassword } from '@/crypto/password-strength';
@@ -73,7 +73,9 @@ export class WalletService {
 
     // 3. Determine version
     let chosenVersion: WalletVersion;
-    let detectedWallets = await detectVersions(keyPair.publicKey);
+    const detection: DetectVersionsResult = await detectVersions(keyPair.publicKey);
+    const detectedWallets = detection.wallets;
+    const hadNetworkError = detection.hadNetworkError;
 
     if (selectedVersion) {
       // User already chose a version (e.g. from multi-version selection screen)
@@ -85,6 +87,7 @@ export class WalletService {
         version: null,
         needsVersionChoice: true,
         detectedWallets,
+        hadNetworkError,
       };
     } else {
       // 0 or 1 found — use the single/default entry
@@ -105,6 +108,7 @@ export class WalletService {
       version: chosenVersion,
       needsVersionChoice: false,
       detectedWallets: [],
+      hadNetworkError,
     };
   }
 

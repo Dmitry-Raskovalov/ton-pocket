@@ -12,7 +12,7 @@ import type {
   WalletContractV5R1,
 } from '@ton/ton';
 import { internal } from '@ton/ton';
-import { getTonClient } from './client';
+import { getTonClient, NetworkError, RateLimitError, ApiError } from './client';
 
 // --- Types ---
 
@@ -142,7 +142,16 @@ export async function sendTransfer(params: TransferParams): Promise<TransferResu
     // Timeout: seqno did not increment within 30 seconds
     return { status: 'timeout' };
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    let errorMessage: string;
+    if (err instanceof RateLimitError) {
+      errorMessage = 'Too many requests. Please wait a moment and try again.';
+    } else if (err instanceof NetworkError) {
+      errorMessage = 'Network error: unable to connect to the blockchain.';
+    } else if (err instanceof ApiError) {
+      errorMessage = `API error (${err.statusCode ?? 'unknown'}): ${err.message}`;
+    } else {
+      errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    }
     return { status: 'error', error: errorMessage };
   }
 }

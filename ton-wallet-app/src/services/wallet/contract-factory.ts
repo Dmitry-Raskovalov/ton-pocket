@@ -6,7 +6,7 @@
  */
 
 import { WalletContractV3R2, WalletContractV4, WalletContractV5R1 } from '@ton/ton';
-import { getTonClient } from '../ton/client';
+import { getTonClient, NetworkError, RateLimitError } from '../ton/client';
 
 // --- Types ---
 
@@ -22,6 +22,12 @@ export interface DetectedWallet {
   addressFriendly: string;
   balance: bigint;
   isDeployed: boolean;
+}
+
+export interface DetectVersionsResult {
+  wallets: DetectedWallet[];
+  /** True when all version checks failed due to network issues */
+  hadNetworkError: boolean;
 }
 
 const DEFAULT_VERSION: WalletVersion = 'v4R2';
@@ -52,9 +58,11 @@ const ALL_VERSIONS: WalletVersion[] = ['v3R2', 'v4R2', 'v5R1'];
  * Queries all three versions in parallel via TonClient.getContractState.
  * Returns a list of deployed wallets; if none are found, returns a single
  * default v4R2 entry with isDeployed=false.
+ * hadNetworkError is true when version checks failed due to network issues.
  */
-export async function detectVersions(publicKey: Buffer): Promise<DetectedWallet[]> {
+export async function detectVersions(publicKey: Buffer): Promise<DetectVersionsResult> {
   const client = getTonClient();
+  let hadNetworkError = false;
 
   const results = await Promise.all(
     ALL_VERSIONS.map(async (version): Promise<DetectedWallet | null> => {
@@ -71,7 +79,10 @@ export async function detectVersions(publicKey: Buffer): Promise<DetectedWallet[
           balance: state.balance,
           isDeployed,
         };
-      } catch {
+      } catch (err) {
+        if (err instanceof NetworkError || err instanceof RateLimitError) {
+          hadNetworkError = true;
+        }
         return null;
       }
     }),
@@ -80,21 +91,24 @@ export async function detectVersions(publicKey: Buffer): Promise<DetectedWallet[
   const found = results.filter((r): r is DetectedWallet => r !== null && r.isDeployed);
 
   if (found.length > 0) {
-    return found;
+    return { wallets: found, hadNetworkError };
   }
 
   // No deployed wallets found — return default v4R2 placeholder
   const defaultContract = createContract(publicKey, DEFAULT_VERSION);
   const address = defaultContract.address;
-  return [
-    {
-      version: DEFAULT_VERSION,
-      addressRaw: address.toRawString(),
-      addressFriendly: address.toString({ bounceable: true, testOnly: true }),
-      balance: 0n,
-      isDeployed: false,
-    },
-  ];
+  return {
+    wallets: [
+      {
+        version: DEFAULT_VERSION,
+        addressRaw: address.toRawString(),
+        addressFriendly: address.toString({ bounceable: true, testOnly: true }),
+        balance: 0n,
+        isDeployed: false,
+      },
+    ],
+    hadNetworkError,
+  };
 }
 
 /**

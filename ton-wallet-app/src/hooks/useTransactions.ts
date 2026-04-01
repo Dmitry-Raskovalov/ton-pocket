@@ -10,6 +10,7 @@ import { getTransactions } from '@/services/ton/transactions';
 import { addressBook } from '@/services/address-book';
 import { useWalletStore } from '@/store/wallet-store';
 import { useUIStore } from '@/store/ui-store';
+import { RateLimitError } from '@/services/ton/client';
 
 const PAGE_SIZE = 20;
 
@@ -34,7 +35,11 @@ export function useTransactions() {
                 }
             });
         } catch (err) {
-            addToast({ type: 'error', message: 'Failed to load transactions', duration: 3000 });
+            if (err instanceof RateLimitError) {
+                addToast({ type: 'warning', message: 'Too many requests, wait...', duration: 3000 });
+            } else {
+                addToast({ type: 'error', message: 'Failed to load transactions', duration: 3000 });
+            }
         } finally {
             setLoading(false);
         }
@@ -61,7 +66,11 @@ export function useTransactions() {
                 }
             });
         } catch (err) {
-            addToast({ type: 'error', message: 'Failed to load more transactions', duration: 3000 });
+            if (err instanceof RateLimitError) {
+                addToast({ type: 'warning', message: 'Too many requests, wait...', duration: 3000 });
+            } else {
+                addToast({ type: 'error', message: 'Failed to load more transactions', duration: 3000 });
+            }
         } finally {
             setLoading(false);
         }

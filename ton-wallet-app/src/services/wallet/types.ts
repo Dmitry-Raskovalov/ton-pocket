@@ -32,6 +32,8 @@ export interface WalletImportResult {
   needsVersionChoice: boolean;
   /** Available versions for user selection (when needsVersionChoice = true) */
   detectedWallets: DetectedWallet[];
+  /** True when auto-detection failed due to network issues and v4R2 was used as fallback */
+  hadNetworkError?: boolean;
 }
 
 /**

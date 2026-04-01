@@ -5,6 +5,19 @@
 
 ---
 
+## [2026-04-01] - Обработка ошибок сети (Задача 10.3)
+
+### Изменено
+- `src/hooks/useBalance.ts` — заменена строковая проверка rate limit на `instanceof RateLimitError`.
+- `src/hooks/useTransactions.ts` — добавлена обработка `RateLimitError` в обоих catch-блоках (fetchInitial, loadMore): при 429 показывается toast «Too many requests, wait...» вместо generic error.
+- `src/services/ton/transfer.ts` — детализированы сообщения об ошибках: `NetworkError` → «Network error: unable to connect to the blockchain», `RateLimitError` → «Too many requests...», `ApiError` → «API error (statusCode): ...».
+- `src/services/wallet/contract-factory.ts` — `detectVersions` теперь возвращает `DetectVersionsResult { wallets, hadNetworkError }`. При сетевой ошибке в любой из параллельных проверок флаг `hadNetworkError` выставляется в `true`.
+- `src/services/wallet/types.ts` — в `WalletImportResult` добавлено поле `hadNetworkError?: boolean`.
+- `src/services/wallet/WalletService.ts` — `importFromMnemonic` прокидывает `hadNetworkError` через результат.
+- `src/screens/ImportMnemonicScreen.tsx` — при импорте с сетевой ошибкой (fallback на v4R2) показывается warning toast с подсказкой об изменении версии в настройках.
+
+---
+
 ## [2026-04-01] - Роутинг и навигационные гварды (Задача 10.1)
 
 ### Добавлено

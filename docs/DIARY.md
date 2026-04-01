@@ -1,5 +1,18 @@
 # Дневник разработки TON Testnet Wallet
 
+## [2026-04-01] - Обработка ошибок сети (Задача 10.3)
+
+### Наблюдения
+- `useBalance` уже обрабатывал rate limit через строковую проверку (`includes('429')`). Заменили на `instanceof RateLimitError` — более надёжный и типобезопасный подход.
+- `detectVersions` в `contract-factory.ts` всегда молча «глотал» сетевые ошибки (возвращал null для каждой версии). Это хорошо для graceful degradation, но делало невозможным информирование пользователя. Решение — флаг `hadNetworkError` в возвращаемом объекте.
+- `sendTransfer` в `transfer.ts` уже был обёрнут в try/catch, но возвращал `err.message` как есть. После добавления типизированных проверок сообщения стали человекочитаемыми.
+
+### Решения
+- `DetectVersionsResult` — новый тип для `detectVersions`, содержит `wallets` и `hadNetworkError`. Флаг устанавливается в `true` при любой `NetworkError | RateLimitError` во время параллельного опроса версий.
+- Флаг прокидывается через `WalletImportResult.hadNetworkError` и обрабатывается в `ImportMnemonicScreen` — показывается warning toast с подсказкой.
+
+---
+
 ## [2026-04-01] - Polling баланса и автообновление транзакций (Задача 10.2)
 
 ### Добавлено

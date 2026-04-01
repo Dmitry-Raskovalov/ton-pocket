@@ -510,6 +510,14 @@ export function ImportMnemonicScreen() {
         return;
       }
 
+      if (result.hadNetworkError) {
+        addToast({
+          type: 'warning',
+          message: 'Network unavailable. Using v4R2 by default. You can change the version in Settings.',
+          duration: 6000,
+        });
+      }
+
       if (result.address && result.version) {
         setWallet({ address: result.address, version: result.version, publicKey: '' });
       }

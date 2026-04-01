@@ -8,6 +8,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useWalletStore } from '@/store/wallet-store';
 import { getBalance } from '@/services/ton/balance';
 import { useUIStore } from '@/store/ui-store';
+import { RateLimitError } from '@/services/ton/client';
 
 const DEFAULT_POLL_INTERVAL = 10000;
 const RATE_LIMIT_POLL_INTERVAL = 30000;
@@ -43,8 +44,7 @@ export function useBalance(onBalanceChange?: () => void) {
                 startPollingRef.current();
             }
         } catch (err: unknown) {
-            const message = err instanceof Error ? err.message : String(err);
-            if (message.includes('429') || /too many requests|rate limit/i.test(message)) {
+            if (err instanceof RateLimitError) {
                 addToast({ type: 'warning', message: 'Too many requests, wait...', duration: 3000 });
                 if (intervalMsRef.current !== RATE_LIMIT_POLL_INTERVAL) {
                     intervalMsRef.current = RATE_LIMIT_POLL_INTERVAL;
