@@ -80,11 +80,9 @@ function StepMnemonic({ onBack, onContinue }: StepMnemonicProps) {
           <ChevronLeft size={24} />
         </button>
         <h1 className="font-bold uppercase tracking-[0.05em] text-sm text-white">Import Wallet</h1>
-        <div className="bg-tertiary-container px-2 py-0.5 rounded-[4px]">
-          <span className="text-on-tertiary-fixed-variant font-bold text-[10px] tracking-wider uppercase">
-            TESTNET
-          </span>
-        </div>
+        <span className="text-[10px] font-extrabold tracking-widest text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-sm uppercase">
+          Testnet
+        </span>
       </header>
 
       {/* Content */}
@@ -233,11 +231,9 @@ function StepPassword({ onBack, onContinue, isLoading }: StepPasswordProps) {
           <ChevronLeft size={24} />
         </button>
         <h1 className="font-bold uppercase tracking-[0.05em] text-sm text-white">Import Wallet</h1>
-        <div className="bg-tertiary-container px-2 py-0.5 rounded-[4px]">
-          <span className="text-on-tertiary-fixed-variant font-bold text-[10px] tracking-wider uppercase">
-            TESTNET
-          </span>
-        </div>
+        <span className="text-[10px] font-extrabold tracking-widest text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-sm uppercase">
+          Testnet
+        </span>
       </header>
 
       {/* Content */}
@@ -349,11 +345,9 @@ function StepSelectVersion({
         <h1 className="font-bold uppercase tracking-[0.05em] text-sm text-white">
           Select Wallet Version
         </h1>
-        <div className="bg-tertiary-container px-2 py-0.5 rounded-[4px]">
-          <span className="text-on-tertiary-fixed-variant font-bold text-[10px] tracking-wider uppercase">
-            TESTNET
-          </span>
-        </div>
+        <span className="text-[10px] font-extrabold tracking-widest text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-sm uppercase">
+          Testnet
+        </span>
       </header>
 
       {/* Content */}

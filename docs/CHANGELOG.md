@@ -3,6 +3,14 @@
 Все заметные изменения в проекте TON Testnet Wallet будут документироваться в этом файле.
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/).
 
+## [2026-04-01] - Унификация UI: бейдж Testnet
+
+### Изменено
+- Приведен к единому стилю (`text-tertiary bg-tertiary/10 font-extrabold`) бейдж "Testnet" на всех экранах приложения: `MainScreen`, `SendScreen`, `ReceiveScreen`, `SettingsScreen`, `CreateWalletScreen`, `ImportMnemonicScreen` и в модальном окне `ChangePasswordModal`.
+- На экране `ReceiveScreen` удалена лишняя точка-индикатор рядом с бейджем.
+
+---
+
 ## [2026-04-01] - Улучшение UI экрана отправки
 
 ### Изменено

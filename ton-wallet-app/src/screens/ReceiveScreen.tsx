@@ -41,10 +41,9 @@ export function ReceiveScreen() {
           >
             <ArrowLeft size={24} className="text-on-surface" />
           </button>
-          <div className="bg-tertiary-container text-on-tertiary-fixed-variant px-2.5 py-0.5 rounded-[4px] text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-on-tertiary-fixed-variant" />
+          <span className="text-[10px] font-extrabold tracking-widest text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-sm uppercase">
             Testnet
-          </div>
+          </span>
         </header>
 
         {/* ── Content ───────────────────────────────────────────────────── */}

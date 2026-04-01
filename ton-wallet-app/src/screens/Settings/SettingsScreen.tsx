@@ -46,11 +46,9 @@ export function SettingsScreen() {
           >
             <ArrowLeft size={24} />
           </button>
-          <div className="bg-tertiary-container px-2 py-0.5 rounded-sm">
-            <span className="text-[10px] font-bold tracking-widest text-on-tertiary-fixed-variant uppercase">
-              Testnet
-            </span>
-          </div>
+          <span className="text-[10px] font-extrabold tracking-widest text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-sm uppercase">
+            Testnet
+          </span>
           {/* Spacer to center the badge */}
           <div className="w-6" />
         </header>

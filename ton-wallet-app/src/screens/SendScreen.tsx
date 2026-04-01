@@ -260,9 +260,9 @@ export function SendScreen() {
           >
             <ArrowLeft size={24} />
           </button>
-          <div className="bg-tertiary-container text-on-tertiary-fixed-variant px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest">
+          <span className="text-[10px] font-extrabold tracking-widest text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-sm uppercase">
             Testnet
-          </div>
+          </span>
         </header>
 
         {/* ── Progress bar (all steps) ───────────────────────────────────── */}

@@ -74,9 +74,9 @@ export function ChangePasswordModal({ onClose }: ChangePasswordModalProps) {
             <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface">
               Change Password
             </h3>
-            <div className="px-2 py-0.5 rounded-[4px] bg-tertiary-container text-on-tertiary-fixed-variant font-mono text-[9px] font-black">
-              TESTNET
-            </div>
+            <span className="text-[10px] font-extrabold tracking-widest text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-sm uppercase">
+              Testnet
+            </span>
           </div>
           <button
             onClick={onClose}
