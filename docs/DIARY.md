@@ -1,5 +1,22 @@
 # Дневник разработки TON Testnet Wallet
 
+## 2026-04-01 — Задача 9.4: MainScreen
+
+### Наблюдения
+- `getFilteredTransactions()` в `transaction-store.ts` читает из `useTransactionStore.getState()` напрямую, а не принимает state как аргумент. Это работает в компоненте (state меняется → ре-рендер → функция вызывается с актуальным состоянием), но требует аккуратного мокирования в тестах — нужно мокировать всю функцию через `vi.mock`, а не имитировать store.
+- Интервал "Updated N sec ago" (1 сек) изначально реализован через `useTransactionStore.getState()` внутри `setInterval`. Это вызывает проблему: Zustand-специфичный метод `.getState()` отсутствует на vi.fn() и ломает тесты. Решение: использовать `useRef` для хранения актуального `lastUpdateTimestamp`, что является стандартным React-паттерном для stable intervals.
+- `Address.parseRaw(raw).toString({ bounceable: false })` — преобразование raw→EQ... адрес не требует сети и работает синхронно.
+
+### Решения
+- `lastUpdateTimestampRef` + `useEffect` синхронизации: ref всегда содержит актуальный timestamp; setInterval замыкается на ref, не на переменную из closure. Это устраняет stale closure без необходимости перезапускать интервал при каждом обновлении транзакций.
+- `formatBalance()` — локальная функция вместо переиспользования `formatTon` из сервиса напрямую: добавляет обрезку до 4 знаков и strip trailing zeros для UI.
+- Пагинация: запрашиваем `PAGE_SIZE + 1` записей, если вернулось больше PAGE_SIZE — `hasMore=true`, в store кладём только `PAGE_SIZE`.
+
+### Проблемы
+- Нет. 24/24 теста с первого запуска.
+
+---
+
 ## 2026-04-01 — Задача 9.3: ImportMnemonicScreen
 
 ### Наблюдения

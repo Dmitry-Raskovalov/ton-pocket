@@ -5,6 +5,21 @@
 
 ---
 
+## [2026-04-01] - MainScreen (Задача 9.4)
+
+### Добавлено
+- `src/screens/MainScreen.tsx` — полнофункциональный главный экран кошелька:
+  - Header: логотип TON Wallet, Testnet badge, кнопка Settings
+  - Секция баланса: адрес в pill-форме (`HighlightedAddress` truncated + `CopyButton`), баланс в TON (formatBalance, max 4 знака), кнопки Receive / Send
+  - Секция транзакций: заголовок + "Updated N sec ago", `SearchBar`, фильтры All/Incoming/Outgoing, список `TransactionItem` с labelMap из address book
+  - Пустое состояние: "No transactions yet" / "No matching transactions" в зависимости от активных фильтров
+  - "Load more" для пагинации (PAGE_SIZE=20, скрывается при `hasMore=false`)
+  - "End of History" маркер когда все транзакции загружены
+  - Polling баланса каждые 30 сек, начальная загрузка транзакций и баланса при mount
+- `src/screens/MainScreen.test.tsx` — 24 юнит-теста: header, баланс, пустое состояние (2 варианта), список транзакций, фильтры (4), поиск, пагинация (4), data fetching (4)
+
+---
+
 ## [2026-04-01] - ImportMnemonicScreen (Задача 9.3)
 
 ### Добавлено
