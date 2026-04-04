@@ -11,6 +11,7 @@ import { checkSelfSend } from './self-send';
 import { checkAccountState } from './account-state';
 import { checkBalance } from './balance-check';
 import { checkAddressSimilarity } from './address-similarity';
+import { checkNewRecipient } from './check-new-recipient';
 import type { Warning } from './types';
 
 /** Параметры для валидации отправки */
@@ -60,10 +61,11 @@ export async function validateSend(params: ValidateSendParams): Promise<SendVali
   const recipientRaw = normalizeAddress(recipientAddress);
 
   // Шаг 2: параллельный запуск независимых проверок
-  const [selfSendWarning, similarityWarning, accountStateWarnings, balanceWarnings] =
+  const [selfSendWarning, similarityWarning, newRecipientWarning, accountStateWarnings, balanceWarnings] =
     await Promise.all([
       Promise.resolve(checkSelfSend(recipientRaw, senderPublicKey)),
       Promise.resolve(checkAddressSimilarity(recipientRaw)),
+      Promise.resolve(checkNewRecipient(recipientRaw)),
       checkAccountState(recipientAddress).catch(() => [] as Warning[]),
       Promise.resolve(checkBalance(amount, senderBalance)),
     ]);
@@ -71,6 +73,7 @@ export async function validateSend(params: ValidateSendParams): Promise<SendVali
   // Собираем результаты
   if (selfSendWarning) warnings.push(selfSendWarning);
   if (similarityWarning) warnings.push(similarityWarning);
+  if (newRecipientWarning) warnings.push(newRecipientWarning);
   warnings.push(...accountStateWarnings);
   warnings.push(...balanceWarnings);
 

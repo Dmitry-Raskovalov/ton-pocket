@@ -19,9 +19,11 @@ export function WarningList({ warnings, onAllBlockingConfirmed }: WarningListPro
   const [checkedMap, setCheckedMap] = useState<Record<number, boolean>>({});
 
   // Reset checked state when the warnings set changes
-  useEffect(() => {
+  const [prevWarnings, setPrevWarnings] = useState(warnings);
+  if (warnings !== prevWarnings) {
+    setPrevWarnings(warnings);
     setCheckedMap({});
-  }, [warnings]);
+  }
 
   // Notify parent when all blocking warnings are confirmed
   useEffect(() => {

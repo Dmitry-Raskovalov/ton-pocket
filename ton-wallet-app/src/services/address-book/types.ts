@@ -16,8 +16,8 @@ export interface AddressBookEntry {
   lastUsed: number;
   /** How many times this address was used */
   usageCount: number;
-  /** How the entry was created */
-  source: 'manual' | 'sent' | 'received';
+  /** All ways this entry was encountered */
+  sources: Array<'manual' | 'sent' | 'received'>;
 }
 
 export interface SimilarAddressMatch {

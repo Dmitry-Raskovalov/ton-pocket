@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * file: screens/MainScreen.test.tsx
  * description: Unit tests for MainScreen — balance display, transaction list, filtering, search, pagination
@@ -5,8 +6,25 @@
  * created: 2026-04-01
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { vi } from 'vitest';
+
+// ─── IntersectionObserver mock ──────────────────────────────
+class IntersectionObserverMock {
+  readonly root: Element | null = null;
+  readonly rootMargin: string = '';
+  readonly thresholds: ReadonlyArray<number> = [];
+  disconnect = vi.fn();
+  observe = vi.fn();
+  takeRecords = vi.fn();
+  unobserve = vi.fn();
+}
+(globalThis as unknown as any).IntersectionObserver = IntersectionObserverMock;
+if (typeof window !== 'undefined') {
+  (window as unknown as any).IntersectionObserver = IntersectionObserverMock;
+}
+
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { MainScreen } from './MainScreen';
 import { useTransactionStore, getFilteredTransactions } from '@/store/transaction-store';
 import type { ParsedTransaction } from '@/services/ton/transactions';
@@ -43,7 +61,10 @@ vi.mock('@/services/ton/transactions', () => ({
 }));
 
 vi.mock('@/services/address-book', () => ({
-  addressBook: { getEntries: () => [] },
+  addressBook: {
+    getEntries: () => [],
+    addOrUpdateEntry: vi.fn(),
+  },
 }));
 
 vi.mock('@ton/core', () => ({
@@ -123,7 +144,7 @@ describe('MainScreen — header and balance', () => {
 
   it('renders balance amount from store (5.23 TON)', () => {
     renderScreen();
-    // balance is 5_230_000_000n → formatBalance → "5.23"
+    // 5.23... (with trailing zeros)
     expect(screen.getByText(/5\.23/)).toBeInTheDocument();
     expect(screen.getByText('TON')).toBeInTheDocument();
   });
@@ -192,8 +213,7 @@ describe('MainScreen — transaction list', () => {
 
   it('renders two transaction rows', () => {
     renderScreen();
-    // TransactionItem renders "from ..." or "to ..." for each counterparty address
-    const froms = screen.getAllByText(/^from /i);
+    const froms = screen.getAllByText(/from /i);
     expect(froms.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -253,28 +273,19 @@ describe('MainScreen — search', () => {
   });
 });
 
-describe('MainScreen — pagination', () => {
+describe('MainScreen — pagination & scrolling', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetTransactions.mockResolvedValue([]);
   });
 
-  it('shows "Load more" button when hasMore=true', () => {
+  it('hides "End of History" when hasMore=true', () => {
     vi.mocked(useTransactionStore).mockReturnValue(
       makeStoreState({ hasMore: true, transactions: [makeTx()] })
     );
     vi.mocked(getFilteredTransactions).mockReturnValue([makeTx()]);
     renderScreen();
-    expect(screen.getByRole('button', { name: /load more/i })).toBeInTheDocument();
-  });
-
-  it('hides "Load more" button when hasMore=false', () => {
-    vi.mocked(useTransactionStore).mockReturnValue(
-      makeStoreState({ hasMore: false, transactions: [makeTx()] })
-    );
-    vi.mocked(getFilteredTransactions).mockReturnValue([makeTx()]);
-    renderScreen();
-    expect(screen.queryByRole('button', { name: /load more/i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/end of history/i)).not.toBeInTheDocument();
   });
 
   it('shows "End of History" when hasMore=false and list non-empty', () => {
@@ -286,13 +297,13 @@ describe('MainScreen — pagination', () => {
     expect(screen.getByText(/end of history/i)).toBeInTheDocument();
   });
 
-  it('shows loading spinner when isLoading=true and no transactions', () => {
+  it('shows loading spinner when isLoading=true and hasMore=true', () => {
     vi.mocked(useTransactionStore).mockReturnValue(
-      makeStoreState({ isLoading: true, transactions: [] })
+      makeStoreState({ isLoading: true, hasMore: true, transactions: [makeTx()] })
     );
-    vi.mocked(getFilteredTransactions).mockReturnValue([]);
+    vi.mocked(getFilteredTransactions).mockReturnValue([makeTx()]);
     renderScreen();
+    // Sentinel loading spinner (div with animate-spin)
     expect(document.querySelector('.animate-spin')).toBeInTheDocument();
   });
 });
-

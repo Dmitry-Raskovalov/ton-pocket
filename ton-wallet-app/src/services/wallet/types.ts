@@ -34,6 +34,8 @@ export interface WalletImportResult {
   detectedWallets: DetectedWallet[];
   /** True when auto-detection failed due to network issues and v4R2 was used as fallback */
   hadNetworkError?: boolean;
+  /** Public key in hex format */
+  publicKey: string | null;
 }
 
 /**

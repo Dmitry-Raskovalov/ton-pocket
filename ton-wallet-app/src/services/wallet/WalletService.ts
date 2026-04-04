@@ -88,6 +88,7 @@ export class WalletService {
         needsVersionChoice: true,
         detectedWallets,
         hadNetworkError,
+        publicKey: null,
       };
     } else {
       // 0 or 1 found — use the single/default entry
@@ -109,12 +110,14 @@ export class WalletService {
       needsVersionChoice: false,
       detectedWallets: [],
       hadNetworkError,
+      publicKey: Buffer.from(keyPair.publicKey).toString('hex'),
     };
   }
 
   /**
    * Unlock wallet with password.
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async unlock(_password: string): Promise<WalletState | null> {
     // TODO: Implement
     throw new Error('Not implemented');

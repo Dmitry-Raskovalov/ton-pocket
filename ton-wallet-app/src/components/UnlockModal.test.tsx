@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UnlockModal } from './UnlockModal';
 import * as vault from '@/crypto/vault';
+import type { EncryptedVault } from '@/crypto/types';
 
 // ─── Setup Mocks ─────────────────────────────────────────────────────────────
 
@@ -11,7 +13,7 @@ const mockSetTransactions = vi.fn();
 
 vi.mock('@/store/wallet-store', () => ({
     useWalletStore: Object.assign(
-        vi.fn((selector) => selector({
+        vi.fn((selector: (s: any) => any) => selector({
             address: 'mock_address',
             updateBalance: mockUpdateBalance,
             setUnlocked: mockSetUnlocked
@@ -72,7 +74,7 @@ describe('UnlockModal', () => {
     });
 
     it('shows error on incorrect password and increments attempts', async () => {
-        vi.spyOn(vault, 'loadVault').mockReturnValue({} as any);
+        vi.spyOn(vault, 'loadVault').mockReturnValue({} as EncryptedVault);
         vi.spyOn(vault, 'decrypt').mockRejectedValue(new Error('Invalid password'));
 
         render(<UnlockModal />);
@@ -102,7 +104,7 @@ describe('UnlockModal', () => {
     });
 
     it('unlocks and fetches initial data upon providing the correct password', async () => {
-        vi.spyOn(vault, 'loadVault').mockReturnValue({} as any);
+        vi.spyOn(vault, 'loadVault').mockReturnValue({} as EncryptedVault);
         vi.spyOn(vault, 'decrypt').mockResolvedValue('{"some":"data"}');
 
         render(<UnlockModal />);

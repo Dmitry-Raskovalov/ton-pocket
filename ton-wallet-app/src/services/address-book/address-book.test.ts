@@ -128,7 +128,7 @@ describe('AddressBook', () => {
       const book2 = new AddressBook();
       expect(book2.getEntries()).toHaveLength(2);
       expect(book2.getByAddress(ADDR_A)?.label).toBe('Persistent');
-      expect(book2.getByAddress(ADDR_D)?.source).toBe('received');
+      expect(book2.getByAddress(ADDR_D)?.sources).toContain('received');
     });
 
     it('usageCount сохраняется между сессиями', () => {

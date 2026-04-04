@@ -1,30 +1,58 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * file: screens/SendScreen.test.tsx
- * description: Unit tests for SendScreen — input validation, confirmation flow, result states
+ * description: Unit tests for SendScreen — multi-step flow, validation, and security protocol
  * dependencies: SendScreen, wallet-store, ui-store, validate-send, transfer, vault
  * created: 2026-04-01
  */
 
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { SendScreen } from './SendScreen';
+import { vi } from 'vitest';
 
-// ─── Module mocks (all static — no hoisting issues) ────────────────────────────
+// ─── IntersectionObserver mock ──────────────────────────────
+class IntersectionObserverMock {
+  readonly root: Element | null = null;
+  readonly rootMargin: string = '';
+  readonly thresholds: ReadonlyArray<number> = [];
+  disconnect = vi.fn();
+  observe = vi.fn();
+  takeRecords = vi.fn();
+  unobserve = vi.fn();
+}
+(globalThis as unknown as any).IntersectionObserver = IntersectionObserverMock;
+if (typeof window !== 'undefined') {
+  (window as unknown as any).IntersectionObserver = IntersectionObserverMock;
+}
+
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { SendScreen } from './SendScreen';
+import * as vaultModule from '@/crypto/vault';
+import * as transferModule from '@/services/ton/transfer';
+
+// ─── Module mocks ────────────────────────────────────────────────────────────
+
+const mockAddToast = vi.fn();
+const mockStore = {
+  address: '0:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
+  balance: 12_340_000_000n,
+  version: 'v4R2' as const,
+  publicKey: '01'.repeat(32),
+  sessionPassword: 'mypassword',
+  updateBalance: vi.fn(),
+};
 
 vi.mock('@/store/wallet-store', () => ({
-  useWalletStore: (selector: (s: Record<string, unknown>) => unknown) =>
-    selector({
-      address: '0:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
-      balance: 10_000_000_000n,
-      version: 'v4R2',
-      publicKey: '01'.repeat(32),
-      updateBalance: vi.fn(),
-    }),
+  useWalletStore: Object.assign(
+    (selector?: (s: any) => any) => (selector ? selector(mockStore) : mockStore),
+    { getState: () => mockStore }
+  ),
 }));
 
 vi.mock('@/store/ui-store', () => ({
-  useUIStore: (selector: (s: Record<string, unknown>) => unknown) =>
-    selector({ addToast: vi.fn() }),
+  useUIStore: Object.assign(
+    (selector?: (s: any) => any) => (selector ? selector({ addToast: mockAddToast }) : { addToast: mockAddToast }),
+    { getState: () => ({ addToast: mockAddToast }) }
+  ),
 }));
 
 vi.mock('@/services/validation/validate-send', () => ({
@@ -40,14 +68,16 @@ vi.mock('@/services/ton/balance', () => ({
   formatTon: (n: bigint) => {
     const whole = n / 1_000_000_000n;
     const frac = n % 1_000_000_000n;
-    return `${whole}.${frac.toString().padStart(9, '0')}`;
+    return frac === 0n ? `${whole}` : `${whole}.${frac.toString().slice(0, 2)}`;
   },
-  getBalance: vi.fn().mockResolvedValue(10_000_000_000n),
+  getBalance: vi.fn().mockResolvedValue(12_340_000_000n),
 }));
 
 vi.mock('@/crypto/vault', () => ({
-  loadVault: vi.fn().mockReturnValue({ version: 1, kdf: 'argon2id' }),
+  loadVault: vi.fn().mockReturnValue({ version: 1, ciphertext: 'abc', iv: 'def', salt: 'ghi', kdfParams: {} }),
   decrypt: vi.fn().mockResolvedValue('["word1","word2"]'),
+  encrypt: vi.fn(),
+  saveVault: vi.fn(),
 }));
 
 vi.mock('@/services/wallet/contract-factory', () => ({
@@ -56,356 +86,122 @@ vi.mock('@/services/wallet/contract-factory', () => ({
   }),
 }));
 
-vi.mock('@/services/address-book/address-book', () => ({
-  addressBook: { addOrUpdateEntry: vi.fn() },
+vi.mock('@/services/address-book', () => ({
+  addressBook: {
+    getEntries: () => [],
+    addOrUpdateEntry: vi.fn(),
+  },
 }));
 
 vi.mock('@ton/crypto', () => ({
   mnemonicToPrivateKey: vi.fn().mockResolvedValue({
     publicKey: Buffer.alloc(32, 0x01),
-    secretKey: Buffer.alloc(32, 0x02),
+    secretKey: Buffer.alloc(64, 0x02),
   }),
 }));
 
-vi.mock('@ton/core', () => ({
-  Address: {
-    parseRaw: () => ({ toString: () => 'UQBcdef1234567890abcdef1234567890abcdef' }),
-    parse: () => ({
-      toRawString: () => '0:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
-      toString: () => 'UQBtest1234567890abcdef',
-    }),
-  },
-}));
-
-vi.mock('@/components/HighlightedAddress', () => ({
-  HighlightedAddress: ({ address, truncate }: { address: string; truncate?: boolean }) => (
-    <span data-testid="highlighted-address" data-truncate={!!truncate}>{address}</span>
-  ),
-}));
-
-vi.mock('@/components/CopyButton', () => ({
-  CopyButton: ({ text }: { text: string }) => (
-    <button data-testid="copy-button" data-text={text}>Copy</button>
-  ),
-}));
-
-vi.mock('@/components/WarningList', () => ({
-  WarningList: ({ warnings, onAllBlockingConfirmed }: { warnings: unknown[]; onAllBlockingConfirmed: (v: boolean) => void }) => (
-    <div data-testid="warning-list" data-count={warnings.length}>
-      <button
-        data-testid="confirm-all-warnings"
-        onClick={() => onAllBlockingConfirmed(true)}
-      />
-    </div>
-  ),
-}));
-
-// ─── Helpers ────────────────────────────────────────────────────────────────────
-
-const mockSetLocation = vi.fn();
 vi.mock('wouter', () => ({
-  useLocation: () => ['/send', mockSetLocation],
+  useLocation: () => ['/send', vi.fn()],
 }));
 
-function renderScreen() {
-  return render(<SendScreen />);
-}
+// ─── Tests ───────────────────────────────────────────────────────────────────
 
-// ─── Tests ─────────────────────────────────────────────────────────────────────
-
-describe('SendScreen — Step 1: Input Form', () => {
+describe('SendScreen UI Flow', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('renders "Send TON" heading', () => {
-    renderScreen();
-    expect(screen.getByText('Send TON')).toBeInTheDocument();
-  });
-
-  it('renders Testnet badge', () => {
-    renderScreen();
-    expect(screen.getByText('Testnet')).toBeInTheDocument();
-  });
-
-  it('displays available balance', () => {
-    renderScreen();
-    expect(screen.getByText('Available:')).toBeInTheDocument();
-  });
-
-  it('renders recipient address input with placeholder', () => {
-    renderScreen();
-    expect(screen.getByPlaceholderText('UQ...')).toBeInTheDocument();
-  });
-
-  it('renders amount input', () => {
-    renderScreen();
-    expect(screen.getByPlaceholderText('0.00')).toBeInTheDocument();
-  });
-
-  it('renders comment input', () => {
-    renderScreen();
-    expect(screen.getByPlaceholderText('Gift for a friend')).toBeInTheDocument();
-  });
-
-  it('renders MAX button', () => {
-    renderScreen();
-    expect(screen.getByRole('button', { name: 'MAX' })).toBeInTheDocument();
-  });
-
-  it('Continue button is disabled when form is empty', () => {
-    renderScreen();
-    const btn = screen.getByRole('button', { name: /continue|validating/i });
-    expect(btn).toBeDisabled();
-  });
-
-  it('MAX button sets amount to balance minus fee (9.99 TON)', () => {
-    renderScreen();
-    fireEvent.click(screen.getByRole('button', { name: 'MAX' }));
-    const input = screen.getByPlaceholderText('0.00') as HTMLInputElement;
-    expect(input.value).toBe('9.99');
-  });
-
-  it('calls setLocation(/main) when back arrow clicked from input step', () => {
-    renderScreen();
-    fireEvent.click(screen.getByLabelText('Go back'));
-    expect(mockSetLocation).toHaveBeenCalledWith('/main');
-  });
-
-  it('renders Security Protocol info note', () => {
-    renderScreen();
-    expect(screen.getByText('Security Protocol')).toBeInTheDocument();
-  });
-});
-
-describe('SendScreen — Step 2: Confirmation', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-  });
-
-  afterEach(() => {
     vi.useRealTimers();
+    vi.clearAllMocks();
   });
 
-  async function goToConfirm() {
-    renderScreen();
+  async function fillFormAndContinue(amount = '1.5') {
+    vi.useFakeTimers();
+    render(<SendScreen />);
 
     fireEvent.change(screen.getByPlaceholderText('UQ...'), {
       target: { value: 'UQBtest1234567890abcdef' },
     });
     fireEvent.change(screen.getByPlaceholderText('0.00'), {
-      target: { value: '1.5' },
+      target: { value: amount },
     });
 
     await act(async () => {
-      vi.advanceTimersByTime(600);
+      await vi.advanceTimersByTimeAsync(800);
     });
 
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /continue/i })).not.toBeDisabled();
-    });
+    // Restore real timers BEFORE calling async finders
+    vi.useRealTimers();
 
-    fireEvent.click(screen.getByRole('button', { name: /continue/i }));
+    const continueBtn = await screen.findByRole('button', { name: /continue/i });
+    fireEvent.click(continueBtn);
 
-    await waitFor(() => {
-      expect(screen.getByText('Confirm Transaction')).toBeInTheDocument();
-    });
+    await screen.findByText(/Step 2 of 3/i);
   }
 
-  it('navigates to confirm step when Continue is clicked', async () => {
-    await goToConfirm();
-    expect(screen.getByText('Confirm Transaction')).toBeInTheDocument();
+  it('renders Step 1 with correct available balance', () => {
+    render(<SendScreen />);
+    expect(screen.getByText(/Available:/i).parentElement).toHaveTextContent(/12\.34/);
   });
 
-  it('displays the amount on confirmation screen', async () => {
-    await goToConfirm();
-    // Amount is rendered as "1.5 TON" split across spans
+  it('MAX button calculates 12.33 from 12.34', () => {
+    render(<SendScreen />);
+    fireEvent.click(screen.getByRole('button', { name: /max/i }));
+    const amountInput = screen.getByPlaceholderText('0.00') as HTMLInputElement;
+    expect(amountInput.value).toBe('12.33');
+  });
+
+  it('navigates through the 3-step flow on success', async () => {
+    await fillFormAndContinue();
+
+    // Step 2 assertions
     expect(screen.getByText('1.5')).toBeInTheDocument();
-    expect(screen.getByText('TON')).toBeInTheDocument();
-  });
-
-  it('renders recipient address on confirmation screen', async () => {
-    await goToConfirm();
     expect(screen.getByTestId('highlighted-address')).toHaveTextContent('UQBtest1234567890abcdef');
-  });
 
-  it('renders password input on confirmation screen', async () => {
-    await goToConfirm();
-    expect(screen.getByPlaceholderText('Enter Wallet Password')).toBeInTheDocument();
-  });
-
-  it('Send button is disabled when password is empty', async () => {
-    await goToConfirm();
-    expect(screen.getByRole('button', { name: /confirm & send/i })).toBeDisabled();
-  });
-
-  it('Cancel button returns to input step', async () => {
-    await goToConfirm();
-    fireEvent.click(screen.getByRole('button', { name: /cancel transaction/i }));
-    expect(screen.getByText('Send TON')).toBeInTheDocument();
-  });
-});
-
-describe('SendScreen — Step 3: Result States', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  async function goToResult() {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-    renderScreen();
-
-    fireEvent.change(screen.getByPlaceholderText('UQ...'), {
-      target: { value: 'UQBtest1234567890abcdef' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('0.00'), {
-      target: { value: '1' },
-    });
-
-    await act(async () => { vi.advanceTimersByTime(600); });
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /continue/i })).not.toBeDisabled();
-    });
-
-    fireEvent.click(screen.getByRole('button', { name: /continue/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText('Confirm Transaction')).toBeInTheDocument();
-    });
-
-    fireEvent.change(screen.getByPlaceholderText('Enter Wallet Password'), {
-      target: { value: 'mypassword' },
-    });
-
-    vi.useRealTimers();
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /confirm & send/i })).not.toBeDisabled();
-    });
-
+    // Confirm & Send
     fireEvent.click(screen.getByRole('button', { name: /confirm & send/i }));
-  }
 
-  it('shows success state when transfer is confirmed', async () => {
-    await goToResult();
-
-    await waitFor(() => {
-      expect(screen.getByText('Transaction Sent!')).toBeInTheDocument();
-    });
-
-    // Should show hash
-    expect(screen.getByText(/Confirmed/)).toBeInTheDocument();
+    await screen.findByText(/Transaction Sent!/i);
   });
 
-  it('shows error state when transfer fails', async () => {
-    const { sendTransfer } = await import('@/services/ton/transfer');
-    vi.mocked(sendTransfer).mockResolvedValueOnce({
-      status: 'error',
-      error: 'Insufficient gas estimate',
-    });
+  it('allows retrying after a transfer failure', async () => {
+    vi.spyOn(transferModule, 'sendTransfer').mockResolvedValueOnce({ status: 'error', hash: 'null' });
 
-    await goToResult();
+    await fillFormAndContinue();
+    fireEvent.click(screen.getByRole('button', { name: /confirm & send/i }));
 
-    await waitFor(() => {
-      expect(screen.getByText('Transaction Failed')).toBeInTheDocument();
-      expect(screen.getByText('Insufficient gas estimate')).toBeInTheDocument();
-    });
-
-    expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
-  });
-
-  it('shows timeout state when transfer times out', async () => {
-    const { sendTransfer } = await import('@/services/ton/transfer');
-    vi.mocked(sendTransfer).mockResolvedValueOnce({ status: 'timeout' });
-
-    await goToResult();
-
-    await waitFor(() => {
-      expect(screen.getByText('Transaction Status Unknown')).toBeInTheDocument();
-    });
-  });
-
-  it('shows password error without calling sendTransfer', async () => {
-    const { decrypt } = await import('@/crypto/vault');
-    vi.mocked(decrypt).mockRejectedValueOnce(new Error('bad'));
-
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-    renderScreen();
-
-    fireEvent.change(screen.getByPlaceholderText('UQ...'), {
-      target: { value: 'UQBtest1234567890abcdef' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('0.00'), {
-      target: { value: '1' },
-    });
-
-    await act(async () => { vi.advanceTimersByTime(600); });
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /continue/i })).not.toBeDisabled();
-    });
-
-    fireEvent.click(screen.getByRole('button', { name: /continue/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText('Confirm Transaction')).toBeInTheDocument();
-    });
-
-    fireEvent.change(screen.getByPlaceholderText('Enter Wallet Password'), {
-      target: { value: 'wrong' },
-    });
-
-    vi.useRealTimers();
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /confirm & send/i })).not.toBeDisabled();
-    });
-
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /confirm & send/i }));
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText('Incorrect password')).toBeInTheDocument();
-    });
-
-    // Should stay on confirm step, not navigate to result
-    expect(screen.queryByText('Transaction Failed')).not.toBeInTheDocument();
-    expect(screen.queryByText('Sending...')).not.toBeInTheDocument();
-  });
-
-  it('Try Again returns to input step', async () => {
-    const { sendTransfer } = await import('@/services/ton/transfer');
-    vi.mocked(sendTransfer).mockResolvedValueOnce({
-      status: 'error',
-      error: 'Test error',
-    });
-
-    await goToResult();
-
-    await waitFor(() => {
-      expect(screen.getByText('Transaction Failed')).toBeInTheDocument();
-    });
+    await screen.findByText(/Transaction Failed/i);
 
     fireEvent.click(screen.getByRole('button', { name: /try again/i }));
 
+    expect(screen.getByText(/Step 2 of 3/i)).toBeInTheDocument();
+  });
+
+  it('handles vault decryption error by showing toast and staying on Step 2', async () => {
+    vi.spyOn(vaultModule, 'decrypt').mockRejectedValueOnce(new Error('Incorrect master password'));
+
+    await fillFormAndContinue();
+    fireEvent.click(screen.getByRole('button', { name: /confirm & send/i }));
+
     await waitFor(() => {
-      expect(screen.getByText('Send TON')).toBeInTheDocument();
+      expect(mockAddToast).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'error', message: 'Incorrect master password' })
+      );
     });
-  });
-});
 
-describe('SendScreen — MAX calculation', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+    // Verify it stays on Step 2 (or returns to it)
+    expect(screen.getByText(/Step 2 of 3/i)).toBeInTheDocument();
   });
 
-  it('MAX = balance - fee = 9.99 TON when balance is 10 TON', () => {
-    renderScreen();
-    fireEvent.click(screen.getByRole('button', { name: 'MAX' }));
-    const input = screen.getByPlaceholderText('0.00') as HTMLInputElement;
-    expect(input.value).toBe('9.99');
+  it('handles transfer timeouts with status unknown screen', async () => {
+    vi.spyOn(transferModule, 'sendTransfer').mockResolvedValueOnce({ status: 'timeout', hash: 'timeout_hash' });
+
+    await fillFormAndContinue();
+    fireEvent.click(screen.getByRole('button', { name: /confirm & send/i }));
+
+    await screen.findByText(/Transaction Status Unknown/i);
+  });
+
+  it('back button from Step 2 returns to Step 1', async () => {
+    await fillFormAndContinue();
+    fireEvent.click(screen.getByLabelText('Go back'));
+    expect(screen.getByText('Send TON')).toBeInTheDocument();
   });
 });

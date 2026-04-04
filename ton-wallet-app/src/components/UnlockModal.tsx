@@ -87,7 +87,7 @@ export function UnlockModal() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [password, isSubmitting, isLocked, setUnlocked, resetUnlockAttempts, incrementUnlockAttempts]);
+  }, [password, isSubmitting, isLocked, setUnlocked, resetUnlockAttempts, incrementUnlockAttempts, setSessionPassword]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {

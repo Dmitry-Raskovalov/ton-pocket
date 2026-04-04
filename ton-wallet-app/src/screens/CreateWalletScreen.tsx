@@ -266,8 +266,9 @@ export function CreateWalletScreen() {
   const [mnemonic, setMnemonic] = useState<string[]>([]);
   const [walletData, setWalletData] = useState<{ address: string; version: string; publicKey: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionPwd, setSessionPwd] = useState('');
 
-  const { setWallet, setUnlocked } = useWalletStore();
+  const { setWallet, setUnlocked, setSessionPassword } = useWalletStore();
   const { addToast } = useUIStore();
   const [, setLocation] = useLocation();
 
@@ -277,6 +278,7 @@ export function CreateWalletScreen() {
       const result = await walletService.createWallet(password);
       setMnemonic(result.mnemonic);
       setWalletData({ address: result.address, version: result.version, publicKey: result.publicKey });
+      setSessionPwd(password);
       setStep('mnemonic');
     } catch {
       addToast({ type: 'error', message: 'Failed to create wallet. Please try again.', duration: 5000 });
@@ -293,6 +295,7 @@ export function CreateWalletScreen() {
       publicKey: walletData.publicKey,
     });
     setUnlocked(true);
+    setSessionPassword(sessionPwd);
     setLocation('/main');
   };
 

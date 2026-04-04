@@ -38,6 +38,11 @@ vi.mock('./address-similarity', () => ({
   checkAddressSimilarity: (...args: unknown[]) => mockCheckAddressSimilarity(...args),
 }));
 
+const mockCheckNewRecipient = vi.fn();
+vi.mock('./check-new-recipient', () => ({
+  checkNewRecipient: (...args: unknown[]) => mockCheckNewRecipient(...args),
+}));
+
 // --- общие константы ---
 
 const VALID_ADDRESS = 'EQCrq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq8Uk';
@@ -77,7 +82,7 @@ const WARNING_ACCOUNT_FROZEN: Warning = {
 const WARNING_SIMILARITY: Warning = {
   type: 'address_similarity',
   message: 'Адрес похож на адрес из адресной книги.',
-  severity: 'critical',
+  severity: 'warning',
   blocking: true,
 };
 
@@ -89,6 +94,7 @@ beforeEach(() => {
   mockNormalizeAddress.mockReturnValue(RAW_ADDRESS);
   mockCheckSelfSend.mockReturnValue(null);
   mockCheckAddressSimilarity.mockReturnValue(null);
+  mockCheckNewRecipient.mockReturnValue(null);
   mockCheckAccountState.mockResolvedValue([]);
   mockCheckBalance.mockReturnValue([]);
 });
@@ -216,6 +222,24 @@ describe('validateSend', () => {
       });
 
       expect(result.warnings.some((w) => w.type === 'address_similarity')).toBe(true);
+    });
+
+    it('new_recipient warning включается в массив warnings', async () => {
+      mockCheckNewRecipient.mockReturnValue({
+        type: 'new_recipient',
+        message: 'Первый перевод на этот адрес',
+        severity: 'warning',
+        blocking: false,
+      });
+
+      const result = await validateSend({
+        recipientAddress: VALID_ADDRESS,
+        amount: AMOUNT,
+        senderBalance: BALANCE,
+        senderPublicKey: SENDER_KEY,
+      });
+      expect(result.warnings.some((w) => w.type === 'new_recipient')).toBe(true);
+      expect(result.isValid).toBe(true); // warning не делает форму невалидной
     });
 
     it('все 4 типа предупреждений одновременно', async () => {

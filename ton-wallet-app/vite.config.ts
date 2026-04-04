@@ -1,4 +1,4 @@
-/// <reference types="vitest/config" />
+
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';

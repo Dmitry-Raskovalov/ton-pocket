@@ -76,6 +76,22 @@ export function MainScreen() {
     void refreshTx();
   }, [refreshTx]);
 
+  /**
+   * Update address book with incoming transaction counterparties.
+   * This helps track "trusted" addresses (both incoming and outgoing).
+   */
+  useEffect(() => {
+    for (const tx of transactions) {
+      if (tx.direction === 'in' && tx.counterpartyAddress) {
+        addressBook.addOrUpdateEntry({
+          address: tx.counterpartyAddress,
+          displayAddress: toUserFriendly(tx.counterpartyAddress),
+          source: 'received',
+        });
+      }
+    }
+  }, [transactions]);
+
   // Infinite scroll: load more when sentinel enters viewport
   const sentinelRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -214,7 +230,7 @@ export function MainScreen() {
                   <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                 </div>
 
-              /* Empty state */
+                /* Empty state */
               ) : filteredTx.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 px-8 text-center bg-surface-container rounded-xl border border-white/[0.02]">
                   <div className="w-16 h-16 rounded-full bg-surface-container-lowest flex items-center justify-center mb-6">
@@ -232,7 +248,7 @@ export function MainScreen() {
                   </p>
                 </div>
 
-              /* Transaction list */
+                /* Transaction list */
               ) : (
                 <div className="space-y-3 pt-2 pb-6">
                   {filteredTx.map((tx) => (

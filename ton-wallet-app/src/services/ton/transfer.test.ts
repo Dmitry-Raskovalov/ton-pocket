@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * file: transfer.test.ts
  * description: Unit tests for transfer service
@@ -6,10 +7,10 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { Address, Cell, TupleReader, beginCell } from '@ton/core';
+import { Address, TupleReader } from '@ton/core';
 import { WalletContractV4 } from '@ton/ton';
 import { sendTransfer, ESTIMATED_FEE } from './transfer';
-import { getTonClient, resetTonClient } from './client';
+import { getTonClient } from './client';
 import type { TonClient } from '@ton/ton';
 
 // --- Mocks ---
@@ -39,19 +40,19 @@ function createMockClient(): TonClient {
     isContractDeployed: vi.fn(),
     sendFile: vi.fn(),
     sendMessage: vi.fn(),
-    open(src: any) {
-      const self = this as any;
+    open(src: { address: unknown }) {
+      const self = this as unknown;
       // Re-implement TonClient.open() using createProvider pattern
       // but with our mocked client as the backend
       const address = src.address;
       return {
         getSeqno: async () => {
           // First check state
-          const state = await self.getContractState(address);
+          const state = await (self as any).getContractState(address);
           if (state.state !== 'active') return 0;
           // Then call runMethod for seqno
           try {
-            const result = await self.runMethod(address, 'seqno', []);
+            const result = await (self as any).runMethod(address, 'seqno', []);
             return result.stack.readNumber();
           } catch {
             return 0;
@@ -75,6 +76,7 @@ describe('transfer service', () => {
   let mockClient: TonClient;
 
   beforeEach(() => {
+    vi.resetModules();
     vi.clearAllMocks();
     mockClient = createMockClient();
     mockGetTonClient.mockReturnValue(mockClient);
@@ -105,7 +107,7 @@ describe('transfer service', () => {
       mockGetContractState.mockResolvedValueOnce({
         state: 'active',
         balance: 0n,
-      } as any);
+      } as unknown as any);
       mockRunMethod.mockResolvedValueOnce({ stack: numberStack(initialSeqno) });
 
       // Send succeeds
@@ -115,13 +117,13 @@ describe('transfer service', () => {
       mockGetContractState.mockResolvedValueOnce({
         state: 'active',
         balance: 0n,
-      } as any);
+      } as unknown as any);
       mockRunMethod.mockResolvedValueOnce({ stack: numberStack(finalSeqno) });
 
       // Return transaction with hash
       mockGetTransactions.mockResolvedValueOnce([{
         hash: () => Buffer.from('abcdef123456', 'hex'),
-      }] as any);
+      }] as unknown as any);
 
       return { mockGetContractState, mockSendExternalMessage, mockGetTransactions };
     }
@@ -138,11 +140,11 @@ describe('transfer service', () => {
 
     it('should return status "timeout" when seqno does not increment within 30 seconds', async () => {
       const mockGetContractState = vi.mocked(mockClient.getContractState);
-      const mockRunMethod = vi.mocked((mockClient as any).runMethod);
+      const mockRunMethod = vi.mocked((mockClient as unknown as any).runMethod);
       const mockSendExternalMessage = vi.mocked(mockClient.sendExternalMessage);
 
       // All calls return seqno = 5
-      mockGetContractState.mockResolvedValue({ state: 'active', balance: 0n } as any);
+      mockGetContractState.mockResolvedValue({ state: 'active', balance: 0n } as unknown as any);
       mockRunMethod.mockResolvedValue({ stack: numberStack(5) });
       mockSendExternalMessage.mockResolvedValueOnce(undefined);
 
@@ -160,10 +162,10 @@ describe('transfer service', () => {
 
     it('should return status "error" when sendExternalMessage fails', async () => {
       const mockGetContractState = vi.mocked(mockClient.getContractState);
-      const mockRunMethod = vi.mocked((mockClient as any).runMethod);
+      const mockRunMethod = vi.mocked((mockClient as unknown as any).runMethod);
       const mockSendExternalMessage = vi.mocked(mockClient.sendExternalMessage);
 
-      mockGetContractState.mockResolvedValueOnce({ state: 'active', balance: 0n } as any);
+      mockGetContractState.mockResolvedValueOnce({ state: 'active', balance: 0n } as unknown as any);
       mockRunMethod.mockResolvedValueOnce({ stack: numberStack(5) });
       mockSendExternalMessage.mockRejectedValueOnce(new Error('Network error'));
 

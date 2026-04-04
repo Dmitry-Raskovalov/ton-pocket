@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "eslint . && stylelint src/**/*.css",
+    "lint:css": "stylelint src/**/*.css",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -45,6 +46,8 @@
     "jsdom": "^28.1.0",
     "postcss": "^8.5.8",
     "rollup": "^4.60.1",
+    "stylelint": "^17.6.0",
+    "stylelint-config-standard": "^40.0.0",
     "tailwindcss": "^4.2.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.0",

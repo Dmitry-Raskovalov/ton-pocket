@@ -36,7 +36,7 @@ export function checkAddressSimilarity(recipientRaw: string): Warning | null {
   return {
     type: 'address_similarity',
     message: `Введённый адрес похож на ${details.length === 1 ? 'адрес' : 'адреса'} из вашей адресной книги: ${details.join('; ')}. Убедитесь, что адрес не был подменён.`,
-    severity: 'critical',
+    severity: 'warning',
     blocking: true,
   };
 }

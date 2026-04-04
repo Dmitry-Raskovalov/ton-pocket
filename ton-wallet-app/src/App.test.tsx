@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import App from './App';
 import * as walletStore from '@/store/wallet-store';
+import type { WalletStore } from '@/store/types';
 
 // Mock components to avoid rendering the full dependency tree
 vi.mock('@/components', () => ({
@@ -36,7 +37,7 @@ describe('App Routing Guards', () => {
 
     it('renders WelcomeScreen conditionally when no vault exists', () => {
         vi.spyOn(walletStore, 'isWalletCreated').mockReturnValue(false);
-        vi.spyOn(walletStore, 'useWalletStore').mockImplementation((selector: any) => selector({ isUnlocked: false }));
+        vi.spyOn(walletStore, 'useWalletStore').mockImplementation((selector: (s: WalletStore) => unknown) => selector({ isUnlocked: false } as WalletStore));
 
         render(<App />);
         expect(screen.getByTestId('welcome-screen')).toBeInTheDocument();
@@ -44,7 +45,7 @@ describe('App Routing Guards', () => {
 
     it('renders UnlockModal when vault exists but not unlocked', () => {
         vi.spyOn(walletStore, 'isWalletCreated').mockReturnValue(true);
-        vi.spyOn(walletStore, 'useWalletStore').mockImplementation((selector: any) => selector({ isUnlocked: false }));
+        vi.spyOn(walletStore, 'useWalletStore').mockImplementation((selector: (s: WalletStore) => unknown) => selector({ isUnlocked: false } as WalletStore));
 
         render(<App />);
         expect(screen.getByTestId('unlock-modal')).toBeInTheDocument();
@@ -52,7 +53,7 @@ describe('App Routing Guards', () => {
 
     it('renders MainScreen when vault exists and is unlocked', () => {
         vi.spyOn(walletStore, 'isWalletCreated').mockReturnValue(true);
-        vi.spyOn(walletStore, 'useWalletStore').mockImplementation((selector: any) => selector({ isUnlocked: true }));
+        vi.spyOn(walletStore, 'useWalletStore').mockImplementation((selector: (s: WalletStore) => unknown) => selector({ isUnlocked: true } as WalletStore));
 
         // To prevent warning related to location, render App directly (it redirects / to /main)
         window.location.hash = '#/main';

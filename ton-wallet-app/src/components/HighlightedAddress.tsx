@@ -8,29 +8,24 @@
 
 const HIGHLIGHT_LEN = 6;
 
-export interface HighlightedAddressProps {
-  /** Raw or user-friendly TON address string */
+export interface HighlightedAddressProps extends React.HTMLAttributes<HTMLSpanElement> {
   address: string;
-  /**
-   * When true — middle section is replaced with "…" (for lists, headers).
-   * When false (default) — full address is shown.
-   */
   truncate?: boolean;
-  className?: string;
 }
 
 export function HighlightedAddress({
   address,
   truncate = false,
   className = '',
+  ...props
 }: HighlightedAddressProps) {
   const start = address.slice(0, HIGHLIGHT_LEN);
   const end = address.slice(-HIGHLIGHT_LEN);
   const middle = address.slice(HIGHLIGHT_LEN, -HIGHLIGHT_LEN);
-
   return (
     <span
       className={`font-mono text-xs break-all leading-relaxed ${className}`}
+      {...props}
     >
       <span className="text-on-surface font-bold">{start}</span>
       {truncate ? (

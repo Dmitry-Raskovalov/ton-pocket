@@ -13,12 +13,14 @@ const STORE_NAME = 'ton-pocket-ui';
 const MAX_UNLOCK_ATTEMPTS = 5;
 const LOCK_DURATION_MS = 5 * 60 * 1000; // 5 минут
 
+import type { Toast } from './types';
+
 const initialState = {
   isLoading: false,
-  toasts: [],
+  toasts: [] as Toast[],
   unlockAttempts: 0,
-  lockedUntil: null,
-} as const;
+  lockedUntil: null as number | null,
+};
 
 export const useUIStore = create<UIStore>()(
   persist(

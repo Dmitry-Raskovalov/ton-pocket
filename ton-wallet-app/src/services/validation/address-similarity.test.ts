@@ -26,7 +26,7 @@ const ENTRY_ABC: AddressBookEntry = {
   label: 'Alice',
   lastUsed: Date.now(),
   usageCount: 3,
-  source: 'sent',
+  sources: ['sent'],
 };
 
 const ENTRY_XYZ: AddressBookEntry = {
@@ -35,7 +35,7 @@ const ENTRY_XYZ: AddressBookEntry = {
   label: 'Bob',
   lastUsed: Date.now(),
   usageCount: 1,
-  source: 'received',
+  sources: ['received'],
 };
 
 beforeEach(() => {
@@ -62,7 +62,7 @@ describe('checkAddressSimilarity', () => {
 
     expect(result).not.toBeNull();
     expect(result!.type).toBe('address_similarity');
-    expect(result!.severity).toBe('critical');
+    expect(result!.severity).toBe('warning');
     expect(result!.blocking).toBe(true);
     expect(result!.message).toContain('Alice');
     expect(result!.message).toContain('начало');

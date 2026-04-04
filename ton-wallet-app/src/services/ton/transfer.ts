@@ -116,7 +116,7 @@ export async function sendTransfer(params: TransferParams): Promise<TransferResu
     const seqnoBefore = await getSeqno(contract);
 
     // Step 2: Create transfer
-    const transfer = contract.createTransfer({
+    const transfer = (contract as WalletContractV4).createTransfer({
       seqno: seqnoBefore,
       secretKey,
       messages: [

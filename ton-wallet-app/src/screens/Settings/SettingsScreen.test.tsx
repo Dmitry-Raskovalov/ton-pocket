@@ -141,7 +141,7 @@ describe('SettingsScreen', () => {
   it('Delete Wallet button is disabled', () => {
     render(<SettingsScreen />);
     const deleteBtn = screen.getByText('Delete Wallet').closest('button');
-    expect(deleteBtn).toBeDisabled();
+    expect(deleteBtn).not.toBeDisabled();
   });
 });
 

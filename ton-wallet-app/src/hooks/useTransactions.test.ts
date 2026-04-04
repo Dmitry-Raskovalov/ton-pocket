@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * file: hooks/useTransactions.test.ts
  * description: Tests for useTransactions hook
@@ -35,7 +36,7 @@ vi.mock('@/services/address-book', () => ({
 
 describe('useTransactions', () => {
     beforeEach(() => {
-        vi.mocked(useWalletStore).mockImplementation((selector: any) => selector({ address: 'test-address' }));
+        vi.mocked(useWalletStore).mockImplementation((selector: (s: any) => any) => selector({ address: 'test-address' }));
 
         vi.mocked(useTransactionStore).mockReturnValue({
             setTransactions: vi.fn(),
@@ -43,7 +44,7 @@ describe('useTransactions', () => {
             setLoading: vi.fn(),
             transactions: [{ hash: 'existing_tx', lt: '1', direction: 'in' }],
             hasMore: true,
-        } as any);
+        } as unknown as any);
     });
 
     afterEach(() => {
@@ -54,7 +55,7 @@ describe('useTransactions', () => {
         vi.mocked(getTransactions).mockResolvedValue([
             { hash: 'new_tx1', counterpartyAddress: 'addr1', direction: 'in' },
             { hash: 'new_tx2', counterpartyAddress: 'addr2', direction: 'out' },
-        ] as any);
+        ] as unknown as any);
 
         const { result } = renderHook(() => useTransactions());
 
@@ -73,7 +74,7 @@ describe('useTransactions', () => {
         vi.mocked(getTransactions).mockResolvedValue([
             { hash: 'existing_tx', lt: '1', direction: 'in' },
             { hash: 'new_tx3', lt: '0', counterpartyAddress: 'addr3', direction: 'in' },
-        ] as any);
+        ] as unknown as any);
 
         const { result } = renderHook(() => useTransactions());
 

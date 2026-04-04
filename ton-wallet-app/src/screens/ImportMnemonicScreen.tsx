@@ -28,10 +28,6 @@ function parseWords(text: string): string[] {
 }
 
 /** Truncate a friendly address to show first 4 and last 4 chars. */
-function truncateAddress(addr: string): string {
-  if (addr.length <= 12) return addr;
-  return `${addr.slice(0, 4)}...${addr.slice(-4)}`;
-}
 
 // ─── Step 1: Enter Mnemonic ────────────────────────────────────────────────────
 
@@ -136,13 +132,12 @@ function StepMnemonic({ onBack, onContinue }: StepMnemonicProps) {
                 </span>
               </div>
               <span
-                className={`text-[10px] font-mono ${
-                  wordCount === 24
-                    ? 'text-primary'
-                    : wordCount > 24
-                      ? 'text-error'
-                      : 'text-outline'
-                }`}
+                className={`text-[10px] font-mono ${wordCount === 24
+                  ? 'text-primary'
+                  : wordCount > 24
+                    ? 'text-error'
+                    : 'text-outline'
+                  }`}
               >
                 {wordCount} / 24 words
               </span>
@@ -366,7 +361,6 @@ function StepSelectVersion({
             const isSelected = selected === wallet.version;
             const badge = versionLabel[wallet.version];
             const subtitle = versionSubtitle[wallet.version] ?? wallet.version;
-            const displayAddress = truncateAddress(wallet.addressFriendly);
 
             return (
               <label key={wallet.version} className="relative block cursor-pointer group">
@@ -483,7 +477,7 @@ export function ImportMnemonicScreen() {
   const [detectedWallets, setDetectedWallets] = useState<DetectedWallet[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { setWallet, setUnlocked } = useWalletStore();
+  const { setWallet, setUnlocked, setSessionPassword } = useWalletStore();
   const { addToast } = useUIStore();
   const [, setLocation] = useLocation();
 
@@ -513,9 +507,10 @@ export function ImportMnemonicScreen() {
       }
 
       if (result.address && result.version) {
-        setWallet({ address: result.address, version: result.version, publicKey: '' });
+        setWallet({ address: result.address, version: result.version, publicKey: result.publicKey ?? '' });
       }
       setUnlocked(true);
+      setSessionPassword(pwd);
       setLocation('/main');
     } catch (err) {
       const message =
@@ -531,9 +526,10 @@ export function ImportMnemonicScreen() {
     try {
       const result = await walletService.importFromMnemonic(words, password, selectedVersion);
       if (result.address && result.version) {
-        setWallet({ address: result.address, version: result.version, publicKey: '' });
+        setWallet({ address: result.address, version: result.version, publicKey: result.publicKey ?? '' });
       }
       setUnlocked(true);
+      setSessionPassword(password);
       setLocation('/main');
     } catch (err) {
       const message =

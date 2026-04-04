@@ -23,8 +23,13 @@ vi.mock('@/services/wallet/WalletService', () => ({
 
 const mockSetWallet = vi.fn();
 const mockSetUnlocked = vi.fn();
+const mockSetSessionPassword = vi.fn();
 vi.mock('@/store/wallet-store', () => ({
-  useWalletStore: () => ({ setWallet: mockSetWallet, setUnlocked: mockSetUnlocked }),
+  useWalletStore: () => ({
+    setWallet: mockSetWallet,
+    setUnlocked: mockSetUnlocked,
+    setSessionPassword: mockSetSessionPassword,
+  }),
 }));
 
 const mockAddToast = vi.fn();
@@ -154,7 +159,8 @@ describe('ImportMnemonicScreen — Step 2: Set Password', () => {
   });
 
   it('advances to password step on valid mnemonic', async () => {
-    await renderScreen() && advanceToPassword();
+    await renderScreen();
+    advanceToPassword();
     await waitFor(() => expect(screen.getByText('Set Password')).toBeInTheDocument());
   });
 
@@ -179,6 +185,7 @@ describe('ImportMnemonicScreen — Step 2: Set Password', () => {
     mockImportFromMnemonic.mockResolvedValueOnce({
       address: '0:abc',
       version: 'v4R2',
+      publicKey: 'aabbcc',
       needsVersionChoice: false,
       detectedWallets: [],
     });
@@ -195,8 +202,9 @@ describe('ImportMnemonicScreen — Step 2: Set Password', () => {
       expect(mockSetWallet).toHaveBeenCalledWith({
         address: '0:abc',
         version: 'v4R2',
-        publicKey: '',
+        publicKey: 'aabbcc',
       });
+      expect(mockSetSessionPassword).toHaveBeenCalledWith('StrongPass123!');
       expect(mockSetLocation).toHaveBeenCalledWith('/main');
     });
   });
@@ -233,6 +241,7 @@ describe('ImportMnemonicScreen — Step 3: Select Version', () => {
     mockImportFromMnemonic.mockResolvedValueOnce({
       address: null,
       version: null,
+      publicKey: '',
       needsVersionChoice: true,
       detectedWallets: DETECTED_WALLETS,
     });
@@ -271,6 +280,7 @@ describe('ImportMnemonicScreen — Step 3: Select Version', () => {
     mockImportFromMnemonic.mockResolvedValueOnce({
       address: '0:abc',
       version: 'v4R2',
+      publicKey: 'aabbcc',
       needsVersionChoice: false,
       detectedWallets: [],
     });

@@ -10,7 +10,7 @@ import { checkBalance } from './balance-check';
 import { ESTIMATED_FEE } from '../ton/transfer';
 
 /** 0.05 TON в нанотонах */
-const LOW_THRESHOLD = 50_000_000n;
+
 
 describe('checkBalance', () => {
   it('возвращает пустой массив при достаточном балансе и хорошем остатке', () => {

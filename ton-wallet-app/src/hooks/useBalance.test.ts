@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * file: hooks/useBalance.test.ts
  * description: Tests for useBalance hook
@@ -42,18 +43,18 @@ describe('useBalance', () => {
     beforeEach(() => {
         vi.useFakeTimers();
         // Mock useWalletStore as a selector hook
-        vi.mocked(useWalletStore).mockImplementation((selector: any) =>
+        vi.mocked(useWalletStore).mockImplementation((selector: (s: any) => any) =>
             selector({ address: '0:' + 'a'.repeat(64) })
         );
 
         // Mock getTonClient to return object with getContractState
         vi.mocked(getTonClient).mockReturnValue({
             getContractState: mockGetContractState,
-        } as any);
+        } as unknown as any);
         mockGetContractState.mockResolvedValue({ state: 'active' });
 
         // Mock UI store addToast
-        vi.mocked(useUIStore).mockReturnValue(vi.fn() as any);
+        vi.mocked(useUIStore).mockReturnValue(vi.fn() as unknown as any);
     });
 
     afterEach(() => {
@@ -65,7 +66,7 @@ describe('useBalance', () => {
         vi.mocked(getBalance).mockResolvedValue(200n);
         const updateBalanceMock = vi.fn();
         const setActivatedMock = vi.fn();
-        vi.mocked((useWalletStore as any).getState).mockReturnValue({
+        vi.mocked((useWalletStore as unknown as any).getState).mockReturnValue({
             balance: 100n,
             updateBalance: updateBalanceMock,
             setActivated: setActivatedMock,
@@ -84,7 +85,7 @@ describe('useBalance', () => {
 
         // Advance 10 seconds for next poll
         vi.mocked(getBalance).mockResolvedValue(300n);
-        vi.mocked((useWalletStore as any).getState).mockReturnValue({
+        vi.mocked((useWalletStore as unknown as any).getState).mockReturnValue({
             balance: 200n,
             updateBalance: updateBalanceMock,
             setActivated: setActivatedMock,
@@ -101,7 +102,7 @@ describe('useBalance', () => {
 
     it('calls onBalanceChange callback when balance changes', async () => {
         vi.mocked(getBalance).mockResolvedValue(200n);
-        vi.mocked((useWalletStore as any).getState).mockReturnValue({
+        vi.mocked((useWalletStore as unknown as any).getState).mockReturnValue({
             balance: 100n,
             updateBalance: vi.fn(),
             setActivated: vi.fn(),
@@ -120,7 +121,7 @@ describe('useBalance', () => {
     it('calls setActivated(true) when contract state is active', async () => {
         vi.mocked(getBalance).mockResolvedValue(100n);
         const setActivatedMock = vi.fn();
-        vi.mocked((useWalletStore as any).getState).mockReturnValue({
+        vi.mocked((useWalletStore as unknown as any).getState).mockReturnValue({
             balance: 100n,
             updateBalance: vi.fn(),
             setActivated: setActivatedMock,
@@ -141,7 +142,7 @@ describe('useBalance', () => {
     it('calls setActivated(false) when contract state is uninit', async () => {
         vi.mocked(getBalance).mockResolvedValue(100n);
         const setActivatedMock = vi.fn();
-        vi.mocked((useWalletStore as any).getState).mockReturnValue({
+        vi.mocked((useWalletStore as unknown as any).getState).mockReturnValue({
             balance: 100n,
             updateBalance: vi.fn(),
             setActivated: setActivatedMock,
@@ -161,7 +162,7 @@ describe('useBalance', () => {
 
     it('cleans up interval on unmount', async () => {
         vi.mocked(getBalance).mockResolvedValue(200n);
-        vi.mocked((useWalletStore as any).getState).mockReturnValue({
+        vi.mocked((useWalletStore as unknown as any).getState).mockReturnValue({
             balance: 100n,
             updateBalance: vi.fn(),
             setActivated: vi.fn(),

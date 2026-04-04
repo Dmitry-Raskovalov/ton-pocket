@@ -21,8 +21,9 @@ import { useUIStore } from '@/store/ui-store';
 import { validateSend } from '@/services/validation/validate-send';
 import type { Warning } from '@/services/validation/types';
 import { sendTransfer, ESTIMATED_FEE } from '@/services/ton/transfer';
-import { formatTon } from '@/services/ton/balance';
+import { formatTon, getBalance } from '@/services/ton/balance';
 import { loadVault, decrypt } from '@/crypto/vault';
+import { mnemonicToPrivateKey } from '@ton/crypto';
 import { createContract } from '@/services/wallet/contract-factory';
 import { addressBook } from '@/services/address-book/address-book';
 import { HighlightedAddress, CopyButton, WarningList } from '@/components';
@@ -89,7 +90,7 @@ export function SendScreen() {
   const [transferResult, setTransferResult] = useState<TransferResult | null>(null);
 
   // Debounce ref
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const amount = parseAmountTon(amountStr);
   const maxAmount = balance > ESTIMATED_FEE ? balance - ESTIMATED_FEE : 0n;
@@ -173,7 +174,6 @@ export function SendScreen() {
       const mnemonicJson = await decrypt(vault, sessionPassword);
 
       // 2. Derive keypair
-      const { mnemonicToPrivateKey } = await import('@ton/crypto');
       const words: string[] = JSON.parse(mnemonicJson);
       const keyPair = await mnemonicToPrivateKey(words);
 
@@ -193,7 +193,10 @@ export function SendScreen() {
       });
 
       setTransferResult(result);
-      setResultState(result.status === 'confirmed' ? 'success' : result.status);
+      // Map 'failed' to 'error' to match our UI result blocks
+      setResultState(
+        result.status === 'confirmed' ? 'success' : result.status
+      );
 
       if (result.status === 'confirmed') {
         // Update address book
@@ -210,7 +213,6 @@ export function SendScreen() {
 
         // Refresh balance
         try {
-          const { getBalance } = await import('@/services/ton/balance');
           const newBalance = await getBalance(rawAddress);
           updateBalance(newBalance);
         } catch {
@@ -339,7 +341,7 @@ export function SendScreen() {
                     type="text"
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    placeholder="Gift for a friend"
+                    placeholder="Comment (optional)"
                     className="w-full bg-surface-container-lowest border-none rounded-xl p-4 text-on-surface placeholder:text-outline-variant focus:ring-1 focus:ring-primary focus:bg-surface-container-high transition-all outline-none"
                   />
                   <p className="text-[10px] text-outline px-1 leading-relaxed">
@@ -354,13 +356,12 @@ export function SendScreen() {
                   {validationWarnings.map((w, i) => (
                     <div
                       key={`${w.type}-${i}`}
-                      className={`p-3 rounded-lg flex gap-3 items-start text-xs ${
-                        w.severity === 'error'
-                          ? 'bg-error-container/10 text-error'
-                          : w.severity === 'warning'
-                            ? 'bg-tertiary-container/10 text-tertiary'
-                            : 'bg-primary-container/10 text-primary'
-                      }`}
+                      className={`p-3 rounded-lg flex gap-3 items-start text-xs ${w.severity === 'error'
+                        ? 'bg-error-container/10 text-error'
+                        : w.severity === 'warning'
+                          ? 'bg-tertiary-container/10 text-tertiary'
+                          : 'bg-primary-container/10 text-primary'
+                        }`}
                     >
                       {w.severity === 'error' ? <XCircle size={14} className="shrink-0 mt-0.5" /> : <AlertTriangle size={14} className="shrink-0 mt-0.5" />}
                       <span>{w.message}</span>
@@ -420,7 +421,7 @@ export function SendScreen() {
                         Recipient Address
                       </span>
                       <div className="bg-surface-container-lowest p-3 rounded-lg flex items-center gap-2">
-                        <HighlightedAddress address={recipient} className="text-[13px] leading-relaxed" />
+                        <HighlightedAddress data-testid="highlighted-address" address={recipient} className="text-[13px] leading-relaxed" />
                         <CopyButton text={recipient} className="ml-auto shrink-0" />
                       </div>
                     </div>
@@ -499,11 +500,10 @@ export function SendScreen() {
           <main className="flex-1 flex flex-col items-center justify-center px-8 text-center pb-24">
             {/* Background glow */}
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-10">
-              <div className={`w-64 h-64 rounded-full blur-[100px] ${
-                resultState === 'success' ? 'bg-primary' :
+              <div className={`w-64 h-64 rounded-full blur-[100px] ${resultState === 'success' ? 'bg-primary' :
                 resultState === 'error' ? 'bg-error' :
-                'bg-tertiary'
-              }`} />
+                  'bg-tertiary'
+                }`} />
             </div>
 
             <div className="relative z-10 flex flex-col items-center w-full">
