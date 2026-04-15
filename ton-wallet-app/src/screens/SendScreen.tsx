@@ -171,7 +171,18 @@ export function SendScreen() {
         return;
       }
 
-      const mnemonicJson = await decrypt(vault, sessionPassword);
+      let mnemonicJson: string;
+      try {
+        mnemonicJson = await decrypt(vault, sessionPassword);
+      } catch (err) {
+        addToast({ 
+          type: 'error', 
+          message: err instanceof Error ? err.message : 'Failed to decrypt wallet', 
+          duration: 4000 
+        });
+        setIsSending(false);
+        return;
+      }
 
       // 2. Derive keypair
       const words: string[] = JSON.parse(mnemonicJson);

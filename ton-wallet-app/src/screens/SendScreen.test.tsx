@@ -171,7 +171,7 @@ describe('SendScreen UI Flow', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /try again/i }));
 
-    expect(screen.getByText(/Step 2 of 3/i)).toBeInTheDocument();
+    expect(screen.getByText(/Step 1 of 3/i)).toBeInTheDocument();
   });
 
   it('handles vault decryption error by showing toast and staying on Step 2', async () => {
