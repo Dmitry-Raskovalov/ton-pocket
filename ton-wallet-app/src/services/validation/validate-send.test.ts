@@ -229,7 +229,7 @@ describe('validateSend', () => {
         type: 'new_recipient',
         message: 'Первый перевод на этот адрес',
         severity: 'warning',
-        blocking: false,
+        blocking: true,
       });
 
       const result = await validateSend({

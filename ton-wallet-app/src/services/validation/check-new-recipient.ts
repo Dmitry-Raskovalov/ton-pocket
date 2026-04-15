@@ -27,6 +27,6 @@ export function checkNewRecipient(recipientRaw: string): Warning | null {
             'Вы впервые отправляете TON на этот адрес. ' +
             'Убедитесь, что адрес введён правильно.',
         severity: 'warning',
-        blocking: false,
+        blocking: true,
     };
 }

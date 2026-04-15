@@ -110,13 +110,11 @@ describe('WarningList', () => {
   });
 
   it('calls onAllBlockingConfirmed(true) when all warnings are non-blocking', () => {
-    // No blocking warnings → callback never fires true (nothing to confirm)
+    // No blocking warnings → nothing to confirm → automatically true
     const onAllBlockingConfirmed = vi.fn();
     render(
       <WarningList warnings={[nonBlocking]} onAllBlockingConfirmed={onAllBlockingConfirmed} />
     );
-    const calls = onAllBlockingConfirmed.mock.calls.map(([v]) => v);
-    // blockingIndices.length === 0 → allConfirmed = false
-    expect(calls).not.toContain(true);
+    expect(onAllBlockingConfirmed).toHaveBeenCalledWith(true);
   });
 });

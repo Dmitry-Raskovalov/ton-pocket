@@ -31,9 +31,13 @@ export function WarningList({ warnings, onAllBlockingConfirmed }: WarningListPro
       .map((w, i) => (w.blocking ? i : -1))
       .filter((i) => i !== -1);
 
-    const allConfirmed =
-      blockingIndices.length > 0 && blockingIndices.every((i) => !!checkedMap[i]);
+    // No blocking warnings → nothing to confirm → automatically confirmed
+    if (blockingIndices.length === 0) {
+      onAllBlockingConfirmed(true);
+      return;
+    }
 
+    const allConfirmed = blockingIndices.every((i) => !!checkedMap[i]);
     onAllBlockingConfirmed(allConfirmed);
   }, [checkedMap, warnings, onAllBlockingConfirmed]);
 
