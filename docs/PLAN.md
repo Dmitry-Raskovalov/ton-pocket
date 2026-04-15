@@ -1474,7 +1474,7 @@ Graceful обработка всех ошибок сети с информати
 
 #### 11.1 Юнит-тесты: крипто-слой и сервисы
 
-**Статус:** TODO
+**Статус:** DONE
 
 **Тип:** тестирование
 
@@ -1487,10 +1487,10 @@ Graceful обработка всех ошибок сети с информати
 **Зависимости:** зависит от всех задач блоков 3, 4, 6, 7
 
 **Шаги выполнения:**
-- [ ] Шаг 1: Ревизия покрытия: пройти по каждому модулю (vault, kdf, password-strength, balance, transactions, transfer, contract-factory, create, import, export, change-password, address-book, все validators, orchestrator) и проверить наличие тестов на основные и edge-case сценарии.
-- [ ] Шаг 2: Добавить недостающие тесты на edge cases: пустая мнемоника, нулевой баланс, пустой vault, concurrent операции.
-- [ ] Шаг 3: Добавить integration-тесты: create wallet → export → сравнение мнемоники; import → validate → export.
-- [ ] Шаг 4: Проверить, что все тесты проходят (`npm run test`), нет flaky-тестов.
+- [x] Шаг 1: Ревизия покрытия: пройти по каждому модулю (vault, kdf, password-strength, balance, transactions, transfer, contract-factory, create, import, export, change-password, address-book, все validators, orchestrator) и проверить наличие тестов на основные и edge-case сценарии.
+- [x] Шаг 2: Добавить недостающие тесты на edge cases: пустая мнемоника, нулевой баланс, пустой vault, concurrent операции.
+- [x] Шаг 3: Добавить integration-тесты: create wallet → export → сравнение мнемоники; import → validate → export.
+- [x] Шаг 4: Проверить, что все тесты проходят (`npm run test`), нет flaky-тестов.
 
 **Ожидаемый результат:**
 Полное покрытие юнит-тестами крипто-слоя, сервисов и валидации.

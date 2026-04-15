@@ -66,4 +66,21 @@ describe('evaluatePassword', () => {
     const result = evaluatePassword('');
     expect(result.isAcceptable).toBe(false);
   });
+
+  it('пароль из пробелов — isAcceptable = false', () => {
+    const result = evaluatePassword('        '); // 8 пробелов
+    expect(result.isAcceptable).toBe(false);
+  });
+
+  it('очень длинный пароль (256 символов) обрабатывается', () => {
+    const longPassword = 'A'.repeat(256);
+    const result = evaluatePassword(longPassword);
+    expect(typeof result.score).toBe('number');
+    expect(typeof result.isAcceptable).toBe('boolean');
+  });
+
+  it('пароль с unicode символами', () => {
+    const result = evaluatePassword('Пароль123!@#');
+    expect(typeof result.score).toBe('number');
+  });
 });

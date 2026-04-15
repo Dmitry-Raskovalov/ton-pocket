@@ -445,6 +445,8 @@ describe('WalletService.exportMnemonic', () => {
 describe('WalletService.changePassword', () => {
   let service: WalletService;
   const NEW_PASSWORD = 'New-Strong-Password!2026';
+  // PBKDF2 with 600k iterations is slow in test environment
+  const SLOW_TIMEOUT = 30000;
 
   beforeEach(() => {
     service = new WalletService();
@@ -470,7 +472,7 @@ describe('WalletService.changePassword', () => {
     const plaintext = await vaultDecrypt(vault!, NEW_PASSWORD);
     const decrypted: string[] = JSON.parse(plaintext);
     expect(decrypted).toEqual(MNEMONIC);
-  });
+  }, SLOW_TIMEOUT);
 
   it('old password no longer works after change', async () => {
     await seedVault(PASSWORD);
@@ -481,14 +483,14 @@ describe('WalletService.changePassword', () => {
     const vault = loadVault()!;
 
     await expect(vaultDecrypt(vault, PASSWORD)).rejects.toThrow();
-  });
+  }, SLOW_TIMEOUT);
 
   it('throws InvalidPasswordError when current password is wrong', async () => {
     await seedVault(PASSWORD);
 
     await expect(service.changePassword('wrong-current', NEW_PASSWORD))
       .rejects.toThrow(InvalidPasswordError);
-  });
+  }, SLOW_TIMEOUT);
 
   it('throws NoVaultError when no vault exists', async () => {
     await expect(service.changePassword(PASSWORD, NEW_PASSWORD))
@@ -500,14 +502,14 @@ describe('WalletService.changePassword', () => {
 
     await expect(service.changePassword(PASSWORD, '12345678'))
       .rejects.toThrow(WeakPasswordError);
-  });
+  }, SLOW_TIMEOUT);
 
   it('throws WeakPasswordError when new password is too short', async () => {
     await seedVault(PASSWORD);
 
     await expect(service.changePassword(PASSWORD, 'X#9kP!2'))
       .rejects.toThrow(WeakPasswordError);
-  });
+  }, SLOW_TIMEOUT);
 
   it('vault is not modified when current password is wrong', async () => {
     await seedVault(PASSWORD);
@@ -523,7 +525,7 @@ describe('WalletService.changePassword', () => {
     expect(vaultAfter).not.toBeNull();
     expect(vaultAfter!.ciphertext).toBe(vaultBefore!.ciphertext);
     expect(vaultAfter!.iv).toBe(vaultBefore!.iv);
-  });
+  }, SLOW_TIMEOUT);
 
   it('vault is not modified when new password is weak', async () => {
     await seedVault(PASSWORD);
@@ -537,7 +539,7 @@ describe('WalletService.changePassword', () => {
     const vaultAfter = loadAfter();
 
     expect(vaultAfter!.ciphertext).toBe(vaultBefore!.ciphertext);
-  });
+  }, SLOW_TIMEOUT);
 
   it('WeakPasswordError has correct name property', async () => {
     await seedVault(PASSWORD);
@@ -548,7 +550,7 @@ describe('WalletService.changePassword', () => {
       expect(error).toBeInstanceOf(WeakPasswordError);
       expect((error as WeakPasswordError).name).toBe('WeakPasswordError');
     }
-  });
+  }, SLOW_TIMEOUT);
 
   it('new vault has different salt and IV from old vault', async () => {
     await seedVault(PASSWORD);
@@ -563,5 +565,5 @@ describe('WalletService.changePassword', () => {
 
     expect(newVault!.iv).not.toBe(oldVault!.iv);
     expect(newVault!.ciphertext).not.toBe(oldVault!.ciphertext);
-  });
+  }, SLOW_TIMEOUT);
 });

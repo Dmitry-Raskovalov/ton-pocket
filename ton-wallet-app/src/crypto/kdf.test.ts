@@ -106,6 +106,25 @@ describe('Argon2id derivation (mocked)', () => {
     expect(result.key).toBeInstanceOf(Uint8Array);
     expect(result.key.length).toBe(32);
   });
+
+  it('handles argon2 returning short hash (edge case)', async () => {
+    vi.doMock('argon2-browser', () => ({
+      hash: vi.fn().mockResolvedValue({ hashHex: 'abcdef' }), // only 3 bytes
+    }));
+
+    const { deriveKeyWithParams: freshDeriveKeyWithParams } = await import('./kdf');
+    const argon2Params: Argon2Params = {
+      salt: generateSalt(),
+      memory: 65536,
+      iterations: 3,
+      parallelism: 1,
+    };
+
+    const key = await freshDeriveKeyWithParams('password', argon2Params);
+    // Should handle short hash — result depends on implementation
+    expect(key).toBeInstanceOf(Uint8Array);
+    expect(key.length).toBeGreaterThan(0);
+  });
 });
 
 describe('deriveKey (fallback to PBKDF2)', () => {

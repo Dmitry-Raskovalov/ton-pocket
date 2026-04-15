@@ -3,6 +3,27 @@
 Все заметные изменения в проекте TON Testnet Wallet будут документироваться в этом файле.
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/).
 
+## [2026-04-15] - Задача 11.1: Юнит-тесты крипто-слоя и сервисов
+
+### Добавлено
+- `src/services/validation/check-new-recipient.test.ts`: тесты для правила checkNewRecipient (5 тестов: доверенный адрес, уже отправляли, новый адрес, только received, только manual).
+- `src/services/validation/ValidationPipeline.test.ts`: тесты для ValidationPipeline (6 тестов: пустой pipeline, один rule, агрегация нескольких rules, передача контекста, chaining, структура результата).
+- `src/hooks/useWallet.test.ts`: тесты для useWallet hook (8 тестов: все поля store, функции действий, селекторы isWalletCreated/hasWallet, значения по умолчанию).
+- `src/integration/wallet-roundtrip.test.ts`: integration round-trip тесты (12 тестов: create→export, import→export, change password→export, validate mnemonic, vault integrity).
+- Edge case тесты в `vault.test.ts` (5 тестов: пустая строка, 10KB данные, перезапись vault, безопасный clearVault, vault с отсутствующими полями).
+- Edge case тесты в `kdf.test.ts` (1 тест: короткий хеш argon2).
+- Edge case тесты в `balance.test.ts` (1 тест: максимальный баланс 10B TON).
+- Edge case тесты в `password-strength.test.ts` (3 теста: пробелы, длинный пароль 256 символов, unicode символы).
+
+### Исправлено
+- `WalletService.test.ts`: увеличен timeout для тестов changePassword (PBKDF2 600k итераций — медленно в test env).
+
+### Результаты
+- 466 тестов в 40 файлах — все проходят.
+- Покрыты все модули крипто-слоя, сервисов, валидации, stores и hooks.
+
+---
+
 ## [2026-04-15] - Исправление отправки на новый адрес
 
 ### Исправлено

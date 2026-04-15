@@ -150,4 +150,39 @@ describe('localStorage operations', () => {
     localStorage.setItem('ton_wallet_vault', 'not-valid-json{');
     expect(loadVault()).toBeNull();
   });
+
+  it('encrypt works with empty string plaintext', async () => {
+    const vault = await encrypt('', PASSWORD);
+    const result = await decrypt(vault, PASSWORD);
+    expect(result).toBe('');
+  });
+
+  it('encrypt works with very long plaintext (10KB)', async () => {
+    const longText = 'A'.repeat(10_000);
+    const vault = await encrypt(longText, PASSWORD);
+    const result = await decrypt(vault, PASSWORD);
+    expect(result).toBe(longText);
+  });
+
+  it('saveVault overwrites existing vault', async () => {
+    const vault1 = await encrypt('data1', PASSWORD);
+    saveVault(vault1);
+
+    const vault2 = await encrypt('data2', PASSWORD);
+    saveVault(vault2);
+
+    const loaded = loadVault()!;
+    const result = await decrypt(loaded, PASSWORD);
+    expect(result).toBe('data2');
+  });
+
+  it('clearVault is safe when no vault exists', () => {
+    expect(() => clearVault()).not.toThrow();
+    expect(hasVault()).toBe(false);
+  });
+
+  it('decrypt throws on vault with missing fields', async () => {
+    const badVault = { version: 1 } as EncryptedVault;
+    await expect(decrypt(badVault, PASSWORD)).rejects.toThrow();
+  });
 });

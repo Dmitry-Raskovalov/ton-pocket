@@ -92,4 +92,9 @@ describe('formatTon', () => {
   it('pads fractional part to 9 digits', () => {
     expect(formatTon(100n)).toBe('0.000000100');
   });
+
+  it('formatTon handles maximum practical balance (billions of TON)', () => {
+    const billionsOfTon = 10_000_000_000n * 1_000_000_000n; // 10 billion TON
+    expect(formatTon(billionsOfTon)).toBe('10000000000.000000000');
+  });
 });
