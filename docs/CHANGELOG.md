@@ -3,6 +3,22 @@
 Все заметные изменения в проекте TON Testnet Wallet будут документироваться в этом файле.
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/).
 
+## [2026-04-15] - Задача 11.2: Юнит-тесты UI-компонентов и экранов
+
+### Добавлено
+- `src/components/SearchBar.test.tsx`: тесты для SearchBar (8 тестов: рендер, ввод, очистка, placeholder, className).
+- `src/components/Loader.test.tsx`: тесты для Loader (4 теста: aria-label, текст, role="status").
+- `src/screens/WelcomeScreen.test.tsx`: тесты для WelcomeScreen (9 тестов: навигация на /create и /import, Testnet badge, метаданные).
+- `src/screens/CreateWalletScreen.test.tsx`: тесты для CreateWalletScreen (19 тестов: Step 1 password валидация, Step 2 мнемоника, error handling, Copy All).
+- `src/screens/Settings/ExportScreen.test.tsx`: тесты для ExportScreen (16 тестов: верификация пароля, показ мнемоники, auto-hide countdown, ошибки).
+- `src/screens/Settings/ChangePasswordModal.test.tsx`: тесты для ChangePasswordModal (13 тестов: валидация полей, ошибки InvalidPassword/WeakPassword, success toast).
+
+### Результаты
+- 535 тестов в 46 файлах — все проходят.
+- Все UI-компоненты и экраны теперь покрыты тестами.
+
+---
+
 ## [2026-04-15] - Задача 11.1: Юнит-тесты крипто-слоя и сервисов
 
 ### Добавлено

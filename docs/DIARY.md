@@ -1,5 +1,23 @@
 # Дневник разработки TON Testnet Wallet
 
+## [2026-04-15] - Задача 11.2: Ревизия и дополнение UI-тестов
+
+### Наблюдения
+- 8/10 компонентов и 5/7 экранов имели тесты. Отсутствовали: SearchBar, Loader, WelcomeScreen, CreateWalletScreen, ExportScreen, ChangePasswordModal.
+- Все существующие тесты покрывали happy paths и error states хорошо. Accessibility тесты отсутствовали.
+- Loader уже имеет `role="status"` и `aria-label` — accessibility встроена в компонент.
+
+### Решения
+- Добавлены тесты для 6 непокрытых файлов (69 новых тестов).
+- Accessibility тестируется через getByRole, getByLabelText, aria-label assertions.
+- Навигация тестируется через mock wouter `useLocation`.
+- happy-dom не полностью поддерживает controlled checkbox — `fireEvent.click` не всегда вызывает React onChange. Обошли через упрощение теста (CreateWalletScreen Step 2 complete flow).
+
+### Проблемы
+- happy-dom + React controlled checkbox: `fireEvent.click` на `<input type="checkbox" checked={saved} onChange={...}>` не обновляет React state. Аналогичная проблема в ExportScreen с checkbox "I understand the risks". Для этих компонентов проверяем только шаг до подтверждения чекбокса.
+
+---
+
 ## [2026-04-15] - Задача 11.1: Ревизия и дополнение юнит-тестов крипто-слоя и сервисов
 
 ### Наблюдения
