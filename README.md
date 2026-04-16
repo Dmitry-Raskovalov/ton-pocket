@@ -32,7 +32,7 @@ The *Single Page Application (SPA)* architecture ensures that all operations (in
   - Warning when sending to self.
   - **Clipboard Poisoning** protection (checking address similarity).
   - Recipient account state check (uninit/frozen).
-- 📒 **Address Book**: Automatic and manual contact saving with tagging support.
+- 📒 **Address Book**: Automatic contact saving.
 - 🎨 **Modern UI**: Premium Material You-style design with deep dark mode support and micro-animations.
 
 ---
