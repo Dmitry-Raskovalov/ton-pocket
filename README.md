@@ -1,10 +1,10 @@
 # TON Pocket 💎
 
-> 🎓 **Демонстрационный проект (Тестовое задание)**  
-> Полная реализация технического задания по созданию *self-custodial* веб-кошелька для экосистемы TON. [Ознакомиться с требованиями к проекту →](docs/testovoe.md)
+> 🎓 **Demo Project (Test Assignment)**  
+> A complete implementation of the technical requirements for creating a *self-custodial* web wallet for the TON ecosystem. [View project requirements →](docs/testovoe.md)
 
-**TON Pocket** — это быстрый, интуитивно понятный и по-настоящему безопасный криптокошелёк для работы в сети **TON Testnet**.  
-Архитектура в формате *Single Page Application (SPA)* гарантирует, что все операции (включая шифрование и подпись транзакций) происходят исключительно на вашем устройстве. Никаких бэкенд-серверов и посредников — только максимальная приватность и абсолютный контроль над вашими активами.
+**TON Pocket** is a fast, intuitive, and truly secure crypto wallet for the **TON Testnet**.  
+The *Single Page Application (SPA)* architecture ensures that all operations (including encryption and transaction signing) happen exclusively on your device. No backend servers, no intermediaries — just maximum privacy and absolute control over your assets.
 
 ![TON Pocket Preview](https://img.shields.io/badge/TON-Testnet-blue?style=for-the-badge&logo=ton&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -13,92 +13,92 @@
 
 ---
 
-## 📂 Структура репозитория
+## 📂 Repository Structure
 
-- `ton-wallet-app/` — Основное веб-приложение (Vite + React + TypeScript + Tailwind CSS 4).
-- `docs/` — Проектная документация (PLAN, CHANGELOG, DIARY, DESIGN_BRIEF).
-- `design/` — Реестр дизайн-макетов и wireframes.
-
----
-
-## ✨ Основные возможности
-
-- 🛡️ **Безопасность**: Шифрование мнемоники по стандарту AES-256-GCM. Ключ деривируется с использованием Argon2id (с автоматическим fallback на PBKDF2).
-- 🔐 **Self-Custodial**: Все секретные данные хранятся только в зашифрованном виде в локальном хранилище вашего браузера.
-- 📦 **Поддержка версий**: Работа с контрактами кошельков версий **v3R2**, **v4R2** и **v5R1**. Автоматическая детекция активных версий при импорте.
-- 💸 **Управление токенами**: Просмотр баланса, истории транзакций и отправка TON в тестовой сети.
-- 🔍 **Умная валидация**: Многоуровневый Pipeline валидации при отправке:
-  - Проверка формата адреса.
-  - Предупреждение при отправке самому себе.
-  - Защита от **Clipboard Poisoning** (проверка на схожесть адресов).
-  - Проверка состояния аккаунта получателя (uninit/frozen).
-- 📒 **Адресная книга**: Автоматическое и ручное сохранение контактов с возможностью присвоения меток.
-- 🎨 **Современный UI**: Премиальный дизайн в стиле Material You с поддержкой глубокой тёмной темы и микро-анимаций.
+- `ton-wallet-app/` — Main web application (Vite + React + TypeScript + Tailwind CSS 4).
+- `docs/` — Project documentation (PLAN, CHANGELOG, DIARY, DESIGN_BRIEF).
+- `design/` — Design assets and wireframes registry.
 
 ---
 
-## 🛠 Технологический стек
+## ✨ Key Features
+
+- 🛡️ **Security**: Mnemonic encryption using AES-256-GCM. Key derivation via Argon2id (with automatic fallback to PBKDF2).
+- 🔐 **Self-Custodial**: All secret data is stored only in encrypted form in your browser's local storage.
+- 📦 **Wallet Version Support**: Works with wallet contracts **v3R2**, **v4R2**, and **v5R1**. Automatic detection of active versions during import.
+- 💸 **Token Management**: View balance, transaction history, and send TON in the test network.
+- 🔍 **Smart Validation**: Multi-level validation pipeline for transfers:
+  - Address format check.
+  - Warning when sending to self.
+  - **Clipboard Poisoning** protection (checking address similarity).
+  - Recipient account state check (uninit/frozen).
+- 📒 **Address Book**: Automatic and manual contact saving with tagging support.
+- 🎨 **Modern UI**: Premium Material You-style design with deep dark mode support and micro-animations.
+
+---
+
+## 🛠 Tech Stack
 
 - **Core**: React 19, TypeScript, Vite
 - **Styling**: Tailwind CSS v4
-- **State Management**: Zustand v5 (с persist middleware)
+- **State Management**: Zustand v5 (with persist middleware)
 - **Routing**: Wouter
 - **Blockchain Interface**: `@ton/ton`, `@ton/crypto`
-- **Security**: `argon2-browser`, `zxcvbn-ts` (оценка силы пароля)
+- **Security**: `argon2-browser`, `zxcvbn-ts` (password strength estimation)
 - **Testing**: Vitest, React Testing Library, Playwright (E2E)
 
 ---
 
-## 🚀 Начало работы
+## 🚀 Getting Started
 
-### Требования
+### Prerequisites
 - Node.js 18+
 - npm
 
-### Установка и запуск
-1. Клонируйте репозиторий:
+### Installation and Run
+1. Clone the repository:
    ```bash
    git clone https://github.com/Dmitry-Raskovalov/ton-pocket.git
    cd ton-pocket/ton-wallet-app
    ```
 
-2. Установите зависимости:
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-3. Запустите в режиме разработки:
+3. Start in development mode:
    ```bash
    npm run dev
    ```
 
-### Переменные окружения
-Создайте файл `ton-wallet-app/.env` на основе `.env.example`:
-- `VITE_TON_ENDPOINT`: URL TON Center API.
-- `VITE_TON_API_KEY`: Ваш API ключ от TON Center.
+### Environment Variables
+Create a `ton-wallet-app/.env` file based on `.env.example`:
+- `VITE_TON_ENDPOINT`: URL for TON Center API.
+- `VITE_TON_API_KEY`: Your API key from TON Center.
 
 ---
 
-## 💎 Получение тестовых токенов
+## 💎 Getting Test Tokens
 
-Для тестирования функций отправки вам понадобятся тестовые монеты (Testnet TON).
+To test the sending features, you will need test coins (Testnet TON).
 
-1. Откройте Telegram и найдите бота [**@testgiver_ton_bot**](https://t.me/testgiver_ton_bot).
-2. Запустите бота и следуйте инструкциям.
-3. Укажите ваш адрес кошелька из приложения TON Pocket (его можно скопировать на экране **Receive**).
-4. Через несколько секунд токены поступят на ваш баланс.
+1. Open Telegram and find the [**@testgiver_ton_bot**](https://t.me/testgiver_ton_bot).
+2. Start the bot and follow the instructions.
+3. Provide your wallet address from the TON Pocket app (copy it from the **Receive** screen).
+4. Tokens will arrive in your balance within seconds.
 
 ---
 
-## 🧪 Тестирование
+## 🧪 Testing
 
-Запуск всех юнит-тестов (535+ тестов):
+Run all unit tests (535+ tests):
 ```bash
 cd ton-wallet-app
 npm run test
 ```
 
-Запуск E2E-тестов (14 тестов, Playwright):
+Run E2E tests (14 tests, Playwright):
 ```bash
 cd ton-wallet-app
 npm run test:e2e
@@ -106,26 +106,26 @@ npm run test:e2e
 
 ---
 
-## 🏗 Архитектура проекта
+## 🏗 Project Architecture
 
-- `ton-wallet-app/src/crypto/` — Модули шифрования (KDF, Vault).
-- `ton-wallet-app/src/services/` — Взаимодействие с TON API, валидация.
-- `ton-wallet-app/src/store/` — Глобальное состояние приложения.
-- `ton-wallet-app/src/screens/` — Основные экраны приложения.
-- `ton-wallet-app/src/components/` — Переиспользуемые UI-компоненты.
-
----
-
-## 🗺 Планы (Roadmap)
-
-- [ ] Интеграция TON Connect.
-- [ ] Поддержка Mainnet.
-- [ ] Управление NFT и Jettons.
-- [ ] Перевод интерфейса на несколько языков.
-- [ ] Мобильное приложение (React Native).
+- `ton-wallet-app/src/crypto/` — Encryption modules (KDF, Vault).
+- `ton-wallet-app/src/services/` — TON API interaction, validation.
+- `ton-wallet-app/src/store/` — Global application state.
+- `ton-wallet-app/src/screens/` — Main application screens.
+- `ton-wallet-app/src/components/` — Reusable UI components.
 
 ---
 
-## 📄 Лицензия
+## 🗺 Roadmap
 
-Проект распространяется под лицензией MIT.
+- [ ] TON Connect integration.
+- [ ] Mainnet support.
+- [ ] NFT and Jettons management.
+- [ ] Multi-language interface support.
+- [ ] Mobile application (React Native).
+
+---
+
+## 📄 License
+
+Distributed under the MIT License.
