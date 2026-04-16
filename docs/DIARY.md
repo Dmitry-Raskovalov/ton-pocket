@@ -1,5 +1,25 @@
 # Дневник разработки TON Testnet Wallet
 
+## [2026-04-15] - Задача 11.3: E2E-тесты на testnet с Playwright
+
+### Наблюдения
+- Playwright — мощный инструмент для E2E, но требует точных селекторов. `getByText` часто находит несколько элементов — нужно использовать `getByRole`, `getByPlaceholder`, или `locator().filter()`.
+- Адреса кошельков в testnet начинаются с `UQ...` (non-bounceable), а не `EQ...` (bounceable). `Address.toString({ bounceable: false })` даёт `UQ...`.
+- Тестовая мнемоника `abandon...art` НЕ проходит валидацию `mnemonicValidate` из `@ton/crypto` — bip39 checker её отвергает. Пришлось сгенерировать валидную мнемонику.
+- `HighlightedAddress` разбивает адрес на три `<span>` элемента — `getByText(/^EQ/)` не находит текст, т.к. нет единого текстового узла. Нужно искать по родительскому контейнеру или по partial text.
+- Сообщения об ошибках валидации — на русском языке (`Невалидный формат TON-адреса`), а не на английском.
+
+### Решения
+- Использованы точные Playwright селекторы: `getByRole('heading')`, `getByRole('button', { name })`, `getByPlaceholder('UQ...')`.
+- Адреса ищутся через regex `/^(EQ|UQ)/` для покрытия обоих форматов.
+- Сгенерирована валидная мнемоника через `mnemonicNew(24)` для import-тестов.
+- Ошибки валидации ищутся через `/invalid|невалидный/i` для покрытия обоих языков.
+
+### Проблемы
+- PBKDF2 с 600,000 итераций замедляет тесты: create wallet flow занимает ~20s (timeout 120s для mnemonic step). Playwright retry=1 помогает при flaky failures.
+
+---
+
 ## [2026-04-15] - Задача 11.2: Ревизия и дополнение UI-тестов
 
 ### Наблюдения

@@ -3,6 +3,24 @@
 Все заметные изменения в проекте TON Testnet Wallet будут документироваться в этом файле.
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/).
 
+## [2026-04-15] - Задача 11.3: E2E-тесты на testnet с Playwright
+
+### Добавлено
+- `playwright.config.ts`: конфигурация Playwright (Chromium, dev-сервер на порту 5174, retry, trace).
+- `e2e/wallet-create.spec.ts`: E2E-тесты создания кошелька (3 теста: полный flow, back button, disabled passwords).
+- `e2e/wallet-import.spec.ts`: E2E-тесты импорта кошелька (2 теста: импорт с мнемоникой, back button).
+- `e2e/receive.spec.ts`: E2E-тесты receive-экрана (1 тест: QR-код, адрес, Copy кнопка).
+- `e2e/send.spec.ts`: E2E-тесты отправки (3 теста: валидация адреса, валидный адрес, back button).
+- `e2e/export.spec.ts`: E2E-тесты экспорта мнемоники (2 теста: показ мнемоники, неверный пароль).
+- `e2e/unlock.spec.ts`: E2E-тесты unlock flow (3 теста: модал после reload, правильный пароль, неверный пароль).
+- `package.json`: добавлен скрипт `test:e2e`.
+
+### Результаты
+- 14 E2E-тестов в 6 spec-файлах — все проходят.
+- Покрыты все основные user flows: create, import, receive, send, export, unlock.
+
+---
+
 ## [2026-04-15] - Задача 11.2: Юнит-тесты UI-компонентов и экранов
 
 ### Добавлено
