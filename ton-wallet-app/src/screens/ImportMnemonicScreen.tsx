@@ -9,7 +9,6 @@ import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { ChevronLeft, ArrowRight, ClipboardPaste, ShieldCheck, Info } from 'lucide-react';
 import { PasswordInput } from '@/components/PasswordInput';
-import { evaluatePassword } from '@/crypto/password-strength';
 import { walletService } from '@/services/wallet/WalletService';
 import { formatTon } from '@/services/ton/balance';
 import { useWalletStore } from '@/store/wallet-store';
@@ -196,10 +195,9 @@ function StepPassword({ onBack, onContinue, isLoading }: StepPasswordProps) {
   const [confirm, setConfirm] = useState('');
   const [confirmError, setConfirmError] = useState('');
 
-  const strength = evaluatePassword(password);
   const passwordsMatch = password === confirm;
   const canContinue =
-    !isLoading && strength.isAcceptable && password.length > 0 && passwordsMatch && confirm.length > 0;
+    !isLoading && password.length > 0 && passwordsMatch && confirm.length > 0;
 
   const handleConfirmChange = (value: string) => {
     setConfirm(value);

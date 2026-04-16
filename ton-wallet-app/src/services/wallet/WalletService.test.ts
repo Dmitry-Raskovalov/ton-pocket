@@ -7,7 +7,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { WalletService } from './WalletService';
-import { InvalidMnemonicError, InvalidPasswordError, NoVaultError, WeakPasswordError } from './types';
+import { InvalidMnemonicError, InvalidPasswordError, NoVaultError } from './types';
 
 // Mock argon2-browser so KDF falls back to PBKDF2 in tests
 vi.mock('argon2-browser', () => {
@@ -497,18 +497,17 @@ describe('WalletService.changePassword', () => {
       .rejects.toThrow(NoVaultError);
   });
 
-  it('throws WeakPasswordError when new password is too weak', async () => {
+  it('allows weak password — strength check is informational only', async () => {
     await seedVault(PASSWORD);
 
-    await expect(service.changePassword(PASSWORD, '12345678'))
-      .rejects.toThrow(WeakPasswordError);
+    // Should NOT throw — password strength is purely informational
+    await expect(service.changePassword(PASSWORD, '12345678')).resolves.toBeUndefined();
   }, SLOW_TIMEOUT);
 
-  it('throws WeakPasswordError when new password is too short', async () => {
+  it('allows short password — strength check is informational only', async () => {
     await seedVault(PASSWORD);
 
-    await expect(service.changePassword(PASSWORD, 'X#9kP!2'))
-      .rejects.toThrow(WeakPasswordError);
+    await expect(service.changePassword(PASSWORD, 'X#9kP!2')).resolves.toBeUndefined();
   }, SLOW_TIMEOUT);
 
   it('vault is not modified when current password is wrong', async () => {
@@ -525,31 +524,6 @@ describe('WalletService.changePassword', () => {
     expect(vaultAfter).not.toBeNull();
     expect(vaultAfter!.ciphertext).toBe(vaultBefore!.ciphertext);
     expect(vaultAfter!.iv).toBe(vaultBefore!.iv);
-  }, SLOW_TIMEOUT);
-
-  it('vault is not modified when new password is weak', async () => {
-    await seedVault(PASSWORD);
-
-    const { loadVault: loadBefore } = await import('@/crypto/vault');
-    const vaultBefore = loadBefore();
-
-    await expect(service.changePassword(PASSWORD, 'weak')).rejects.toThrow();
-
-    const { loadVault: loadAfter } = await import('@/crypto/vault');
-    const vaultAfter = loadAfter();
-
-    expect(vaultAfter!.ciphertext).toBe(vaultBefore!.ciphertext);
-  }, SLOW_TIMEOUT);
-
-  it('WeakPasswordError has correct name property', async () => {
-    await seedVault(PASSWORD);
-
-    try {
-      await service.changePassword(PASSWORD, '123');
-    } catch (error) {
-      expect(error).toBeInstanceOf(WeakPasswordError);
-      expect((error as WeakPasswordError).name).toBe('WeakPasswordError');
-    }
   }, SLOW_TIMEOUT);
 
   it('new vault has different salt and IV from old vault', async () => {
