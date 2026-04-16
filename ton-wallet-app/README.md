@@ -28,13 +28,13 @@
 
 ## 🛠 Технологический стек
 
-- **Core**: React 18, TypeScript, Vite
-- **Styling**: Tailwind CSS 4
-- **State Management**: Zustand (с persist middleware)
+- **Core**: React 19, TypeScript, Vite
+- **Styling**: Tailwind CSS v4
+- **State Management**: Zustand v5 (с persist middleware)
 - **Routing**: Wouter
 - **Blockchain Interface**: `@ton/ton`, `@ton/crypto`
 - **Security**: `argon2-browser`, `zxcvbn-ts` (оценка силы пароля)
-- **Testing**: Vitest, React Testing Library
+- **Testing**: Vitest, React Testing Library, Playwright (E2E)
 
 ---
 
@@ -81,9 +81,14 @@
 
 ## 🧪 Тестирование
 
-Запуск всех юнит-тестов:
+Запуск всех юнит-тестов (535+ тестов):
 ```bash
 npm run test
+```
+
+Запуск E2E-тестов на testnet (14 тестов, Playwright):
+```bash
+npm run test:e2e
 ```
 
 Просмотр покрытия тестами:

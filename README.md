@@ -36,13 +36,13 @@
 
 ## 🛠 Технологический стек
 
-- **Core**: React 18, TypeScript, Vite
-- **Styling**: Tailwind CSS 4
-- **State Management**: Zustand (с persist middleware)
+- **Core**: React 19, TypeScript, Vite
+- **Styling**: Tailwind CSS v4
+- **State Management**: Zustand v5 (с persist middleware)
 - **Routing**: Wouter
 - **Blockchain Interface**: `@ton/ton`, `@ton/crypto`
 - **Security**: `argon2-browser`, `zxcvbn-ts` (оценка силы пароля)
-- **Testing**: Vitest, React Testing Library
+- **Testing**: Vitest, React Testing Library, Playwright (E2E)
 
 ---
 
@@ -89,10 +89,16 @@
 
 ## 🧪 Тестирование
 
-Запуск всех юнит-тестов (370+ тестов):
+Запуск всех юнит-тестов (535+ тестов):
 ```bash
 cd ton-wallet-app
 npm run test
+```
+
+Запуск E2E-тестов (14 тестов, Playwright):
+```bash
+cd ton-wallet-app
+npm run test:e2e
 ```
 
 ---
