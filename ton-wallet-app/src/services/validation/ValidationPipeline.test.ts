@@ -7,13 +7,15 @@
 
 import { describe, it, expect } from 'vitest';
 import { ValidationPipeline } from './ValidationPipeline';
-import type { ValidationResult, ValidationContext, ValidationRule } from './types';
+import type { ValidationRule } from './ValidationPipeline';
+import type { ValidationResult, ValidationContext } from './types';
 
 const MOCK_CTX: ValidationContext = {
-  recipientAddress: 'EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c',
+  fromAddress: '0:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+  toAddress: '0:BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
   amount: 1_000_000_000n,
-  senderBalance: 2_000_000_000n,
-  senderPublicKey: Buffer.alloc(32, 0x01),
+  balance: 2_000_000_000n,
+  fee: 10_000_000n,
 };
 
 describe('ValidationPipeline', () => {
@@ -31,7 +33,7 @@ describe('ValidationPipeline', () => {
       id: 'test-rule',
       validate: async () => ({
         valid: false,
-        errors: [{ message: 'test error', field: 'address' }],
+        errors: [{ type: 'test_err', message: 'test error', field: 'address' }],
         warnings: [],
       }),
     };
@@ -50,7 +52,7 @@ describe('ValidationPipeline', () => {
       validate: async () => ({
         valid: true,
         errors: [],
-        warnings: [{ message: 'warning 1', type: 'test1', severity: 'warning' as const, blocking: false }],
+        warnings: [{ type: 'test1', message: 'warning 1', field: 'address', acknowledged: false }],
       }),
     };
 
@@ -58,8 +60,8 @@ describe('ValidationPipeline', () => {
       id: 'rule-2',
       validate: async () => ({
         valid: false,
-        errors: [{ message: 'error 2', field: 'amount' }],
-        warnings: [{ message: 'warning 2', type: 'test2', severity: 'warning' as const, blocking: true }],
+        errors: [{ type: 'test_err', message: 'error 2', field: 'amount' }],
+        warnings: [{ type: 'test2', message: 'warning 2', field: 'amount', acknowledged: false }],
       }),
     };
 
@@ -75,7 +77,7 @@ describe('ValidationPipeline', () => {
     const receivedCtx: ValidationContext[] = [];
     const rule: ValidationRule = {
       id: 'spy-rule',
-      validate: async (ctx) => {
+      validate: async (ctx: ValidationContext) => {
         receivedCtx.push(ctx);
         return { valid: true, errors: [], warnings: [] };
       },
