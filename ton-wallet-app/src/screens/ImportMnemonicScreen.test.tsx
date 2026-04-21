@@ -5,7 +5,7 @@
  * created: 2026-04-01
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ImportMnemonicScreen } from './ImportMnemonicScreen';
 
@@ -78,7 +78,9 @@ function fillTextarea(text: string) {
 async function advanceToPassword() {
   mockValidateMnemonic.mockResolvedValueOnce(true);
   fillTextarea(VALID_WORDS_24);
-  fireEvent.click(screen.getByRole('button', { name: /continue/i }));
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: /continue/i }));
+  });
   await waitFor(() => expect(screen.getByText('Set Password')).toBeInTheDocument());
 }
 
@@ -127,19 +129,19 @@ describe('ImportMnemonicScreen — Step 1: Enter Mnemonic', () => {
     mockValidateMnemonic.mockResolvedValueOnce(false);
     renderScreen();
     fillTextarea(VALID_WORDS_24);
-    fireEvent.click(screen.getByRole('button', { name: /continue/i }));
-    await waitFor(() =>
-      expect(
-        screen.getByText(/invalid recovery phrase/i)
-      ).toBeInTheDocument()
-    );
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /continue/i }));
+    });
+    expect(screen.getByText(/invalid recovery phrase/i)).toBeInTheDocument();
   });
 
   it('clears error when user modifies textarea after error', async () => {
     mockValidateMnemonic.mockResolvedValueOnce(false);
     renderScreen();
     fillTextarea(VALID_WORDS_24);
-    fireEvent.click(screen.getByRole('button', { name: /continue/i }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /continue/i }));
+    });
     await waitFor(() => expect(screen.getByText(/invalid recovery phrase/i)).toBeInTheDocument());
 
     fillTextarea(VALID_WORDS_24 + ' ');

@@ -12,7 +12,7 @@ test.describe('Receive Screen', () => {
 
     // Create wallet
     await page.getByText('Create New Wallet').click();
-    const password = 'Receive-E2E-Pass!42';
+    const password = process.env.E2E_TEST_PASSWORD ?? 'E2E-Test-Password!';
     await page.getByPlaceholder('Enter secure password').fill(password);
     await page.getByPlaceholder('Repeat your password').fill(password);
     await page.locator('button', { hasText: 'Continue' }).first().click();

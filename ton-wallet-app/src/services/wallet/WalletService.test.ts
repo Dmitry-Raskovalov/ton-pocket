@@ -9,10 +9,18 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { WalletService } from './WalletService';
 import { InvalidMnemonicError, InvalidPasswordError, NoVaultError } from './types';
 
-// Mock argon2-browser so KDF falls back to PBKDF2 in tests
-vi.mock('argon2-browser', () => {
-  throw new Error('WASM not available in test environment');
-});
+// Mock argon2-browser with a fast SHA-256-based stub so KDF doesn't block tests
+vi.mock('argon2-browser', () => ({
+  hash: async ({ pass, salt }: { pass: string; salt: Uint8Array }) => {
+    const enc = new TextEncoder();
+    const combined = new Uint8Array([...enc.encode(pass), ...salt]);
+    const buf = await crypto.subtle.digest('SHA-256', combined);
+    const hashHex = Array.from(new Uint8Array(buf))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+    return { hashHex };
+  },
+}));
 
 // Mock @ton/crypto — mnemonicNew/mnemonicToPrivateKey are problematic in jsdom
 // due to tweetnacl type checking. We use inline literals to avoid hoisting issues.

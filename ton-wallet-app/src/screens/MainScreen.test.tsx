@@ -73,6 +73,16 @@ vi.mock('@ton/core', () => ({
   },
 }));
 
+vi.mock('@/services/ton/client', () => ({
+  getTonClient: () => ({
+    getContractState: vi.fn().mockResolvedValue({ state: 'active' }),
+  }),
+  resetTonClient: vi.fn(),
+  RateLimitError: class RateLimitError extends Error {
+    constructor() { super('Rate limit exceeded'); this.name = 'RateLimitError'; }
+  },
+}));
+
 // ─── Fixtures ──────────────────────────────────────────────────────────────────
 
 const mockSetSearchQuery = vi.fn();

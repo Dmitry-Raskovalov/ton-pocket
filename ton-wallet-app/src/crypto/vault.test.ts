@@ -9,10 +9,18 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { encrypt, decrypt, saveVault, loadVault, hasVault, clearVault } from './vault';
 import type { EncryptedVault } from './types';
 
-// Mock argon2-browser so all KDF calls use PBKDF2 (WASM unavailable in jsdom)
-vi.mock('argon2-browser', () => {
-  throw new Error('WASM not available in test environment');
-});
+// Mock argon2-browser with a fast SHA-256-based stub so KDF doesn't block tests
+vi.mock('argon2-browser', () => ({
+  hash: async ({ pass, salt }: { pass: string; salt: Uint8Array }) => {
+    const enc = new TextEncoder();
+    const combined = new Uint8Array([...enc.encode(pass), ...salt]);
+    const buf = await crypto.subtle.digest('SHA-256', combined);
+    const hashHex = Array.from(new Uint8Array(buf))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+    return { hashHex };
+  },
+}));
 
 const PLAINTEXT = 'word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 word21 word22 word23 word24';
 const PASSWORD = 'test-password-secure';
