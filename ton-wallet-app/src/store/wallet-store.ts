@@ -8,6 +8,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { hasVault } from '@/crypto/vault';
+import { clearSession } from '@/crypto/session';
 import type { WalletStore } from './types';
 
 const STORE_NAME = 'ton-pocket-wallet';
@@ -19,7 +20,6 @@ const initialState = {
   isUnlocked: false,
   publicKey: null,
   isActivated: false,
-  sessionPassword: null,
 } as const;
 
 export const useWalletStore = create<WalletStore>()(
@@ -30,15 +30,13 @@ export const useWalletStore = create<WalletStore>()(
       setWallet: ({ address, version, publicKey }) =>
         set({ address, version, publicKey }),
 
-      clearWallet: () => set({ ...initialState }),
+      clearWallet: () => { clearSession(); set({ ...initialState }); },
 
       updateBalance: (balance) => set({ balance }),
 
       setUnlocked: (isUnlocked) => set({ isUnlocked }),
 
       setActivated: (isActivated) => set({ isActivated }),
-
-      setSessionPassword: (sessionPassword) => set({ sessionPassword }),
     }),
     {
       name: STORE_NAME,

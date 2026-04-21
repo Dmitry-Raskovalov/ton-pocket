@@ -37,7 +37,6 @@ const mockStore = {
   balance: 12_340_000_000n,
   version: 'v4R2' as const,
   publicKey: '01'.repeat(32),
-  sessionPassword: 'mypassword',
   updateBalance: vi.fn(),
 };
 
@@ -53,6 +52,10 @@ vi.mock('@/store/ui-store', () => ({
     (selector?: (s: any) => any) => (selector ? selector({ addToast: mockAddToast }) : { addToast: mockAddToast }),
     { getState: () => ({ addToast: mockAddToast }) }
   ),
+}));
+
+vi.mock('@/crypto/session', () => ({
+  getSessionPassword: vi.fn().mockReturnValue('mypassword'),
 }));
 
 vi.mock('@/services/validation/validate-send', () => ({
@@ -203,5 +206,123 @@ describe('SendScreen UI Flow', () => {
     await fillFormAndContinue();
     fireEvent.click(screen.getByLabelText('Go back'));
     expect(screen.getByText('Send TON')).toBeInTheDocument();
+  });
+});
+
+// ─── Corrupted vault handling ─────────────────────────────────────────────────
+
+describe('SendScreen — corrupted vault handling', () => {
+  beforeEach(() => {
+    vi.useRealTimers();
+    vi.clearAllMocks();
+  });
+
+  async function fillFormAndContinue() {
+    vi.useFakeTimers();
+    render(<SendScreen />);
+
+    fireEvent.change(screen.getByPlaceholderText('UQ...'), {
+      target: { value: 'UQBtest1234567890abcdef' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('0.00'), {
+      target: { value: '1.0' },
+    });
+
+    await act(async () => { await vi.advanceTimersByTimeAsync(800); });
+    vi.useRealTimers();
+
+    const continueBtn = await screen.findByRole('button', { name: /continue/i });
+    fireEvent.click(continueBtn);
+    await screen.findByText(/Step 2 of 3/i);
+  }
+
+  it('показывает toast и остаётся на Step 2 если decrypt вернул невалидный JSON', async () => {
+    vi.spyOn(vaultModule, 'decrypt').mockResolvedValueOnce('not {{ valid json');
+
+    await fillFormAndContinue();
+    fireEvent.click(screen.getByRole('button', { name: /confirm & send/i }));
+
+    await waitFor(() => {
+      expect(mockAddToast).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'error' })
+      );
+    });
+    expect(screen.getByText(/Step 2 of 3/i)).toBeInTheDocument();
+  });
+
+  it('показывает "Invalid mnemonic data" если vault содержит не массив', async () => {
+    vi.spyOn(vaultModule, 'decrypt').mockResolvedValueOnce('"just a string"');
+
+    await fillFormAndContinue();
+    fireEvent.click(screen.getByRole('button', { name: /confirm & send/i }));
+
+    await waitFor(() => {
+      expect(mockAddToast).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'error', message: 'Invalid mnemonic data in vault' })
+      );
+    });
+    expect(screen.getByText(/Step 2 of 3/i)).toBeInTheDocument();
+  });
+
+  it('показывает "Invalid mnemonic data" если массив содержит не строки', async () => {
+    vi.spyOn(vaultModule, 'decrypt').mockResolvedValueOnce('[1, 2, 3]');
+
+    await fillFormAndContinue();
+    fireEvent.click(screen.getByRole('button', { name: /confirm & send/i }));
+
+    await waitFor(() => {
+      expect(mockAddToast).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'error', message: 'Invalid mnemonic data in vault' })
+      );
+    });
+    expect(screen.getByText(/Step 2 of 3/i)).toBeInTheDocument();
+  });
+});
+
+// ─── debouncedValidate stability ─────────────────────────────────────────────
+
+describe('SendScreen — debouncedValidate вызывается ровно один раз за изменение', () => {
+  beforeEach(() => {
+    vi.useRealTimers();
+    vi.clearAllMocks();
+  });
+
+  it('validateSend вызывается ровно 1 раз после одного изменения ввода', async () => {
+    const { validateSend } = await import('@/services/validation/validate-send');
+
+    vi.useFakeTimers();
+    render(<SendScreen />);
+
+    fireEvent.change(screen.getByPlaceholderText('UQ...'), {
+      target: { value: 'UQBtest1234567890abcdef' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('0.00'), {
+      target: { value: '1' },
+    });
+
+    await act(async () => { await vi.advanceTimersByTimeAsync(600); });
+    vi.useRealTimers();
+
+    expect(vi.mocked(validateSend)).toHaveBeenCalledTimes(1);
+  });
+
+  it('debounce подавляет промежуточные вызовы при быстром вводе', async () => {
+    const { validateSend } = await import('@/services/validation/validate-send');
+
+    vi.useFakeTimers();
+    render(<SendScreen />);
+
+    const input = screen.getByPlaceholderText('0.00');
+    // Быстрые последовательные изменения — должен отработать только последний
+    fireEvent.change(input, { target: { value: '1' } });
+    await act(async () => { await vi.advanceTimersByTimeAsync(200); });
+    fireEvent.change(input, { target: { value: '2' } });
+    await act(async () => { await vi.advanceTimersByTimeAsync(200); });
+    fireEvent.change(input, { target: { value: '3' } });
+    await act(async () => { await vi.advanceTimersByTimeAsync(600); });
+
+    vi.useRealTimers();
+
+    expect(vi.mocked(validateSend)).toHaveBeenCalledTimes(1);
   });
 });

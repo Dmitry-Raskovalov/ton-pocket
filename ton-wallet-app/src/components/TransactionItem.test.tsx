@@ -76,4 +76,13 @@ describe('TransactionItem', () => {
     render(<TransactionItem transaction={{ ...baseIn, counterpartyAddress: null }} />);
     expect(screen.getByText('—')).toBeInTheDocument();
   });
+
+  it('обновляет отображение при смене пропса transaction (React.memo не блокирует)', () => {
+    const { rerender } = render(<TransactionItem transaction={baseIn} />);
+    expect(screen.getByText(/1\.5/)).toBeInTheDocument();
+
+    rerender(<TransactionItem transaction={{ ...baseIn, amount: 2_000_000_000n }} />);
+    expect(screen.getByText(/2\.0/)).toBeInTheDocument();
+    expect(screen.queryByText(/1\.5/)).not.toBeInTheDocument();
+  });
 });

@@ -5,8 +5,8 @@
  * created: 2026-03-31
  */
 
-import { Address } from '@ton/core';
 import { getTonClient } from './client';
+import { parseToAddress } from '../validation/address-format';
 
 const NANOTON_PER_TON = 1_000_000_000n;
 
@@ -16,7 +16,7 @@ const NANOTON_PER_TON = 1_000_000_000n;
  */
 export async function getBalance(address: string): Promise<bigint> {
   const client = getTonClient();
-  const parsed = address.includes(':') ? Address.parseRaw(address) : Address.parse(address);
+  const parsed = parseToAddress(address);
 
   try {
     return await client.getBalance(parsed);

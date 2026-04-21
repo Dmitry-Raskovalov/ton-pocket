@@ -56,19 +56,27 @@ function sleep(ms: number): Promise<void> {
 }
 
 /**
- * Get current seqno from the blockchain for a wallet contract.
- * Uses contract's get-method via client.open() — the only correct way.
+ * Get current seqno; returns 0 if the contract is not yet deployed.
+ * Used before sending to establish the baseline seqno.
  */
-async function getSeqno(contract: WalletContract): Promise<number> {
+async function getInitialSeqno(contract: WalletContract): Promise<number> {
   const client = getTonClient();
   try {
-    // Cast to V4 is safe: all wallet versions share the same getSeqno() signature
     const opened = client.open(contract as WalletContractV4);
     return await opened.getSeqno();
   } catch {
-    // Contract not yet deployed (seqno = 0)
     return 0;
   }
+}
+
+/**
+ * Get current seqno during polling — propagates errors so the caller can
+ * decide whether to retry or abort.
+ */
+async function getSeqno(contract: WalletContract): Promise<number> {
+  const client = getTonClient();
+  const opened = client.open(contract as WalletContractV4);
+  return await opened.getSeqno();
 }
 
 // --- Public API ---
@@ -112,8 +120,8 @@ export async function sendTransfer(params: TransferParams): Promise<TransferResu
   }
 
   try {
-    // Step 1: Get current seqno
-    const seqnoBefore = await getSeqno(contract);
+    // Step 1: Get current seqno (0 if not yet deployed)
+    const seqnoBefore = await getInitialSeqno(contract);
 
     // Step 2: Create transfer
     const transfer = (contract as WalletContractV4).createTransfer({
@@ -137,19 +145,22 @@ export async function sendTransfer(params: TransferParams): Promise<TransferResu
     while (Date.now() - startTime < SEQNO_TIMEOUT_MS) {
       await sleep(SEQNO_POLL_INTERVAL_MS);
 
-      const seqnoAfter = await getSeqno(contract);
-      if (seqnoAfter > seqnoBefore) {
-        // Transaction confirmed - get the hash from the last transaction
-        try {
-          const txs = await client.getTransactions(contract.address, { limit: 1 });
-          if (txs.length > 0) {
-            const hash = txs[0].hash().toString('hex');
-            return { status: 'confirmed', hash };
+      try {
+        const seqnoAfter = await getSeqno(contract);
+        if (seqnoAfter > seqnoBefore) {
+          // Transaction confirmed — fetch hash from the latest transaction
+          try {
+            const txs = await client.getTransactions(contract.address, { limit: 1 });
+            if (txs.length > 0) {
+              const hash = txs[0].hash().toString('hex');
+              return { status: 'confirmed', hash };
+            }
+          } catch {
+            return { status: 'confirmed' };
           }
-        } catch {
-          // Failed to get transaction hash, but seqno incremented
-          return { status: 'confirmed' };
         }
+      } catch {
+        // Transient network error during polling — continue until timeout
       }
     }
 

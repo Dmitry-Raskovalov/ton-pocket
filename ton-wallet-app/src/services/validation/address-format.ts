@@ -54,6 +54,21 @@ export function normalizeAddress(input: string): string {
 }
 
 /**
+ * Парсит TON-адрес любого формата и возвращает объект Address.
+ * Бросает ошибку, если адрес невалиден.
+ */
+export function parseToAddress(input: string): Address {
+  if (!input || typeof input !== 'string') {
+    throw new Error('Invalid address: empty input');
+  }
+  try {
+    return input.includes(':') ? Address.parseRaw(input) : Address.parseFriendly(input).address;
+  } catch {
+    throw new Error(`Invalid TON address: ${input}`);
+  }
+}
+
+/**
  * Разбирает TON-адрес и возвращает raw-форму и флаги.
  * Бросает ошибку, если адрес невалиден.
  */

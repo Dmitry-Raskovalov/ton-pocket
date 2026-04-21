@@ -22,6 +22,30 @@ describe('AddressBook', () => {
     book = new AddressBook();
   });
 
+  describe('addOrUpdateEntry — валидация адреса', () => {
+    it('принимает валидный raw-адрес (0:hex64)', () => {
+      expect(() => book.addOrUpdateEntry({ address: ADDR_A })).not.toThrow();
+    });
+
+    it('выбрасывает ошибку для user-friendly адреса (UQ...)', () => {
+      expect(() =>
+        book.addOrUpdateEntry({ address: 'UQBtest1234567890abcdef1234567890abcdef1234567890' })
+      ).toThrow('Invalid raw address format');
+    });
+
+    it('выбрасывает ошибку для пустой строки', () => {
+      expect(() => book.addOrUpdateEntry({ address: '' })).toThrow('Invalid raw address format');
+    });
+
+    it('выбрасывает ошибку для произвольной строки', () => {
+      expect(() => book.addOrUpdateEntry({ address: 'not-an-address' })).toThrow('Invalid raw address format');
+    });
+
+    it('выбрасывает ошибку для raw-адреса с коротким hex', () => {
+      expect(() => book.addOrUpdateEntry({ address: '0:deadbeef' })).toThrow('Invalid raw address format');
+    });
+  });
+
   describe('addOrUpdateEntry + getEntries', () => {
     it('добавляет новую запись', () => {
       book.addOrUpdateEntry({ address: ADDR_A, displayAddress: 'EQaabb...', source: 'manual' });

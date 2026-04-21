@@ -24,14 +24,16 @@ vi.mock('argon2-browser', () => {
 const mockAddToast = vi.fn();
 const mockSetWallet = vi.fn();
 const mockSetUnlocked = vi.fn();
-const mockSetSessionPassword = vi.fn();
+
+vi.mock('@/crypto/session', () => ({
+  setSessionPassword: vi.fn(),
+}));
 
 vi.mock('@/store/wallet-store', () => ({
   useWalletStore: Object.assign(
     (selector?: (s: any) => any) => selector ? selector({
       setWallet: mockSetWallet,
       setUnlocked: mockSetUnlocked,
-      setSessionPassword: mockSetSessionPassword,
     }) : {},
     { getState: () => ({ setWallet: mockSetWallet, setUnlocked: mockSetUnlocked }) }
   ),

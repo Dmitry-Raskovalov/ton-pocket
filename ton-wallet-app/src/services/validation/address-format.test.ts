@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { isValidAddress, normalizeAddress, parseAddress } from './address-format';
+import { isValidAddress, normalizeAddress, parseAddress, parseToAddress } from './address-format';
 
 // Тестовые адреса одного и того же кошелька в разных форматах
 // Workchain 0, hash 0xabab...ab (32 байта)
@@ -114,5 +114,38 @@ describe('parseAddress', () => {
 
   it('бросает ошибку для невалидного адреса', () => {
     expect(() => parseAddress('garbage')).toThrow();
+  });
+});
+
+describe('parseToAddress', () => {
+  it('возвращает Address из raw-формата', () => {
+    const addr = parseToAddress(RAW);
+    expect(addr.toRawString()).toBe(RAW);
+  });
+
+  it('возвращает Address из bounceable-формата', () => {
+    const addr = parseToAddress(BOUNCEABLE);
+    expect(addr.toRawString()).toBe(RAW);
+  });
+
+  it('возвращает Address из non-bounceable-формата', () => {
+    const addr = parseToAddress(NON_BOUNCEABLE);
+    expect(addr.toRawString()).toBe(RAW);
+  });
+
+  it('все три формата возвращают равный Address через .equals()', () => {
+    const fromRaw = parseToAddress(RAW);
+    const fromBounceable = parseToAddress(BOUNCEABLE);
+    const fromNonBounceable = parseToAddress(NON_BOUNCEABLE);
+    expect(fromRaw.equals(fromBounceable)).toBe(true);
+    expect(fromRaw.equals(fromNonBounceable)).toBe(true);
+  });
+
+  it('бросает ошибку для невалидного адреса', () => {
+    expect(() => parseToAddress('not-an-address')).toThrow();
+  });
+
+  it('бросает ошибку для пустой строки', () => {
+    expect(() => parseToAddress('')).toThrow();
   });
 });

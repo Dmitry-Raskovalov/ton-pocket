@@ -6,6 +6,7 @@
  * created: 2026-03-31
  */
 
+import { Address } from '@ton/core';
 import type { AddressBookEntry, SimilarAddressMatch } from './types';
 
 const STORAGE_KEY = 'ton_pocket_address_book';
@@ -51,6 +52,12 @@ export class AddressBook {
    * All comparisons are done via normalised raw address.
    */
   addOrUpdateEntry(entry: { address: string; displayAddress?: string; label?: string; source?: 'manual' | 'sent' | 'received' }): void {
+    try {
+      Address.parseRaw(entry.address);
+    } catch {
+      throw new Error(`Invalid raw address format: ${entry.address}`);
+    }
+
     const existing = this.entries.get(entry.address);
     if (existing) {
       const newSource = entry.source ?? 'manual';

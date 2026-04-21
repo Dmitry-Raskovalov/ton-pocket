@@ -11,6 +11,7 @@ import { ChevronLeft, Settings, ArrowRight, AlertTriangle, Info } from 'lucide-r
 import { PasswordInput } from '@/components/PasswordInput';
 import { CopyButton } from '@/components/CopyButton';
 import { walletService } from '@/services/wallet/WalletService';
+import { setSessionPassword } from '@/crypto/session';
 import { useWalletStore } from '@/store/wallet-store';
 import { useUIStore } from '@/store/ui-store';
 
@@ -266,7 +267,7 @@ export function CreateWalletScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [sessionPwd, setSessionPwd] = useState('');
 
-  const { setWallet, setUnlocked, setSessionPassword } = useWalletStore();
+  const { setWallet, setUnlocked } = useWalletStore();
   const { addToast } = useUIStore();
   const [, setLocation] = useLocation();
 

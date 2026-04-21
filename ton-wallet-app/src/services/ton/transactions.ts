@@ -8,6 +8,7 @@
 import type { Transaction } from '@ton/core';
 import { Address } from '@ton/core';
 import { getTonClient } from './client';
+import { parseToAddress } from '../validation/address-format';
 
 // --- Types ---
 
@@ -119,7 +120,7 @@ export async function getTransactions(
   hash?: string,
 ): Promise<ParsedTransaction[]> {
   const client = getTonClient();
-  const parsed = address.includes(':') ? Address.parseRaw(address) : Address.parse(address);
+  const parsed = parseToAddress(address);
 
   const rawTxs = await client.getTransactions(parsed, {
     limit,

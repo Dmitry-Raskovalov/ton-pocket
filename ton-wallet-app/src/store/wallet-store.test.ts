@@ -14,6 +14,10 @@ vi.mock('@/crypto/vault', () => ({
   hasVault: vi.fn(() => false),
 }));
 
+vi.mock('@/crypto/session', () => ({
+  clearSession: vi.fn(),
+}));
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function resetStore() {

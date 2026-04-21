@@ -4,6 +4,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UnlockModal } from './UnlockModal';
 import * as vault from '@/crypto/vault';
 import type { EncryptedVault } from '@/crypto/types';
+import { getBalance } from '@/services/ton/balance';
+import { getTransactions } from '@/services/ton/transactions';
 
 // ─── Setup Mocks ─────────────────────────────────────────────────────────────
 
@@ -49,6 +51,10 @@ const mockStoreState = {
 
 vi.mock('@/store/ui-store', () => ({
     useUIStore: vi.fn((selector) => selector(mockStoreState))
+}));
+
+vi.mock('@/crypto/session', () => ({
+    setSessionPassword: vi.fn(),
 }));
 
 vi.mock('@/services/ton/balance', () => ({
@@ -101,6 +107,44 @@ describe('UnlockModal', () => {
 
         // Check if the timer is formatting appropriately
         expect(screen.getByText(/Try again in 5:00/)).toBeInTheDocument();
+    });
+
+    it('логирует ошибку в console.error если getBalance падает после анлока', async () => {
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(vault, 'loadVault').mockReturnValue({} as EncryptedVault);
+        vi.spyOn(vault, 'decrypt').mockResolvedValue('{"some":"data"}');
+        vi.mocked(getBalance).mockRejectedValueOnce(new Error('network error'));
+
+        render(<UnlockModal />);
+        fireEvent.change(screen.getByPlaceholderText('Enter password'), { target: { value: 'correct' } });
+        fireEvent.click(screen.getByRole('button', { name: /unlock/i }));
+
+        await waitFor(() => {
+            expect(consoleSpy).toHaveBeenCalledWith(
+                '[UnlockModal] balance fetch failed',
+                expect.any(Error),
+            );
+        });
+        consoleSpy.mockRestore();
+    });
+
+    it('логирует ошибку в console.error если getTransactions падает после анлока', async () => {
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(vault, 'loadVault').mockReturnValue({} as EncryptedVault);
+        vi.spyOn(vault, 'decrypt').mockResolvedValue('{"some":"data"}');
+        vi.mocked(getTransactions).mockRejectedValueOnce(new Error('tx error'));
+
+        render(<UnlockModal />);
+        fireEvent.change(screen.getByPlaceholderText('Enter password'), { target: { value: 'correct' } });
+        fireEvent.click(screen.getByRole('button', { name: /unlock/i }));
+
+        await waitFor(() => {
+            expect(consoleSpy).toHaveBeenCalledWith(
+                '[UnlockModal] transactions fetch failed',
+                expect.any(Error),
+            );
+        });
+        consoleSpy.mockRestore();
     });
 
     it('unlocks and fetches initial data upon providing the correct password', async () => {

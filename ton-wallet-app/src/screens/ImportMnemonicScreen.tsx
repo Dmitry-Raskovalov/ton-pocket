@@ -11,6 +11,7 @@ import { ChevronLeft, ArrowRight, ClipboardPaste, ShieldCheck, Info } from 'luci
 import { PasswordInput } from '@/components/PasswordInput';
 import { walletService } from '@/services/wallet/WalletService';
 import { formatTon } from '@/services/ton/balance';
+import { setSessionPassword } from '@/crypto/session';
 import { useWalletStore } from '@/store/wallet-store';
 import { useUIStore } from '@/store/ui-store';
 import type { DetectedWallet, WalletVersion } from '@/services/wallet/contract-factory';
@@ -475,7 +476,7 @@ export function ImportMnemonicScreen() {
   const [detectedWallets, setDetectedWallets] = useState<DetectedWallet[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { setWallet, setUnlocked, setSessionPassword } = useWalletStore();
+  const { setWallet, setUnlocked } = useWalletStore();
   const { addToast } = useUIStore();
   const [, setLocation] = useLocation();
 

@@ -9,6 +9,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Lock, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { loadVault, decrypt } from '@/crypto/vault';
+import { setSessionPassword } from '@/crypto/session';
 import { useWalletStore } from '@/store/wallet-store';
 import { useUIStore } from '@/store/ui-store';
 import { useTransactionStore } from '@/store/transaction-store';
@@ -25,7 +26,6 @@ export function UnlockModal() {
   const [remainingSeconds, setRemainingSeconds] = useState(0);
 
   const setUnlocked = useWalletStore((s) => s.setUnlocked);
-  const setSessionPassword = useWalletStore((s) => s.setSessionPassword);
   const unlockAttempts = useUIStore((s) => s.unlockAttempts);
   const lockedUntil = useUIStore((s) => s.lockedUntil);
   const incrementUnlockAttempts = useUIStore((s) => s.incrementUnlockAttempts);
@@ -76,10 +76,10 @@ export function UnlockModal() {
       if (address) {
         getBalance(address)
           .then((b) => updateBalance(b))
-          .catch(() => { });
+          .catch((err) => console.error('[UnlockModal] balance fetch failed', err));
         getTransactions(address, 20)
           .then((txs) => setTransactions(txs, txs.length === 20))
-          .catch(() => { });
+          .catch((err) => console.error('[UnlockModal] transactions fetch failed', err));
       }
     } catch {
       setError('Incorrect password');
@@ -87,7 +87,7 @@ export function UnlockModal() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [password, isSubmitting, isLocked, setUnlocked, resetUnlockAttempts, incrementUnlockAttempts, setSessionPassword]);
+  }, [password, isSubmitting, isLocked, setUnlocked, resetUnlockAttempts, incrementUnlockAttempts]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {

@@ -3,6 +3,23 @@
 Все заметные изменения в проекте TON Testnet Wallet будут документироваться в этом файле.
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/).
 
+## [2026-04-21] - Code review: исправление критических проблем
+
+### Безопасность
+- `crypto/session.ts` (новый): `sessionPassword` вынесен из Zustand store в модульную переменную — недоступен через `getState()` и DevTools.
+- `store/wallet-store.ts`: удалены `sessionPassword` и `setSessionPassword`; `clearWallet` теперь вызывает `clearSession()`.
+- `store/types.ts`: удалены соответствующие поля из `WalletState` и `WalletActions`.
+
+### Исправления
+- `screens/SendScreen.tsx`: `JSON.parse(mnemonicJson)` обёрнут в общий try/catch с валидацией типа и длины массива.
+- `screens/SendScreen.tsx`: `debouncedValidate` стабилизирован через `useRef` — больше не пересоздаётся при изменении баланса.
+
+### Рефакторинг
+- `components/UnlockModal.tsx`, `screens/CreateWalletScreen.tsx`, `screens/ImportMnemonicScreen.tsx`: используют `setSessionPassword` из `@/crypto/session`.
+- Все затронутые тесты обновлены (46 файлов, 533 теста — все проходят).
+
+---
+
 ## [2026-04-15] - Задача 11.3: E2E-тесты на testnet с Playwright
 
 ### Добавлено

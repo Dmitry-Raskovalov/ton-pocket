@@ -15,25 +15,16 @@ import {
   ArrowLeft, ArrowRight, Info, RefreshCw,
   CheckCircle, XCircle, AlertTriangle, Clock,
 } from 'lucide-react';
-import { Address } from '@ton/core';
 import { useWalletStore } from '@/store/wallet-store';
-import { useUIStore } from '@/store/ui-store';
 import { validateSend } from '@/services/validation/validate-send';
 import type { Warning } from '@/services/validation/types';
-import { sendTransfer, ESTIMATED_FEE } from '@/services/ton/transfer';
-import { formatTon, getBalance } from '@/services/ton/balance';
-import { loadVault, decrypt } from '@/crypto/vault';
-import { mnemonicToPrivateKey } from '@ton/crypto';
-import { createContract } from '@/services/wallet/contract-factory';
-import { addressBook } from '@/services/address-book/address-book';
+import { formatTon } from '@/services/ton/balance';
 import { HighlightedAddress, CopyButton, WarningList } from '@/components';
-import type { TransferResult } from '@/services/ton/transfer';
+import { useSendTransaction, ESTIMATED_FEE } from '@/hooks/useSendTransaction';
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
 type Step = 'input' | 'confirm' | 'result';
-
-type ResultState = 'pending' | 'success' | 'error' | 'timeout';
 
 const TON_NANO = 1_000_000_000n;
 const REDIRECT_DELAY_MS = 3000;
@@ -59,14 +50,11 @@ function formatAmountInput(nanotons: bigint): string {
 
 export function SendScreen() {
   const [, setLocation] = useLocation();
-  // Store
   const rawAddress = useWalletStore((s) => s.address);
   const balance = useWalletStore((s) => s.balance);
-  const version = useWalletStore((s) => s.version);
   const publicKeyHex = useWalletStore((s) => s.publicKey);
-  const sessionPassword = useWalletStore((s) => s.sessionPassword);
-  const updateBalance = useWalletStore((s) => s.updateBalance);
-  const addToast = useUIStore((s) => s.addToast);
+
+  const { isSending, resultState, transferResult, sendTransaction, resetResult } = useSendTransaction();
 
   // ─── Step state ───────────────────────────────────────────────────────────
   const [step, setStep] = useState<Step>('input');
@@ -83,11 +71,6 @@ export function SendScreen() {
 
   // Step 2: Confirm
   const [allBlockingConfirmed, setAllBlockingConfirmed] = useState(true);
-  const [isSending, setIsSending] = useState(false);
-
-  // Step 3: Result
-  const [resultState, setResultState] = useState<ResultState>('pending');
-  const [transferResult, setTransferResult] = useState<TransferResult | null>(null);
 
   // Debounce ref
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -122,12 +105,16 @@ export function SendScreen() {
     }
   }, [rawAddress, publicKeyHex, balance]);
 
+  // Ref keeps latest runValidation without forcing debouncedValidate to recreate
+  const runValidationRef = useRef(runValidation);
+  useEffect(() => { runValidationRef.current = runValidation; }, [runValidation]);
+
   const debouncedValidate = useCallback((recipientAddr: string, amountNano: bigint) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      void runValidation(recipientAddr, amountNano);
+      void runValidationRef.current(recipientAddr, amountNano);
     }, 500);
-  }, [runValidation]);
+  }, []); // stable — always invokes latest runValidation via ref
 
   // Trigger validation on input changes
   useEffect(() => {
@@ -159,88 +146,9 @@ export function SendScreen() {
   };
 
   const handleSend = async () => {
-    if (!rawAddress || !publicKeyHex || !version || !sessionPassword) return;
-    setIsSending(true);
-
-    try {
-      // 1. Decrypt vault
-      const vault = loadVault();
-      if (!vault) {
-        addToast({ type: 'error', message: 'Wallet vault not found', duration: 4000 });
-        setIsSending(false);
-        return;
-      }
-
-      let mnemonicJson: string;
-      try {
-        mnemonicJson = await decrypt(vault, sessionPassword);
-      } catch (err) {
-        addToast({ 
-          type: 'error', 
-          message: err instanceof Error ? err.message : 'Failed to decrypt wallet', 
-          duration: 4000 
-        });
-        setIsSending(false);
-        return;
-      }
-
-      // 2. Derive keypair
-      const words: string[] = JSON.parse(mnemonicJson);
-      const keyPair = await mnemonicToPrivateKey(words);
-
-      // 3. Create contract & send
-      const contract = createContract(keyPair.publicKey, version);
-      const secretKey = Buffer.from(keyPair.secretKey);
-
-      setStep('result');
-      setResultState('pending');
-
-      const result = await sendTransfer({
-        recipient,
-        amount,
-        comment: comment || undefined,
-        contract,
-        secretKey,
-      });
-
-      setTransferResult(result);
-      // Map 'failed' to 'error' to match our UI result blocks
-      setResultState(
-        result.status === 'confirmed' ? 'success' : result.status
-      );
-
-      if (result.status === 'confirmed') {
-        // Update address book
-        try {
-          const recipientRaw = Address.parse(recipient).toRawString();
-          addressBook.addOrUpdateEntry({
-            address: recipientRaw,
-            displayAddress: recipient,
-            source: 'sent',
-          });
-        } catch {
-          // Address book update is best-effort
-        }
-
-        // Refresh balance
-        try {
-          const newBalance = await getBalance(rawAddress);
-          updateBalance(newBalance);
-        } catch {
-          // Best effort
-        }
-
-        addToast({ type: 'success', message: 'Transaction sent successfully!', duration: 5000 });
-      }
-    } catch (err) {
-      setResultState('error');
-      setTransferResult({
-        status: 'error',
-        error: err instanceof Error ? err.message : 'Unknown error',
-      });
-    } finally {
-      setIsSending(false);
-    }
+    setStep('result');
+    const started = await sendTransaction({ recipient, amount, comment });
+    if (!started) setStep('confirm');
   };
 
   // Auto-redirect after success/timeout
@@ -251,8 +159,7 @@ export function SendScreen() {
   }, [resultState, setLocation]);
 
   const handleTryAgain = () => {
-    setResultState('pending');
-    setTransferResult(null);
+    resetResult();
     setStep('input');
     setValidationWarnings([]);
     setIsFormValid(false);

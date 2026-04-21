@@ -70,6 +70,22 @@ function numberStack(n: number): TupleReader {
   return new TupleReader([{ type: 'int', value: BigInt(n) }]);
 }
 
+/**
+ * Simplified mock client where open().getSeqno() is a direct vi.fn(),
+ * giving full control over return values and thrown errors per call.
+ */
+function createDirectMockClient(opts: {
+  getSeqno: ReturnType<typeof vi.fn>;
+  sendExternalMessage?: ReturnType<typeof vi.fn>;
+  getTransactions?: ReturnType<typeof vi.fn>;
+}): TonClient {
+  return {
+    sendExternalMessage: opts.sendExternalMessage ?? vi.fn().mockResolvedValue(undefined),
+    getTransactions: opts.getTransactions ?? vi.fn().mockResolvedValue([]),
+    open: () => ({ getSeqno: opts.getSeqno }),
+  } as unknown as TonClient;
+}
+
 // --- Tests ---
 
 describe('transfer service', () => {
@@ -228,6 +244,74 @@ describe('transfer service', () => {
       const result = await sendTransfer({ recipient: nonBounceableRecipient, amount, contract, secretKey });
 
       expect(result.status).toBe('confirmed');
+    });
+  });
+
+  describe('seqno polling resilience', () => {
+    const publicKey = Buffer.alloc(32, 0x01);
+    const secretKey = Buffer.concat([publicKey, Buffer.alloc(32, 0x02)]);
+    const contract = WalletContractV4.create({ workchain: 0, publicKey });
+    const recipientContract = WalletContractV4.create({ workchain: 0, publicKey: Buffer.alloc(32, 0x03) });
+    const recipient = recipientContract.address.toString({ testOnly: true });
+    const amount = 1_000_000_000n;
+
+    it('confirms after a transient polling error on the first poll', async () => {
+      const mockGetSeqno = vi.fn();
+      mockGetSeqno.mockResolvedValueOnce(5); // initial read
+      mockGetSeqno.mockRejectedValueOnce(new Error('Network blip')); // first poll throws
+      mockGetSeqno.mockResolvedValueOnce(6); // second poll confirms
+
+      mockGetTonClient.mockReturnValue(
+        createDirectMockClient({
+          getSeqno: mockGetSeqno,
+          getTransactions: vi.fn().mockResolvedValue([{
+            hash: () => Buffer.from('abcdef12', 'hex'),
+          }]),
+        })
+      );
+
+      const result = await sendTransfer({ recipient, amount, contract, secretKey });
+
+      expect(result.status).toBe('confirmed');
+      expect(result.hash).toBe('abcdef12');
+      expect(mockGetSeqno).toHaveBeenCalledTimes(3);
+    });
+
+    it('returns timeout when all polling calls throw network errors', async () => {
+      const mockGetSeqno = vi.fn();
+      mockGetSeqno.mockResolvedValueOnce(5); // initial read succeeds
+      mockGetSeqno.mockRejectedValue(new Error('Persistent network failure')); // all polls fail
+
+      mockGetTonClient.mockReturnValue(
+        createDirectMockClient({ getSeqno: mockGetSeqno })
+      );
+
+      vi.useFakeTimers();
+      const transferPromise = sendTransfer({ recipient, amount, contract, secretKey });
+      await vi.advanceTimersByTimeAsync(35_000);
+      const result = await transferPromise;
+      vi.useRealTimers();
+
+      expect(result.status).toBe('timeout');
+    });
+
+    it('returns timeout (not error) when polling fails — send was initiated', async () => {
+      const mockGetSeqno = vi.fn();
+      mockGetSeqno.mockResolvedValueOnce(0); // initial: undeployed wallet
+      mockGetSeqno.mockRejectedValue(new Error('RPC down'));
+
+      mockGetTonClient.mockReturnValue(
+        createDirectMockClient({ getSeqno: mockGetSeqno })
+      );
+
+      vi.useFakeTimers();
+      const transferPromise = sendTransfer({ recipient, amount, contract, secretKey });
+      await vi.advanceTimersByTimeAsync(35_000);
+      const result = await transferPromise;
+      vi.useRealTimers();
+
+      // Polling errors should not bubble up as 'error' — they are retried until timeout
+      expect(result.status).toBe('timeout');
     });
   });
 });

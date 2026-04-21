@@ -5,6 +5,7 @@
  * created: 2026-04-01
  */
 
+import { memo } from 'react';
 import { ArrowDownLeft, ArrowUpRight, MessageSquare } from 'lucide-react';
 import { formatTon } from '@/services/ton/balance';
 import type { ParsedTransaction } from '@/services/ton/transactions';
@@ -55,7 +56,7 @@ function formatAmount(nanotons: bigint): string {
   return `${whole}.${trimmed}`;
 }
 
-export function TransactionItem({ transaction, label, onClick }: TransactionItemProps) {
+export const TransactionItem = memo(function TransactionItem({ transaction, label, onClick }: TransactionItemProps) {
   const isIn = transaction.direction === 'in';
 
   return (
@@ -109,4 +110,4 @@ export function TransactionItem({ transaction, label, onClick }: TransactionItem
       </div>
     </div>
   );
-}
+});

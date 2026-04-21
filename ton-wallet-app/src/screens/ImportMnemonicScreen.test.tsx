@@ -8,6 +8,7 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ImportMnemonicScreen } from './ImportMnemonicScreen';
+import * as sessionModule from '@/crypto/session';
 
 // ─── Mocks ─────────────────────────────────────────────────────────────────────
 
@@ -23,12 +24,15 @@ vi.mock('@/services/wallet/WalletService', () => ({
 
 const mockSetWallet = vi.fn();
 const mockSetUnlocked = vi.fn();
-const mockSetSessionPassword = vi.fn();
+
+vi.mock('@/crypto/session', () => ({
+  setSessionPassword: vi.fn(),
+}));
+
 vi.mock('@/store/wallet-store', () => ({
   useWalletStore: () => ({
     setWallet: mockSetWallet,
     setUnlocked: mockSetUnlocked,
-    setSessionPassword: mockSetSessionPassword,
   }),
 }));
 
@@ -206,7 +210,7 @@ describe('ImportMnemonicScreen — Step 2: Set Password', () => {
         version: 'v4R2',
         publicKey: 'aabbcc',
       });
-      expect(mockSetSessionPassword).toHaveBeenCalledWith('StrongPass123!');
+      expect(vi.mocked(sessionModule.setSessionPassword)).toHaveBeenCalledWith('StrongPass123!');
       expect(mockSetLocation).toHaveBeenCalledWith('/main');
     });
   });

@@ -60,6 +60,15 @@ describe('getBalance', () => {
       getBalance('EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c'),
     ).rejects.toThrow('network timeout');
   });
+
+  it('принимает адрес в raw-формате (parseToAddress)', async () => {
+    mockGetBalance.mockResolvedValue(42n);
+    const result = await getBalance('0:0000000000000000000000000000000000000000000000000000000000000000');
+    expect(result).toBe(42n);
+    const arg = mockGetBalance.mock.calls[0][0];
+    expect(typeof arg.toRawString).toBe('function');
+    expect(arg.toRawString()).toBe('0:0000000000000000000000000000000000000000000000000000000000000000');
+  });
 });
 
 // --- formatTon ---
