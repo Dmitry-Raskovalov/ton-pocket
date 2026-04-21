@@ -71,7 +71,7 @@ function deserializeKdfParams(params: KdfParamsSerialized): Argon2Params | Pbkdf
 async function importAesKey(keyBytes: Uint8Array): Promise<CryptoKey> {
   return crypto.subtle.importKey(
     'raw',
-    keyBytes,
+    keyBytes as Uint8Array<ArrayBuffer>,
     { name: 'AES-GCM' },
     false,
     ['encrypt', 'decrypt']
@@ -121,9 +121,9 @@ export async function decrypt(vault: EncryptedVault, password: string): Promise<
 
   try {
     const decrypted = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv },
+      { name: 'AES-GCM', iv: iv as Uint8Array<ArrayBuffer> },
       cryptoKey,
-      ciphertext
+      ciphertext as Uint8Array<ArrayBuffer>
     );
 
     return new TextDecoder().decode(decrypted);
