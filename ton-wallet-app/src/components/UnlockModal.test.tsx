@@ -12,13 +12,20 @@ import { getTransactions } from '@/services/ton/transactions';
 const mockSetUnlocked = vi.fn();
 const mockUpdateBalance = vi.fn();
 const mockSetTransactions = vi.fn();
+const mockClearWallet = vi.fn();
+
+const mockNavigate = vi.fn();
+vi.mock('wouter', () => ({
+    useLocation: () => ['/', mockNavigate],
+}));
 
 vi.mock('@/store/wallet-store', () => ({
     useWalletStore: Object.assign(
         vi.fn((selector: (s: any) => any) => selector({
             address: 'mock_address',
             updateBalance: mockUpdateBalance,
-            setUnlocked: mockSetUnlocked
+            setUnlocked: mockSetUnlocked,
+            clearWallet: mockClearWallet,
         })),
         {
             getState: () => ({
@@ -160,5 +167,48 @@ describe('UnlockModal', () => {
             expect(mockStoreState.resetUnlockAttempts).toHaveBeenCalled();
             expect(mockSetUnlocked).toHaveBeenCalledWith(true);
         });
+    });
+
+    // ─── Delete Wallet (gear menu) ──────────────────────────────────────────
+
+    it('renders gear button', () => {
+        render(<UnlockModal />);
+        expect(screen.getByRole('button', { name: /wallet options/i })).toBeInTheDocument();
+    });
+
+    it('opens dropdown and shows Delete Wallet option on gear click', () => {
+        render(<UnlockModal />);
+        fireEvent.click(screen.getByRole('button', { name: /wallet options/i }));
+        expect(screen.getByText('Delete Wallet')).toBeInTheDocument();
+    });
+
+    it('closes dropdown when clicking Delete Wallet and shows confirmation dialog', () => {
+        render(<UnlockModal />);
+        fireEvent.click(screen.getByRole('button', { name: /wallet options/i }));
+        fireEvent.click(screen.getByText('Delete Wallet'));
+        expect(screen.getByText('The wallet will be removed from browser storage only.')).toBeInTheDocument();
+        expect(screen.getByText(/import this wallet again/i)).toBeInTheDocument();
+    });
+
+    it('cancel button closes confirmation dialog', () => {
+        render(<UnlockModal />);
+        fireEvent.click(screen.getByRole('button', { name: /wallet options/i }));
+        fireEvent.click(screen.getByText('Delete Wallet'));
+        fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+        expect(screen.queryByText('The wallet will be removed from browser storage only.')).not.toBeInTheDocument();
+    });
+
+    it('confirm delete calls clearVault, clearWallet, resetUnlockAttempts and redirects', () => {
+        const clearVaultSpy = vi.spyOn(vault, 'clearVault').mockImplementation(() => {});
+
+        render(<UnlockModal />);
+        fireEvent.click(screen.getByRole('button', { name: /wallet options/i }));
+        fireEvent.click(screen.getByText('Delete Wallet'));
+        fireEvent.click(screen.getByRole('button', { name: /^delete$/i }));
+
+        expect(clearVaultSpy).toHaveBeenCalledOnce();
+        expect(mockClearWallet).toHaveBeenCalledOnce();
+        expect(mockStoreState.resetUnlockAttempts).toHaveBeenCalledOnce();
+        expect(mockNavigate).toHaveBeenCalledWith('/');
     });
 });

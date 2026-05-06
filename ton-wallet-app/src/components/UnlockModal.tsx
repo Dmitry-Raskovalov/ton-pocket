@@ -6,9 +6,10 @@
  * created: 2026-04-01
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { Lock, AlertTriangle, Eye, EyeOff } from 'lucide-react';
-import { loadVault, decrypt } from '@/crypto/vault';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Lock, AlertTriangle, Eye, EyeOff, Settings, Trash2 } from 'lucide-react';
+import { useLocation } from 'wouter';
+import { loadVault, decrypt, clearVault } from '@/crypto/vault';
 import { setSessionPassword } from '@/crypto/session';
 import { useWalletStore } from '@/store/wallet-store';
 import { useUIStore } from '@/store/ui-store';
@@ -22,12 +23,36 @@ export function UnlockModal() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
+  const [, setLocation] = useLocation();
   const setUnlocked = useWalletStore((s) => s.setUnlocked);
+  const clearWallet = useWalletStore((s) => s.clearWallet);
   const unlockAttempts = useUIStore((s) => s.unlockAttempts);
   const lockedUntil = useUIStore((s) => s.lockedUntil);
   const incrementUnlockAttempts = useUIStore((s) => s.incrementUnlockAttempts);
   const resetUnlockAttempts = useUIStore((s) => s.resetUnlockAttempts);
+
+  // Close menu on outside click
+  useEffect(() => {
+    if (!showMenu) return;
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showMenu]);
+
+  function handleDeleteWallet() {
+    clearVault();
+    clearWallet();
+    resetUnlockAttempts();
+    setLocation('/');
+  }
 
   const attemptsLeft = MAX_ATTEMPTS - unlockAttempts;
   const isLocked = lockedUntil !== null && Date.now() < lockedUntil;
@@ -93,13 +118,37 @@ export function UnlockModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center px-6">
+    <div className="fixed inset-0 z-[100] bg-background flex flex-col items-center px-6">
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative z-10 w-full max-w-[400px] flex flex-col items-center">
+      {/* Top bar — gear aligned to content width */}
+      <div className="relative z-20 w-full max-w-[400px] flex justify-end py-4">
+        <div ref={menuRef} className="relative">
+          <button
+            onClick={() => setShowMenu((v) => !v)}
+            aria-label="Wallet options"
+            className="w-9 h-9 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"
+          >
+            <Settings size={20} />
+          </button>
+          {showMenu && (
+            <div className="absolute right-0 mt-1 w-48 bg-surface-container rounded-xl shadow-xl border border-white/10 overflow-hidden">
+              <button
+                onClick={() => { setShowMenu(false); setShowDeleteConfirm(true); }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-error hover:bg-error/10 transition-colors"
+              >
+                <Trash2 size={16} />
+                Delete Wallet
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="relative z-10 w-full max-w-[400px] flex flex-col items-center flex-1 justify-center pb-16">
         {/* Lock icon */}
         <div className="relative mb-8">
           <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full" />
@@ -193,6 +242,55 @@ export function UnlockModal() {
           </span>
         </div>
       </div>
+
+      {/* Delete Wallet Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-[480px] bg-surface-container rounded-2xl overflow-hidden shadow-2xl">
+            <div className="p-6 space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-error/15 flex items-center justify-center text-error shrink-0">
+                  <AlertTriangle size={20} />
+                </div>
+                <h3 className="text-lg font-bold text-on-surface">Delete Wallet</h3>
+              </div>
+
+              <div className="bg-error/10 border border-error/20 rounded-xl p-4 space-y-2">
+                <p className="text-sm text-on-surface font-medium">
+                  The wallet will be removed from browser storage only.
+                </p>
+                <p className="text-sm text-on-surface-variant">
+                  Your funds remain on the blockchain. You can restore access at any time by importing your recovery phrase.
+                </p>
+              </div>
+
+              <p className="text-xs text-on-surface-variant">
+                Make sure your recovery phrase is saved — without it, access cannot be restored.
+              </p>
+
+              <p className="text-xs text-primary/80 bg-primary/10 rounded-lg px-3 py-2">
+                After deletion you can import this wallet again, create a new one, or import a different wallet.
+              </p>
+            </div>
+
+            <div className="flex border-t border-white/10">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 py-4 text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high transition-colors"
+              >
+                Cancel
+              </button>
+              <div className="w-px bg-white/10" />
+              <button
+                onClick={handleDeleteWallet}
+                className="flex-1 py-4 text-sm font-bold text-error hover:bg-error/10 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

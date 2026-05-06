@@ -20,6 +20,10 @@ import { ReceiveScreen } from '@/screens/ReceiveScreen';
 import { SettingsScreen } from '@/screens/Settings/SettingsScreen';
 
 function App() {
+  // Subscribe to address so App re-renders when clearWallet() nulls it out.
+  // Without this, clearWallet() doesn't change isUnlocked (already false),
+  // Zustand skips the re-render, and isWalletCreated() never gets re-evaluated.
+  useWalletStore((s) => s.address);
   const vaultExists = isWalletCreated();
   const isUnlocked = useWalletStore((s) => s.isUnlocked);
 
