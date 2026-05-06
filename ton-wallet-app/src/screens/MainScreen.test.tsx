@@ -41,7 +41,12 @@ vi.mock('@/store/wallet-store', () => ({
 }));
 
 vi.mock('@/store/transaction-store', () => ({
-  useTransactionStore: vi.fn(),
+  useTransactionStore: Object.assign(vi.fn(), {
+    // useTransactions.fetchInitial reads `lastUpdateTimestamp` via getState()
+    // to skip duplicate fetches when seedWalletData ran recently. Tests want
+    // the fetch to happen, so report "never seeded".
+    getState: () => ({ lastUpdateTimestamp: null }),
+  }),
   getFilteredTransactions: vi.fn(),
 }));
 

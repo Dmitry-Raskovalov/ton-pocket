@@ -10,6 +10,7 @@ import { useLocation } from 'wouter';
 import { ChevronLeft, ArrowRight, ClipboardPaste, ShieldCheck, Info } from 'lucide-react';
 import { PasswordInput } from '@/components/PasswordInput';
 import { walletService } from '@/services/wallet/WalletService';
+import { seedWalletData } from '@/services/wallet/seed-wallet-data';
 import { formatTon } from '@/services/ton/balance';
 import { setSessionPassword } from '@/crypto/session';
 import { useWalletStore } from '@/store/wallet-store';
@@ -510,6 +511,7 @@ export function ImportMnemonicScreen() {
       }
       setUnlocked(true);
       setSessionPassword(pwd);
+      if (result.address) seedWalletData(result.address);
       setLocation('/main');
     } catch (err) {
       const message =
@@ -529,6 +531,7 @@ export function ImportMnemonicScreen() {
       }
       setUnlocked(true);
       setSessionPassword(password);
+      if (result.address) seedWalletData(result.address);
       setLocation('/main');
     } catch (err) {
       const message =

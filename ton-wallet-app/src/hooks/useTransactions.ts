@@ -13,6 +13,9 @@ import { useUIStore } from '@/store/ui-store';
 import { RateLimitError } from '@/services/ton/client';
 
 const PAGE_SIZE = 20;
+/** Skip mount-effect fetch if seeding ran within this window — avoids the
+ *  double-request that previously hit toncenter rate limits on cold start. */
+const SEED_FRESHNESS_MS = 5000;
 
 export function useTransactions() {
     const address = useWalletStore((state) => state.address);
@@ -21,6 +24,13 @@ export function useTransactions() {
 
     const fetchInitial = useCallback(async () => {
         if (!address) return;
+
+        // If `seedWalletData` (called during unlock/create/import) populated
+        // the store within the last few seconds, skip — the data is fresh and
+        // a duplicate fetch only spends rate-limit budget for nothing.
+        const seededAt = useTransactionStore.getState().lastUpdateTimestamp;
+        if (seededAt !== null && Date.now() - seededAt < SEED_FRESHNESS_MS) return;
+
         setLoading(true);
         try {
             const txs = await getTransactions(address, PAGE_SIZE);

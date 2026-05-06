@@ -11,6 +11,7 @@ import { ChevronLeft, Settings, ArrowRight, AlertTriangle, Info } from 'lucide-r
 import { PasswordInput } from '@/components/PasswordInput';
 import { CopyButton } from '@/components/CopyButton';
 import { walletService } from '@/services/wallet/WalletService';
+import { seedWalletData } from '@/services/wallet/seed-wallet-data';
 import { setSessionPassword } from '@/crypto/session';
 import { useWalletStore } from '@/store/wallet-store';
 import { useUIStore } from '@/store/ui-store';
@@ -295,6 +296,7 @@ export function CreateWalletScreen() {
     });
     setUnlocked(true);
     setSessionPassword(sessionPwd);
+    seedWalletData(walletData.address);
     setLocation('/main');
   };
 

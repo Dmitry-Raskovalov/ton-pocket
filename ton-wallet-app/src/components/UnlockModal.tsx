@@ -12,9 +12,7 @@ import { loadVault, decrypt } from '@/crypto/vault';
 import { setSessionPassword } from '@/crypto/session';
 import { useWalletStore } from '@/store/wallet-store';
 import { useUIStore } from '@/store/ui-store';
-import { useTransactionStore } from '@/store/transaction-store';
-import { getBalance } from '@/services/ton/balance';
-import { getTransactions } from '@/services/ton/transactions';
+import { seedWalletData } from '@/services/wallet/seed-wallet-data';
 
 const MAX_ATTEMPTS = 5;
 
@@ -71,16 +69,8 @@ export function UnlockModal() {
       setSessionPassword(password);
 
       // Load initial data
-      const { address, updateBalance } = useWalletStore.getState();
-      const { setTransactions } = useTransactionStore.getState();
-      if (address) {
-        getBalance(address)
-          .then((b) => updateBalance(b))
-          .catch((err) => console.error('[UnlockModal] balance fetch failed', err));
-        getTransactions(address, 20)
-          .then((txs) => setTransactions(txs, txs.length === 20))
-          .catch((err) => console.error('[UnlockModal] transactions fetch failed', err));
-      }
+      const { address } = useWalletStore.getState();
+      if (address) seedWalletData(address);
     } catch {
       setError('Incorrect password');
       incrementUnlockAttempts();

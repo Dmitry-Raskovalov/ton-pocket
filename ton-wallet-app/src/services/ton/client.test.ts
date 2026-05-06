@@ -56,10 +56,61 @@ describe('withRetry', () => {
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
-  it('does not retry on RateLimitError', async () => {
-    const fn = vi.fn().mockRejectedValue(new RateLimitError(5000));
-    await expect(withRetry(fn)).rejects.toBeInstanceOf(RateLimitError);
-    expect(fn).toHaveBeenCalledTimes(1);
+  it('retries on RateLimitError respecting Retry-After (capped at 5s) and succeeds', async () => {
+    const fn = vi.fn()
+      .mockRejectedValueOnce(new RateLimitError(2000))
+      .mockResolvedValueOnce('ok');
+
+    const promise = withRetry(fn);
+    await vi.advanceTimersByTimeAsync(2000);
+    const result = await promise;
+
+    expect(result).toBe('ok');
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  it('caps RateLimitError wait at 5s even if Retry-After is larger', async () => {
+    const fn = vi.fn()
+      .mockRejectedValueOnce(new RateLimitError(60_000)) // server asks for 60s
+      .mockResolvedValueOnce('ok');
+
+    const promise = withRetry(fn);
+    // advance only 5s — capped wait should already have elapsed
+    await vi.advanceTimersByTimeAsync(5000);
+    const result = await promise;
+
+    expect(result).toBe('ok');
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  it('falls back to exponential backoff when RateLimitError has no Retry-After', async () => {
+    const fn = vi.fn()
+      .mockRejectedValueOnce(new RateLimitError())
+      .mockResolvedValueOnce('ok');
+
+    const promise = withRetry(fn);
+    await vi.advanceTimersByTimeAsync(1000);
+    const result = await promise;
+
+    expect(result).toBe('ok');
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  it('throws RateLimitError after MAX_RETRIES persistent 429s', async () => {
+    const fn = vi.fn().mockRejectedValue(new RateLimitError(1000));
+
+    const settled = withRetry(fn).then(
+      (v) => ({ status: 'fulfilled', value: v }),
+      (e) => ({ status: 'rejected', reason: e }),
+    );
+    await vi.advanceTimersByTimeAsync(3000);
+
+    const result = await settled;
+    expect(result.status).toBe('rejected');
+    expect((result as { status: 'rejected'; reason: unknown }).reason).toBeInstanceOf(
+      RateLimitError,
+    );
+    expect(fn).toHaveBeenCalledTimes(3);
   });
 
   it('does not retry on ApiError', async () => {

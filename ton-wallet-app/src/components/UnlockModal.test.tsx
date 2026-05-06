@@ -121,7 +121,7 @@ describe('UnlockModal', () => {
 
         await waitFor(() => {
             expect(consoleSpy).toHaveBeenCalledWith(
-                '[UnlockModal] balance fetch failed',
+                expect.stringContaining('balance fetch failed'),
                 expect.any(Error),
             );
         });
@@ -140,7 +140,7 @@ describe('UnlockModal', () => {
 
         await waitFor(() => {
             expect(consoleSpy).toHaveBeenCalledWith(
-                '[UnlockModal] transactions fetch failed',
+                expect.stringContaining('transactions fetch failed'),
                 expect.any(Error),
             );
         });

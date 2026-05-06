@@ -810,3 +810,36 @@
 ### Проблемы
 - Нет. 12/12 тестов с первого прогона.
 
+
+---
+
+## 2026-05-06 — Bugfix: пустая история транзакций после import
+
+### Наблюдения
+- При импорте кошелька с уже существующей on-chain историей MainScreen открывался с пустой историей. Подгрузка происходила только после первой новой транзакции (входящей/исходящей).
+- В коде уже был work-around для unlock-flow: `UnlockModal.handleSubmit` после `setUnlocked(true)` явно делал `getBalance` + `getTransactions` и сидил соответствующие Zustand stores. Для create/import flow аналогичный шаг отсутствовал — полагались на mount-effect MainScreen'а.
+
+### Решения
+- Извлёк сидинг в helper `services/wallet/seed-wallet-data.ts` (`seedWalletData(address)`); вызывается из `UnlockModal`, `ImportMnemonicScreen` (оба пути — с и без выбора версии), `CreateWalletScreen`.
+- Используется fire-and-forget с логированием ошибок в console — MainScreen polling остаётся fallback'ом.
+
+### Проблемы
+- Корневая причина flakiness — `withRetry` в `services/ton/client.ts:62-65` НЕ ретраит `RateLimitError`, а `useBalance` дёргает `refreshTx` только при изменении баланса (`useBalance.ts:40`). Для wallet'ов с balance=0 polling никогда не подхватит историю. Это структурная фрагильность; в текущем PR не трогаю — сидинг закрывает основной user-facing case. Если 429 случится и при сидинге, тосты в MainScreen покажут ошибку, дальнейшее поведение не хуже исходного.
+
+### Решения (продолжение): ретрай 429
+- Сделал `withRetry` ретраящим `RateLimitError`. Уважает `Retry-After`, capится на 5s (`MAX_RATE_LIMIT_WAIT_MS`). Это фундаментальный фикс — все toncenter-вызовы (`detectVersions`, `getBalance`, `getTransactions`, `getContractState`) теперь устойчивы к транзитным 429-кам, не нужно полагаться на верхнеуровневые workaround'ы. Cap нужен потому что toncenter иногда возвращает Retry-After=60 — UI бы повис на минуту.
+- Альтернатива (б) — принудительный refreshTx в useBalance на первом успешном fetch — отклонил: это узкий workaround, тогда как (а) лечит проблему системно.
+- Тестовый кейс "does not retry on RateLimitError" заменён на 4 новых, покрывающих: успешный ретрай по Retry-After, cap на 5s, fallback на backoff без заголовка, окончательный fail после MAX_RETRIES.
+
+### Code review iteration
+Reviewer flagged Important-уровни:
+- **Double-fetch:** seed + MainScreen mount-effect оба дёргали `getTransactions` подряд на freshly импортированном кошельке. Фикс: guard в `useTransactions.fetchInitial` через уже существующий `lastUpdateTimestamp` (окно 5s). Если seed только что отработал, mount-effect skip'ится. PAGE_SIZE остался дублированным в двух местах — premature abstraction по KISS.
+- **Stale-state race:** fire-and-forget `seedWalletData` мог записать в стор после смены адреса (reset wallet). Фикс: захват address в closure + проверка `useWalletStore.getState().address === address` в `.then`.
+- **NaN/edge-case retryAfterMs:** `parseInt('abc', 10) = NaN`; `NaN ?? fallback` НЕ откатывается (NaN не nullish), `Math.min(NaN, 5000) = NaN`, `setTimeout(NaN) = 0ms`. Защита в двух местах: HTTP-адаптер выдаёт `undefined` для невалидного `Retry-After`; внутри `withRetry` дополнительный type-guard через `Number.isFinite`.
+- **Тесты для seedWalletData:** добавлен полный suite (7 тестов).
+
+Skipped:
+- Тесты на интеграцию seed в Create/ImportMnemonicScreen — screen-тесты уже покрывают UI flow, добавление spy на helper это integration test, отдельный TODO. Стало follow-up.
+- Дедупликация PAGE_SIZE между useTransactions и seed-wallet-data — KISS. Если константа разъедется, тест на seed обнаружит несоответствие.
+
+Behaviour change worth noting: `withRetry` теперь пробрасывает `RateLimitError` после exhaustion (не оборачивает в `NetworkError`). Семантически правильнее — callers различают этот класс. Pre-fix RateLimitError бросался немедленно (без retry), post-fix — после 3 неудачных попыток. Тесты подтверждают новое поведение.

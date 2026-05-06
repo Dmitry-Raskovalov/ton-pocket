@@ -21,7 +21,9 @@ vi.mock('@/store/ui-store', () => ({
 }));
 
 vi.mock('@/store/transaction-store', () => ({
-    useTransactionStore: Object.assign(vi.fn(), { getState: vi.fn() }),
+    useTransactionStore: Object.assign(vi.fn(), {
+        getState: vi.fn(() => ({ lastUpdateTimestamp: null })),
+    }),
 }));
 
 vi.mock('@/services/ton/transactions', () => ({

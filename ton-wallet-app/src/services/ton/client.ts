@@ -41,14 +41,20 @@ export class ApiError extends Error {
 
 const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 1000;
+/** Cap on Retry-After waits — keeps UI responsive even if server asks for long wait. */
+const MAX_RATE_LIMIT_WAIT_MS = 5000;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
- * Execute `fn` with retry logic: up to MAX_RETRIES attempts,
- * exponential backoff (1s, 2s, 4s).
+ * Execute `fn` with retry logic: up to MAX_RETRIES attempts.
+ *  - NetworkError: exponential backoff (1s, 2s).
+ *  - RateLimitError (HTTP 429): respect server's Retry-After header,
+ *    capped at MAX_RATE_LIMIT_WAIT_MS to avoid long UI hangs.
+ *    Falls back to exponential backoff when header is missing.
+ *  - ApiError (other 4xx): not retried.
  */
 export async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
   let lastError: unknown;
@@ -59,18 +65,29 @@ export async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
     } catch (err: unknown) {
       lastError = err;
 
-      // RateLimitError and ApiError are not retried
-      if (err instanceof RateLimitError || err instanceof ApiError) {
+      // ApiError (non-429 4xx) — caller-side issue, do not retry.
+      if (err instanceof ApiError) {
         throw err;
       }
 
-      if (attempt < MAX_RETRIES - 1) {
+      const isLastAttempt = attempt >= MAX_RETRIES - 1;
+      if (isLastAttempt) break;
+
+      if (err instanceof RateLimitError) {
+        const fallback = BASE_DELAY_MS * Math.pow(2, attempt);
+        const requested = err.retryAfterMs;
+        const wait =
+          typeof requested === 'number' && Number.isFinite(requested) && requested > 0
+            ? Math.min(requested, MAX_RATE_LIMIT_WAIT_MS)
+            : fallback;
+        await sleep(wait);
+      } else {
         await sleep(BASE_DELAY_MS * Math.pow(2, attempt));
       }
     }
   }
 
-  if (lastError instanceof NetworkError) {
+  if (lastError instanceof NetworkError || lastError instanceof RateLimitError) {
     throw lastError;
   }
 
@@ -113,7 +130,12 @@ function buildHttpAdapter(apiKey?: string) {
 
       if (response.status === 429) {
         const retryAfter = response.headers.get('Retry-After');
-        throw new RateLimitError(retryAfter ? parseInt(retryAfter, 10) * 1000 : undefined);
+        // Retry-After is technically a non-negative integer in seconds; guard
+        // against malformed values (NaN / negative / 0) by coercing them to
+        // undefined so withRetry falls back to exponential backoff.
+        const parsed = retryAfter ? parseInt(retryAfter, 10) : NaN;
+        const retryAfterMs = Number.isFinite(parsed) && parsed > 0 ? parsed * 1000 : undefined;
+        throw new RateLimitError(retryAfterMs);
       }
 
       if (!response.ok) {

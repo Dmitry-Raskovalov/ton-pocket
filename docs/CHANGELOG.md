@@ -3,6 +3,42 @@
 Все заметные изменения в проекте TON Testnet Wallet будут документироваться в этом файле.
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/).
 
+## [2026-05-06] - Bugfix: пустая история транзакций после импорта кошелька
+
+### Проблема
+После импорта (а также после создания) кошелька MainScreen открывался с пустой историей транзакций. История подгружалась только когда менялся баланс — то есть после первой входящей/исходящей транзакции. Для импортированных кошельков с уже существующей on-chain историей это выглядело как баг.
+
+### Корневая причина
+1. После import flow `detectVersions` уже расходует 3 параллельных запроса к toncenter; при монтировании MainScreen стартуют ещё 2 (`useBalance` + `useTransactions`). На бесплатном API (~1 req/sec) часть запросов получает 429, при этом `withRetry` НЕ ретраит `RateLimitError` (`services/ton/client.ts`).
+2. `useBalance` вызывает `refreshTx` только если `newBalance !== currentBalance`. Для импортированного кошелька store-баланс = 0n. Если фактический баланс тоже 0 (или mount-fetch упал), polling никогда не дёргает `refreshTx`. История остаётся пустой до тех пор, пока баланс реально не изменится — это и происходит при первой транзакции.
+3. `UnlockModal` уже решал эту проблему: явно сидил баланс/историю после успешного unlock'а. В create/import flows этот шаг отсутствовал.
+
+### Исправления
+- `services/wallet/seed-wallet-data.ts` (новый): helper `seedWalletData(address)` — best-effort параллельная загрузка `getBalance` + `getTransactions` с записью в соответствующие Zustand stores.
+- `components/UnlockModal.tsx`: inline-логика сидинга заменена на вызов `seedWalletData` (DRY).
+- `screens/ImportMnemonicScreen.tsx`: `seedWalletData(result.address)` вызывается в `handlePasswordContinue` и `handleVersionContinue` после `setUnlocked(true)`.
+- `screens/CreateWalletScreen.tsx`: `seedWalletData(walletData.address)` вызывается в `handleComplete` для консистентности.
+- `components/UnlockModal.test.tsx`: префикс лог-сообщений обновлён на `[seedWalletData]`.
+
+### Defense-in-depth: ретрай 429
+- `services/ton/client.ts`: `withRetry` теперь ретраит `RateLimitError`, уважая заголовок `Retry-After`. Wait capпится на `MAX_RATE_LIMIT_WAIT_MS=5000` чтобы UI не зависал даже при больших значениях. Если `Retry-After` отсутствует — exponential backoff (1s, 2s). После 3-х неудач прокидывается оригинальный `RateLimitError`. `ApiError` (другие 4xx) по-прежнему не ретраится. Это закрывает корневую причину для всех toncenter-вызовов, не только seed'а.
+- `services/ton/client.test.ts`: тест "does not retry on RateLimitError" заменён на 4 новых: успешный ретрай по Retry-After, cap на 5s, fallback на backoff без заголовка, окончательный fail после MAX_RETRIES.
+
+### Code review fixes
+- `hooks/useTransactions.ts`: добавлен guard через `lastUpdateTimestamp` — пропускает mount-fetch если seed отработал в последние 5s. Устраняет double-request, который раньше неосознанно расходовал retry-budget.
+- `services/wallet/seed-wallet-data.ts`: stale-address guard — late `.then()` коллбеки записывают в стор только если активный адрес не сменился, защищая от записи stale-данных после reset wallet.
+- `services/ton/client.ts`: NaN-guard для `Retry-After` (HTTP-адаптер) и для `retryAfterMs` (внутри `withRetry`). Малформенные/нулевые/отрицательные значения откатываются на exponential backoff.
+- `services/wallet/seed-wallet-data.test.ts` (новый): 7 unit-тестов — happy path, empty address, error swallowing, hasMore, stale-address guard для balance и transactions.
+- `components/UnlockModal.test.tsx`: ассерты лог-сообщений переведены на `expect.stringContaining(...)` — больше не зависят от внутреннего префикса.
+
+### Behaviour change (note)
+- `withRetry` теперь после исчерпания ретраев пробрасывает оригинальный `RateLimitError` (а не оборачивает в `NetworkError`). Существующие callers (`useBalance`, `useTransactions`) уже различают этот класс отдельно — поведение для них улучшилось (показывают rate-limit toast, а не generic error).
+
+### Тесты
+- 588/588 тестов проходят, lint без ошибок.
+
+---
+
 ## [2026-04-21] - Code review: исправление критических проблем
 
 ### Безопасность
