@@ -1,7 +1,7 @@
 /**
  * file: address-similarity.ts
- * description: Проверка адреса получателя на похожесть с адресами из адресной книги
- *              (защита от clipboard poisoning)
+ * description: Check if recipient address is similar to addresses in address book
+ *              (protection from clipboard poisoning)
  * dependencies: address-book.ts, types.ts
  * created: 2026-04-01
  */
@@ -10,11 +10,11 @@ import { addressBook } from '../address-book';
 import type { Warning } from './types';
 
 /**
- * Проверяет, похож ли адрес получателя на один из адресов в адресной книге.
- * Возвращает Warning с severity='critical', blocking=true если найдены похожие адреса.
- * Возвращает null если похожих адресов нет или адрес полностью совпадает.
+ * Checks if recipient address is similar to addresses in address book.
+ * Returns Warning with severity='critical', blocking=true if similar addresses found.
+ * Returns null if no similar addresses or address exactly matches.
  *
- * @param recipientRaw - адрес получателя в нормализованном raw-формате (0:hex)
+ * @param recipientRaw - recipient address in normalized raw format (0:hex)
  */
 export function checkAddressSimilarity(recipientRaw: string): Warning | null {
   const similar = addressBook.findSimilar(recipientRaw);
@@ -26,16 +26,16 @@ export function checkAddressSimilarity(recipientRaw: string): Warning | null {
   const details = similar.map((match) => {
     const label = match.entry.label ?? match.entry.displayAddress;
     const part = match.matchType === 'prefix'
-      ? 'начало'
+      ? 'prefix'
       : match.matchType === 'suffix'
-        ? 'конец'
-        : 'начало и конец';
-    return `${label} (совпадает ${part}: ${match.matchedChars})`;
+        ? 'suffix'
+        : 'prefix and suffix';
+    return `${label} (matches ${part}: ${match.matchedChars})`;
   });
 
   return {
     type: 'address_similarity',
-    message: `Введённый адрес похож на ${details.length === 1 ? 'адрес' : 'адреса'} из вашей адресной книги: ${details.join('; ')}. Убедитесь, что адрес не был подменён.`,
+    message: `Entered address is similar to ${details.length === 1 ? 'an address' : 'addresses'} in your address book: ${details.join('; ')}. Ensure the address was not substituted.`,
     severity: 'warning',
     blocking: true,
   };

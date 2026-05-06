@@ -1,6 +1,6 @@
 /**
  * file: validate-send.test.ts
- * description: Юнит-тесты для оркестратора валидации validateSend
+ * description: Unit tests for validateSend orchestrator
  * dependencies: validate-send.ts
  * created: 2026-04-01
  */
@@ -9,7 +9,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { validateSend } from './validate-send';
 import type { Warning } from './types';
 
-// --- моки всех зависимостей ---
+// --- mocks for all dependencies ---
 
 const mockIsValidAddress = vi.fn();
 const mockNormalizeAddress = vi.fn();
@@ -43,7 +43,7 @@ vi.mock('./check-new-recipient', () => ({
   checkNewRecipient: (...args: unknown[]) => mockCheckNewRecipient(...args),
 }));
 
-// --- общие константы ---
+// --- common constants ---
 
 const VALID_ADDRESS = 'EQCrq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq8Uk';
 const RAW_ADDRESS = '0:abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234';
@@ -53,35 +53,35 @@ const BALANCE = 2_000_000_000n; // 2 TON
 
 const WARNING_SELF_SEND: Warning = {
   type: 'self_send',
-  message: 'Вы отправляете средства на свой собственный адрес.',
+  message: 'You are sending funds to your own address.',
   severity: 'warning',
   blocking: false,
 };
 
 const WARNING_LOW_REMAINDER: Warning = {
   type: 'low_remainder',
-  message: 'После перевода на кошельке останется менее 0.05 TON.',
+  message: 'After transfer, wallet balance will be less than 0.05 TON.',
   severity: 'warning',
   blocking: false,
 };
 
 const WARNING_ACCOUNT_UNINIT: Warning = {
   type: 'account_uninit',
-  message: 'Аккаунт получателя не инициализирован.',
+  message: 'Recipient account is not initialized.',
   severity: 'warning',
   blocking: true,
 };
 
 const WARNING_ACCOUNT_FROZEN: Warning = {
   type: 'account_frozen',
-  message: 'Аккаунт получателя заморожен.',
+  message: 'Recipient account is frozen.',
   severity: 'error',
   blocking: true,
 };
 
 const WARNING_SIMILARITY: Warning = {
   type: 'address_similarity',
-  message: 'Адрес похож на адрес из адресной книги.',
+  message: 'Address is similar to address in address book.',
   severity: 'warning',
   blocking: true,
 };
@@ -89,7 +89,7 @@ const WARNING_SIMILARITY: Warning = {
 beforeEach(() => {
   vi.clearAllMocks();
 
-  // По умолчанию: валидный адрес, нет предупреждений
+  // By default: valid address, no warnings
   mockIsValidAddress.mockReturnValue(true);
   mockNormalizeAddress.mockReturnValue(RAW_ADDRESS);
   mockCheckSelfSend.mockReturnValue(null);
@@ -100,8 +100,8 @@ beforeEach(() => {
 });
 
 describe('validateSend', () => {
-  describe('ранний возврат при невалидном адресе', () => {
-    it('возвращает isValid=false и единственный error при невалидном адресе', async () => {
+  describe('early return on invalid address', () => {
+    it('returns isValid=false and single error on invalid address', async () => {
       mockIsValidAddress.mockReturnValue(false);
 
       const result = await validateSend({
@@ -118,7 +118,7 @@ describe('validateSend', () => {
       expect(result.warnings[0].blocking).toBe(true);
     });
 
-    it('не вызывает остальные проверки при невалидном адресе', async () => {
+    it('does not call other checks on invalid address', async () => {
       mockIsValidAddress.mockReturnValue(false);
 
       await validateSend({
@@ -135,8 +135,8 @@ describe('validateSend', () => {
     });
   });
 
-  describe('чистая отправка без предупреждений', () => {
-    it('возвращает isValid=true и пустой массив warnings', async () => {
+  describe('clean send without warnings', () => {
+    it('returns isValid=true and empty warnings array', async () => {
       const result = await validateSend({
         recipientAddress: VALID_ADDRESS,
         amount: AMOUNT,
@@ -148,7 +148,7 @@ describe('validateSend', () => {
       expect(result.warnings).toEqual([]);
     });
 
-    it('передаёт нормализованный адрес в checkSelfSend и checkAddressSimilarity', async () => {
+    it('passes normalized address to checkSelfSend and checkAddressSimilarity', async () => {
       await validateSend({
         recipientAddress: VALID_ADDRESS,
         amount: AMOUNT,
@@ -162,8 +162,8 @@ describe('validateSend', () => {
     });
   });
 
-  describe('комбинации предупреждений', () => {
-    it('собирает self_send и low_remainder вместе, isValid=true', async () => {
+  describe('warning combinations', () => {
+    it('collects self_send and low_remainder together, isValid=true', async () => {
       mockCheckSelfSend.mockReturnValue(WARNING_SELF_SEND);
       mockCheckBalance.mockReturnValue([WARNING_LOW_REMAINDER]);
 
@@ -211,7 +211,7 @@ describe('validateSend', () => {
       expect(result.warnings[0].type).toBe('account_frozen');
     });
 
-    it('address_similarity присутствует в warnings', async () => {
+    it('address_similarity is present in warnings', async () => {
       mockCheckAddressSimilarity.mockReturnValue(WARNING_SIMILARITY);
 
       const result = await validateSend({
@@ -224,10 +224,10 @@ describe('validateSend', () => {
       expect(result.warnings.some((w) => w.type === 'address_similarity')).toBe(true);
     });
 
-    it('new_recipient warning включается в массив warnings', async () => {
+    it('new_recipient warning is included in warnings array', async () => {
       mockCheckNewRecipient.mockReturnValue({
         type: 'new_recipient',
-        message: 'Первый перевод на этот адрес',
+        message: 'First transfer to this address',
         severity: 'warning',
         blocking: true,
       });
@@ -239,10 +239,10 @@ describe('validateSend', () => {
         senderPublicKey: SENDER_KEY,
       });
       expect(result.warnings.some((w) => w.type === 'new_recipient')).toBe(true);
-      expect(result.isValid).toBe(true); // warning не делает форму невалидной
+      expect(result.isValid).toBe(true); // warning does not make form invalid
     });
 
-    it('все 4 типа предупреждений одновременно', async () => {
+    it('all 4 types of warnings at once', async () => {
       mockCheckSelfSend.mockReturnValue(WARNING_SELF_SEND);
       mockCheckAddressSimilarity.mockReturnValue(WARNING_SIMILARITY);
       mockCheckAccountState.mockResolvedValue([WARNING_ACCOUNT_UNINIT]);
@@ -256,13 +256,13 @@ describe('validateSend', () => {
       });
 
       expect(result.warnings).toHaveLength(4);
-      // similarity — severity critical, не 'error', поэтому isValid=true
+      // similarity — severity critical, not 'error', so isValid=true
       expect(result.isValid).toBe(true);
     });
   });
 
-  describe('устойчивость к ошибкам сети', () => {
-    it('при ошибке checkAccountState — пропускает её, остальные выполняются', async () => {
+  describe('network error resilience', () => {
+    it('on checkAccountState error — skips it, others execute', async () => {
       mockCheckAccountState.mockRejectedValue(new Error('Network error'));
       mockCheckBalance.mockReturnValue([WARNING_LOW_REMAINDER]);
 
@@ -273,15 +273,15 @@ describe('validateSend', () => {
         senderPublicKey: SENDER_KEY,
       });
 
-      // balance warning должен присутствовать, account state — нет
+      // balance warning should be present, account state — not
       expect(result.warnings).toHaveLength(1);
       expect(result.warnings[0].type).toBe('low_remainder');
       expect(result.isValid).toBe(true);
     });
   });
 
-  describe('isValid определяется только наличием error-severity', () => {
-    it('warning severity не влияет на isValid', async () => {
+  describe('isValid determined only by error-severity presence', () => {
+    it('warning severity does not affect isValid', async () => {
       mockCheckSelfSend.mockReturnValue(WARNING_SELF_SEND);
 
       const result = await validateSend({
@@ -294,11 +294,11 @@ describe('validateSend', () => {
       expect(result.isValid).toBe(true);
     });
 
-    it('единственный error делает isValid=false', async () => {
+    it('single error makes isValid=false', async () => {
       mockCheckBalance.mockReturnValue([
         {
           type: 'insufficient_balance',
-          message: 'Сумма превышает баланс.',
+          message: 'Amount exceeds balance.',
           severity: 'error',
           blocking: true,
         } satisfies Warning,

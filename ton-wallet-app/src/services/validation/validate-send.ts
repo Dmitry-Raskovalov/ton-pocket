@@ -1,6 +1,6 @@
 /**
  * file: validate-send.ts
- * description: Оркестратор валидации — единая точка входа для проверок перед отправкой
+ * description: Validation orchestrator — single entry point for pre-send checks
  * dependencies: address-format.ts, self-send.ts, account-state.ts, balance-check.ts,
  *               address-similarity.ts, types.ts
  * created: 2026-04-01
@@ -14,44 +14,44 @@ import { checkAddressSimilarity } from './address-similarity';
 import { checkNewRecipient } from './check-new-recipient';
 import type { Warning } from './types';
 
-/** Параметры для валидации отправки */
+/** Parameters for send validation */
 export interface ValidateSendParams {
-  /** Адрес получателя в любом формате (friendly или raw) */
+  /** Recipient address in any format (friendly or raw) */
   recipientAddress: string;
-  /** Сумма перевода в нанотонах */
+  /** Transfer amount in nanotons */
   amount: bigint;
-  /** Текущий баланс отправителя в нанотонах */
+  /** Current sender balance in nanotons */
   senderBalance: bigint;
-  /** Публичный ключ отправителя (Buffer или hex-строка) */
+  /** Sender public key (Buffer or hex string) */
   senderPublicKey: Buffer;
 }
 
-/** Результат валидации отправки */
+/** Send validation result */
 export interface SendValidationResult {
-  /** true — нет error-level предупреждений (можно продолжать) */
+  /** true — no error-level warnings (can continue) */
   isValid: boolean;
-  /** Все предупреждения от всех проверок */
+  /** All warnings from all checks */
   warnings: Warning[];
 }
 
 /**
- * Оркестратор валидации перед отправкой транзакции.
+ * Validation orchestrator before transaction send.
  *
- * Шаг 1 — валидация формата адреса (early return при невалидном).
- * Шаг 2 — параллельный запуск проверок: self-send, similarity, account state, balance.
- * Собирает все Warning в единый массив.
+ * Step 1 — address format validation (early return if invalid).
+ * Step 2 — parallel check execution: self-send, similarity, account state, balance.
+ * Collects all warnings into single array.
  *
- * @param params - параметры отправки
+ * @param params - send parameters
  */
 export async function validateSend(params: ValidateSendParams): Promise<SendValidationResult> {
   const { recipientAddress, amount, senderBalance, senderPublicKey } = params;
   const warnings: Warning[] = [];
 
-  // Шаг 1: валидация формата адреса — early return
+  // Step 1: address format validation — early return
   if (!isValidAddress(recipientAddress)) {
     warnings.push({
       type: 'invalid_address_format',
-      message: 'Невалидный формат TON-адреса.',
+      message: 'Invalid TON address format.',
       severity: 'error',
       blocking: true,
     });
@@ -60,7 +60,7 @@ export async function validateSend(params: ValidateSendParams): Promise<SendVali
 
   const recipientRaw = normalizeAddress(recipientAddress);
 
-  // Шаг 2: параллельный запуск независимых проверок
+  // Step 2: parallel execution of independent checks
   const [selfSendWarning, similarityWarning, newRecipientWarning, accountStateWarnings, balanceWarnings] =
     await Promise.all([
       Promise.resolve(checkSelfSend(recipientRaw, senderPublicKey)),
@@ -70,7 +70,7 @@ export async function validateSend(params: ValidateSendParams): Promise<SendVali
       Promise.resolve(checkBalance(amount, senderBalance)),
     ]);
 
-  // Собираем результаты
+  // Collect results
   if (selfSendWarning) warnings.push(selfSendWarning);
   if (similarityWarning) warnings.push(similarityWarning);
   if (newRecipientWarning) warnings.push(newRecipientWarning);

@@ -1,6 +1,6 @@
 /**
  * file: self-send.ts
- * description: Проверка отправки средств на собственный адрес (self-send)
+ * description: Check if sending funds to own address (self-send)
  * dependencies: contract-factory.ts, address-format.ts, types.ts
  * created: 2026-03-31
  */
@@ -13,12 +13,12 @@ import type { Warning } from './types';
 const ALL_VERSIONS: WalletVersion[] = ['v3R2', 'v4R2', 'v5R1'];
 
 /**
- * Проверяет, не отправляет ли пользователь средства самому себе.
- * Сравнивает recipientRaw с адресами кошелька для всех версий контрактов.
+ * Checks if user is sending funds to themselves.
+ * Compares recipientRaw with wallet addresses for all contract versions.
  *
- * @param recipientRaw - адрес получателя в raw-формате (0:hex)
- * @param walletPublicKey - публичный ключ кошелька отправителя
- * @returns Warning если совпадение найдено, иначе null
+ * @param recipientRaw - recipient address in raw format (0:hex)
+ * @param walletPublicKey - sender wallet public key
+ * @returns Warning if match found, otherwise null
  */
 export function checkSelfSend(recipientRaw: string, walletPublicKey: Buffer): Warning | null {
   const recipient = Address.parseRaw(recipientRaw);
@@ -29,7 +29,7 @@ export function checkSelfSend(recipientRaw: string, walletPublicKey: Buffer): Wa
     if (contract.address.equals(recipient)) {
       return {
         type: 'self_send',
-        message: 'Вы отправляете средства на свой собственный адрес.',
+        message: 'You are sending funds to your own address.',
         severity: 'warning',
         blocking: false,
       };
