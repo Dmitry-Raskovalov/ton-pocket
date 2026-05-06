@@ -6,7 +6,7 @@
  */
 
 import { useLocation } from 'wouter';
-import { Diamond, Settings, PlusCircle, Download, Wallet } from 'lucide-react';
+import { Diamond, PlusCircle, Download, Wallet } from 'lucide-react';
 
 export function WelcomeScreen() {
   const [, setLocation] = useLocation();
@@ -21,15 +21,9 @@ export function WelcomeScreen() {
             TON Wallet
           </span>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-extrabold tracking-widest text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-sm uppercase">
+        <span className="text-[10px] font-extrabold tracking-widest text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-sm uppercase">
             Testnet
           </span>
-          <Settings
-            size={20}
-            className="text-outline hover:text-on-surface-variant transition-colors cursor-pointer"
-          />
-        </div>
       </header>
 
       {/* Main Content */}
@@ -50,6 +44,21 @@ export function WelcomeScreen() {
           <p className="text-on-surface-variant font-medium text-sm leading-relaxed max-w-[280px] mx-auto">
             Self-custodial wallet for TON testnet. Your keys, your crypto, zero compromise.
           </p>
+          <div className="mt-2 bg-surface-container-low rounded-xl px-5 py-4 text-left max-w-[300px] mx-auto border border-white/5">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">
+              Get test tokens
+            </p>
+            <ul className="space-y-1.5 text-xs text-on-surface-variant leading-relaxed">
+              <li>
+                <span className="text-primary font-mono">@testgiver_ton_bot</span>
+                <span className="text-outline"> — Telegram faucet</span>
+              </li>
+              <li>
+                <span className="text-primary font-mono">t.me/ton_free_giver_bot</span>
+                <span className="text-outline"> — alternative</span>
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* Technical metadata */}

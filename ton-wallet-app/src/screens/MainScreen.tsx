@@ -76,30 +76,21 @@ export function MainScreen() {
     void refreshTx();
   }, [refreshTx]);
 
-  /**
-   * Update address book with incoming transaction counterparties.
-   * This helps track "trusted" addresses (both incoming and outgoing).
-   */
-  useEffect(() => {
-    for (const tx of transactions) {
-      if (tx.direction === 'in' && tx.counterpartyAddress) {
-        addressBook.addOrUpdateEntry({
-          address: tx.counterpartyAddress,
-          displayAddress: toUserFriendly(tx.counterpartyAddress),
-          source: 'received',
-        });
-      }
-    }
-  }, [transactions]);
-
-  // Infinite scroll: load more when sentinel enters viewport
+  // Infinite scroll: load more when sentinel enters viewport.
+  // Observer is NOT recreated on isLoading changes — that would cause
+  // immediate re-triggering on a still-visible sentinel and an infinite loop.
+  // Instead we use a ref to read the latest isLoading value inside the
+  // stable callback, and a separate effect to re-check after load finishes.
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const isLoadingRef = useRef(isLoading);
+  isLoadingRef.current = isLoading;
+
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && hasMore && !isLoading) {
+        if (entry.isIntersecting && !isLoadingRef.current) {
           void loadMore();
         }
       },
@@ -107,7 +98,8 @@ export function MainScreen() {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hasMore, isLoading, loadMore]);
+  }, [hasMore, loadMore]); // isLoading intentionally omitted — read via ref
+
 
   return (
     <div className="flex flex-col h-dvh items-center bg-background text-on-background">
@@ -194,6 +186,28 @@ export function MainScreen() {
             </section>
           )}
 
+          {/* Faucet hint — shown while balance is zero */}
+          {balance === 0n && (
+            <section className="mt-4 bg-surface-container rounded-xl p-4 border border-primary/10 space-y-2">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                Get testnet tokens
+              </p>
+              <ul className="space-y-1 text-xs text-on-surface-variant">
+                <li>
+                  Telegram:{' '}
+                  <span className="font-mono text-primary">@testgiver_ton_bot</span>
+                </li>
+                <li>
+                  Alternative:{' '}
+                  <span className="font-mono text-primary">@ton_free_giver_bot</span>
+                </li>
+              </ul>
+              <p className="text-[10px] text-outline leading-relaxed pt-1">
+                Send your address to one of the bots and receive free testnet TON in seconds.
+              </p>
+            </section>
+          )}
+
           {/* Transactions section */}
           <section className="flex-1 flex flex-col overflow-hidden min-h-0 mt-8">
             {/* Fixed: section header + filters */}
@@ -259,9 +273,9 @@ export function MainScreen() {
                     />
                   ))}
 
-                  {/* Infinite scroll sentinel */}
+                  {/* Infinite scroll sentinel — fixed height prevents layout shift when spinner appears/disappears */}
                   {hasMore && (
-                    <div ref={sentinelRef} className="flex justify-center py-4">
+                    <div ref={sentinelRef} className="flex justify-center items-center h-12">
                       {isLoading && (
                         <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                       )}

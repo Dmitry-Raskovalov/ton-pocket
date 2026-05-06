@@ -54,7 +54,8 @@ function sleep(ms: number): Promise<void> {
  *  - RateLimitError (HTTP 429): respect server's Retry-After header,
  *    capped at MAX_RATE_LIMIT_WAIT_MS to avoid long UI hangs.
  *    Falls back to exponential backoff when header is missing.
- *  - ApiError (other 4xx): not retried.
+ *  - ApiError 4xx (except 429): not retried — bad request won't succeed on retry.
+ *  - ApiError 5xx: retried — transient server error.
  */
 export async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
   let lastError: unknown;
@@ -65,8 +66,9 @@ export async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
     } catch (err: unknown) {
       lastError = err;
 
-      // ApiError (non-429 4xx) — caller-side issue, do not retry.
-      if (err instanceof ApiError) {
+      // 4xx client errors (except 429) are not retryable — bad request won't succeed on retry.
+      // 5xx server errors are retried: they are transient by nature.
+      if (err instanceof ApiError && err.statusCode != null && err.statusCode >= 400 && err.statusCode < 500) {
         throw err;
       }
 
@@ -87,7 +89,11 @@ export async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
     }
   }
 
-  if (lastError instanceof NetworkError || lastError instanceof RateLimitError) {
+  if (
+    lastError instanceof NetworkError ||
+    lastError instanceof RateLimitError ||
+    lastError instanceof ApiError
+  ) {
     throw lastError;
   }
 

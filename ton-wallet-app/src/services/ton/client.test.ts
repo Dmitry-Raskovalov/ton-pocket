@@ -113,10 +113,57 @@ describe('withRetry', () => {
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
-  it('does not retry on ApiError', async () => {
+  it('does not retry on 4xx ApiError (400)', async () => {
     const fn = vi.fn().mockRejectedValue(new ApiError('Bad Request', 400));
     await expect(withRetry(fn)).rejects.toBeInstanceOf(ApiError);
     expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not retry on 4xx ApiError (499)', async () => {
+    const fn = vi.fn().mockRejectedValue(new ApiError('Client Error', 499));
+    await expect(withRetry(fn)).rejects.toBeInstanceOf(ApiError);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it('retries on 5xx ApiError and succeeds on second attempt', async () => {
+    const fn = vi.fn()
+      .mockRejectedValueOnce(new ApiError('Internal Server Error', 500))
+      .mockResolvedValueOnce('ok');
+
+    const promise = withRetry(fn);
+    await vi.advanceTimersByTimeAsync(1000);
+    const result = await promise;
+
+    expect(result).toBe('ok');
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  it('retries 5xx ApiError 3 times then throws ApiError', async () => {
+    const fn = vi.fn().mockRejectedValue(new ApiError('Service Unavailable', 503));
+
+    const settled = withRetry(fn).then(
+      (v) => ({ status: 'fulfilled', value: v }),
+      (e) => ({ status: 'rejected', reason: e }),
+    );
+    await vi.advanceTimersByTimeAsync(3000);
+
+    const result = await settled;
+    expect(result.status).toBe('rejected');
+    expect((result as { status: 'rejected'; reason: unknown }).reason).toBeInstanceOf(ApiError);
+    expect(fn).toHaveBeenCalledTimes(3);
+  });
+
+  it('retries ApiError with undefined statusCode', async () => {
+    const fn = vi.fn()
+      .mockRejectedValueOnce(new ApiError('Unknown error'))
+      .mockResolvedValueOnce('ok');
+
+    const promise = withRetry(fn);
+    await vi.advanceTimersByTimeAsync(1000);
+    const result = await promise;
+
+    expect(result).toBe('ok');
+    expect(fn).toHaveBeenCalledTimes(2);
   });
 
   it('wraps unknown error in NetworkError after max retries', async () => {

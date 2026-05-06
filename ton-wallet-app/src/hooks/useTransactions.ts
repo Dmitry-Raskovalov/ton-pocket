@@ -4,7 +4,7 @@
  * created: 2026-04-01
  */
 
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { useTransactionStore } from '@/store/transaction-store';
 import { getTransactions } from '@/services/ton/transactions';
 import { addressBook } from '@/services/address-book';
@@ -19,11 +19,16 @@ const SEED_FRESHNESS_MS = 5000;
 
 export function useTransactions() {
     const address = useWalletStore((state) => state.address);
-    const { setTransactions, appendTransactions, setLoading, transactions, hasMore } = useTransactionStore();
+    const { setTransactions, appendTransactions, setLoading } = useTransactionStore();
     const addToast = useUIStore((state) => state.addToast);
 
+    // Refs to avoid stale closures in loadMore without adding them to deps
+    const addressRef = useRef(address);
+    addressRef.current = address;
+
     const fetchInitial = useCallback(async () => {
-        if (!address) return;
+        if (!addressRef.current) return;
+        if (useTransactionStore.getState().isLoading) return;
 
         // If `seedWalletData` (called during unlock/create/import) populated
         // the store within the last few seconds, skip — the data is fresh and
@@ -33,7 +38,7 @@ export function useTransactions() {
 
         setLoading(true);
         try {
-            const txs = await getTransactions(address, PAGE_SIZE);
+            const txs = await getTransactions(addressRef.current, PAGE_SIZE);
             setTransactions(txs, txs.length === PAGE_SIZE);
 
             txs.forEach((tx) => {
@@ -53,19 +58,27 @@ export function useTransactions() {
         } finally {
             setLoading(false);
         }
-    }, [address, setTransactions, setLoading, addToast]);
+    }, [setTransactions, setLoading, addToast]);
 
+    // Stable loadMore — reads live store state via getState() to avoid
+    // including `transactions`/`hasMore` in deps (which would recreate the
+    // function on every append and cause the IntersectionObserver to
+    // reconnect, immediately re-triggering and looping infinitely).
     const loadMore = useCallback(async () => {
-        if (!address || !hasMore || transactions.length === 0) return;
+        const { transactions, hasMore, isLoading } = useTransactionStore.getState();
+        if (!addressRef.current || !hasMore || isLoading || transactions.length === 0) return;
         setLoading(true);
         try {
             const lastTx = transactions[transactions.length - 1];
-            const txs = await getTransactions(address, PAGE_SIZE, lastTx.lt, lastTx.hash);
+            const txs = await getTransactions(addressRef.current, PAGE_SIZE, lastTx.lt, lastTx.hash);
 
             // Deduplicate
-            const newTxs = txs.filter((newTx) => !transactions.some((t) => t.hash === newTx.hash));
+            const currentTxs = useTransactionStore.getState().transactions;
+            const newTxs = txs.filter((newTx) => !currentTxs.some((t) => t.hash === newTx.hash));
 
-            appendTransactions(newTxs, txs.length === PAGE_SIZE);
+            // If cursor didn't advance (all fetched txs were already stored),
+            // stop pagination — otherwise the next call would repeat the same page.
+            appendTransactions(newTxs, newTxs.length > 0 && txs.length === PAGE_SIZE);
 
             newTxs.forEach((tx) => {
                 if (tx.direction === 'in' && tx.counterpartyAddress) {
@@ -76,6 +89,9 @@ export function useTransactions() {
                 }
             });
         } catch (err) {
+            // Stop pagination on error to prevent rapid retry loops.
+            // User can pull-to-refresh to resume if they want more.
+            appendTransactions([], false);
             if (err instanceof RateLimitError) {
                 addToast({ type: 'warning', message: 'Too many requests, wait...', duration: 3000 });
             } else {
@@ -84,7 +100,7 @@ export function useTransactions() {
         } finally {
             setLoading(false);
         }
-    }, [address, hasMore, transactions, appendTransactions, setLoading, addToast]);
+    }, [appendTransactions, setLoading, addToast]);
 
     return { refresh: fetchInitial, loadMore };
 }

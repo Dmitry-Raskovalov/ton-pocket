@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { useLocation } from 'wouter';
-import { ChevronLeft, ArrowRight, ClipboardPaste, ShieldCheck, Info } from 'lucide-react';
+import { ChevronLeft, ArrowRight, ShieldCheck, Info } from 'lucide-react';
 import { PasswordInput } from '@/components/PasswordInput';
 import { walletService } from '@/services/wallet/WalletService';
 import { seedWalletData } from '@/services/wallet/seed-wallet-data';
@@ -28,8 +28,6 @@ function parseWords(text: string): string[] {
     .filter(Boolean);
 }
 
-/** Truncate a friendly address to show first 4 and last 4 chars. */
-
 // ─── Step 1: Enter Mnemonic ────────────────────────────────────────────────────
 
 interface StepMnemonicProps {
@@ -44,16 +42,6 @@ function StepMnemonic({ onBack, onContinue }: StepMnemonicProps) {
   const words = parseWords(text);
   const wordCount = words.length;
   const canContinue = wordCount === 24;
-
-  const handlePaste = async () => {
-    try {
-      const clipText = await navigator.clipboard.readText();
-      setText(clipText);
-      setError('');
-    } catch {
-      // Permissions API blocked — user pastes manually
-    }
-  };
 
   const handleContinue = async () => {
     setError('');
@@ -101,17 +89,6 @@ function StepMnemonic({ onBack, onContinue }: StepMnemonicProps) {
 
         {/* Textarea block */}
         <section className="relative group mb-8">
-          {/* Paste button */}
-          <div className="absolute right-3 top-3 z-10">
-            <button
-              onClick={handlePaste}
-              className="bg-surface-container-highest hover:bg-outline-variant text-primary text-xs font-bold py-1.5 px-3 rounded-lg transition-all active:scale-95 flex items-center gap-1.5 border border-white/5"
-            >
-              <ClipboardPaste size={14} />
-              Paste
-            </button>
-          </div>
-
           <div className="bg-surface-container-lowest rounded-xl p-4 min-h-[240px] border border-transparent focus-within:border-primary/30 transition-all duration-300">
             <textarea
               className="w-full min-h-[200px] bg-transparent border-none focus:ring-0 text-on-surface font-mono text-sm leading-8 resize-none placeholder:font-sans placeholder:text-outline/40 outline-none"

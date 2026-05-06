@@ -59,7 +59,7 @@ describe('checkNewRecipient', () => {
     expect(result!.type).toBe('new_recipient');
     expect(result!.severity).toBe('warning');
     expect(result!.blocking).toBe(true);
-    expect(result!.message).toContain('впервые');
+    expect(result!.message).toContain('first time');
   });
 
   it('returns warning when address exists but only with received source', async () => {
