@@ -7,7 +7,6 @@ import { renderHook, act } from '@testing-library/react';
 import { useTransactions } from './useTransactions';
 import { useTransactionStore } from '@/store/transaction-store';
 import { useWalletStore } from '@/store/wallet-store';
-import { useUIStore } from '@/store/ui-store';
 import { addressBook } from '@/services/address-book';
 import { getTransactions } from '@/services/ton/transactions';
 import { RateLimitError } from '@/services/ton/client';
